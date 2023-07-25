@@ -120,6 +120,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       }
       osDisk: {
         createOption: 'FromImage'
+        deleteOption: 'Delete'
         managedDisk: {
           storageAccountType: 'StandardSSD_LRS'
         }
@@ -131,6 +132,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       networkInterfaces: [
         {
           id: nic.id
+          properties:{
+            deleteOption: 'Delete'
+          }
         }
       ]
     }
