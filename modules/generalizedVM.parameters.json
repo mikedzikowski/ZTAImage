@@ -3,11 +3,11 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "adminUsername": {
-      "value": "xadmin"
+      "value": ""
     },
     
     "adminPassword": {
-      "value": "123mikeD123!"
+      "value": ""
     }
   }
 }
