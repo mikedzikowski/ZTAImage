@@ -4,7 +4,7 @@ param adminUsername string
 @description('Password for the Virtual Machine.')
 @minLength(20)
 @secure()
-param adminPassword string 
+param adminPassword string
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([
@@ -41,35 +41,6 @@ var securityProfileJson = {
   }
   securityType: securityType
 }
-// var extensionName = 'GuestAttestation'
-// var extensionPublisher = 'Microsoft.Azure.Security.WindowsAttestation'
-// var extensionVersion = '1.0'
-// var maaTenantName = 'GuestAttestation'
-// var maaEndpoint = substring('emptyString', 0, 0)
-
-// resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
-//   name: storageAccountName
-//   location: location
-//   sku: {
-//     name: 'Standard_LRS'
-//   }
-//   kind: 'Storage'
-// }
-
-// resource publicIp 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
-//   name: publicIpName
-//   location: location
-//   sku: {
-//     name: publicIpSku
-//   }
-//   properties: {
-//     publicIPAllocationMethod: publicIPAllocationMethod
-//     dnsSettings: {
-//       domainNameLabel: dnsLabelPrefix
-//     }
-//   }
-// }
-
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
   name: networkSecurityGroupName
   location: location
