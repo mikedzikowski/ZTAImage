@@ -107,7 +107,8 @@ try {
    # Removing Image Virtual Machine
    Write-host "Removing Image Virtual Machine $($Sourcevm.name)..." -ForegroundColor White
    Remove-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVM.name -ForceDeletion $true -Force -Verbose
-   Write-host "Completed Removal of Image Virtual Machine $($Sourcevm.name)...!!!" -ForegroundColor White
+   Write-host "Removing Image Virtual Machine NSG associated with $($Sourcevm.name)..." -ForegroundColor White
+   Remove-AzNetworkSecurityGroup -Name "default-nsg" -ResourceGroupName $sourceVM.ResourceGroupName -Force
 }
 catch {
    Write-Host $_.error

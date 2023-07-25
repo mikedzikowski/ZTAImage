@@ -39,7 +39,7 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
         value: notepadBlobName
       }
     ]
-    timeoutInSeconds: 120
+    timeoutInSeconds: 360
   }
 }
 

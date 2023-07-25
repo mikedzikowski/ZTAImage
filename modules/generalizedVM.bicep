@@ -19,7 +19,7 @@ param vmSize string = 'Standard_D2s_v5'
 param location string = resourceGroup().location
 
 @description('Name of the virtual machine.')
-param vmName string = 'image-vm'
+param vmName string = 'vm-image'
 
 @description('Security Type of the Virtual Machine.')
 @allowed([
@@ -33,7 +33,7 @@ param miName string = 'image-mi'
 var nicName = '${vmName}-nic'
 var subnetName = 'default'
 var virtualNetworkName = 'testtimage-vnet'
-var networkSecurityGroupName = 'default-NSG'
+var networkSecurityGroupName = 'nsg-image-vm'
 var securityProfileJson = {
   uefiSettings: {
     secureBootEnabled: true
