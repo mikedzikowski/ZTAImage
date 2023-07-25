@@ -72,21 +72,18 @@ try {
 
       # Create New Gallery Image
       Write-host "Creating New Gallery Image Definition..." -ForegroundColor White
-
-      $NewGalleryImageDefinitionArguments = @{
-         GalleryName = $gallery.Name
-         Feature = $features
-         ResourceGroupName = $gallery.ResourceGroupName
-         Location= $gallery.Location
-         Name = $imageName
-         OsState = Generalized
-         OsType = Windows
-         Publisher = $imagePublisher
-         Offer = $imageOffer
-         Sku = $imageSku
-         HyperVGeneration ="V2"
-       }
-      $galleryImage = New-AzGalleryImageDefinition @NewGalleryImageDefinitionArguments
+      $galleryImage = New-AzGalleryImageDefinition `
+         -GalleryName $gallery.Name `
+         -Feature $features `
+         -ResourceGroupName $gallery.ResourceGroupName `
+         -Location $gallery.Location `
+         -Name $imageName `
+         -OsState Generalized `
+         -OsType Windows `
+         -Publisher $imagePublisher `
+         -Offer $imageOffer `
+         -Sku $imageSku `
+         -HyperVGeneration "V2"
 
       # Set Target Regions for Replication
       $region1 = @{Name = 'usgovvirginia'; ReplicaCount = 1 }
@@ -94,19 +91,16 @@ try {
 
       # Create New Gallery Image Version
       Write-host "Creating New Gallery Image Version..." -ForegroundColor White
-
-      $NewGalleryImageVersionArguments =@{
-         GalleryImageDefinitionName = $galleryImage.Name
-         GalleryImageVersionName = $imageVersion
-         GalleryName = $gallery.Name
-         ResourceGroupName = $gallery.ResourceGroupName
-         Location = 'usgovvirginia'
-         TargetRegion = $targetRegions
-         Source = $sourceVM.Id.ToString()
-         PublishingProfileEndOfLifeDate = '2030-12-01'
-         StorageAccountType = 'Standard_LRS'
-      }
-      $newImage = New-AzGalleryImageVersion @$NewGalleryImageVersionArguments
+      $newImage = New-AzGalleryImageVersion `
+         -GalleryImageDefinitionName $galleryImage.Name `
+         -GalleryImageVersionName $imageVersion `
+         -GalleryName $gallery.Name `
+         -ResourceGroupName $gallery.ResourceGroupName `
+         -Location 'usgovvirginia' `
+         -TargetRegion $targetRegions `
+         -Source $sourceVM.Id.ToString() `
+         -PublishingProfileEndOfLifeDate '2030-12-01' `
+         -StorageAccountType 'Standard_LRS'
 
       Write-host "Virtual Machine Image" $($galleryImage.name) "version $($newImage.name) has been created!" -ForegroundColor White
    }

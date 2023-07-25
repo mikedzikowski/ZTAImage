@@ -10,18 +10,21 @@ param notepadBlobName string = 'Get-Notepad++.ps1'
 param storageEndpoint string = '.blob.core.usgovcloudapi.net'
 
 
+var software = [
+  notepadBlobName
+]
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing  = {
   name: vmName
 }
 
-resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
-  name: 'notepad'
+resource customization 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [for (blob, i) in software:  {
+  name: 'softwareinstall-${i}'
   location: location
   parent: vm
   properties: {
     source: {
-      scriptUri: 'https://${storageAccountName}${storageEndpoint}/${containerName}/${notepadBlobName}'
+      scriptUri: 'https://${storageAccountName}${storageEndpoint}/${containerName}/${blob}'
     }
     parameters: [
       {
@@ -38,12 +41,12 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
       }
       {
         name: 'BlobName'
-        value: notepadBlobName
+        value: blob
       }
     ]
-    timeoutInSeconds: 120
+    timeoutInSeconds: 360
   }
-}
+}]
 
 resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
   name: 'sysprep'
@@ -74,6 +77,6 @@ resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
     timeoutInSeconds: 120
   }
   dependsOn: [
-     notepad
+     customization
   ]
 }

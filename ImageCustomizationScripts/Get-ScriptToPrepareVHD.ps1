@@ -22,7 +22,6 @@ try
     Start-Sleep -Seconds 60
     Set-Location -Path $env:windir\temp
     .\$BlobName
-
 }
 catch
 {
