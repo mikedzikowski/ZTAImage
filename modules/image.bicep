@@ -2,6 +2,11 @@ targetScope = 'resourceGroup'
 
 param vmName string
 param location string = resourceGroup().location
+param userAssignedIdentityObjectId string = '258d3674-d759-4fe1-bddf-13413e16a6a7'
+param storageAccontName string = 'saimageartifacts'
+param containerName string = 'artifacts'
+param sysprepBlobName string = 'Get-ScriptToPrepareVHD.ps1'
+param notepadBlobName string = 'Get-Notepad++.ps1'
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing  = {
   name: vmName
@@ -13,8 +18,26 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
   parent: vm
   properties: {
     source: {
-      scriptUri: 'https://saimageartifacts.blob.core.usgovcloudapi.net/artifacts/Get-NotePad++.ps1'
+      scriptUri: 'https://saimageartifacts.blob.core.usgovcloudapi.net/artifacts/Get-NotePad++.ps1' 
     }
+    parameters: [
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccontName'
+        value: storageAccontName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'BlobName'
+        value: notepadBlobName
+      }
+    ]
     timeoutInSeconds: 120
   }
 }
@@ -24,11 +47,27 @@ resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
   location: location
   parent: vm
   properties: {
-    outputBlobUri: 'https://saimageartifacts.blob.core.usgovcloudapi.net/artifacts/errors.txt'
     source: {
-      // script:'\${Env:windir}\\system32\\sysprep\\Sysprep.exe /generalize /oobe /shutdown /mode:vm'
       scriptUri: 'https://saimageartifacts.blob.core.usgovcloudapi.net/artifacts/Get-ScriptToPrepareVHD.ps1'
     }
+    parameters: [
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccontName'
+        value: storageAccontName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'BlobName'
+        value: sysprepBlobName
+      }
+    ]
     timeoutInSeconds: 120
   }
   dependsOn: [
