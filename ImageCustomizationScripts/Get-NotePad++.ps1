@@ -5,9 +5,7 @@ param (
    [parameter(mandatory = $true)]
    $StorageAccountName,
    [parameter(mandatory = $true)]
-   $ContainerName,
-   [parameter(mandatory = $true)]
-   $BlobName
+   $ContainerName
 )
 try
 {
