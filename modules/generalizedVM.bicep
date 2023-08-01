@@ -2,7 +2,6 @@
 param adminUsername string
 
 @description('Password for the Virtual Machine.')
-@minLength(20)
 @secure()
 param adminPassword string
 
@@ -70,7 +69,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: miName
 }
-
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
   name: nicName

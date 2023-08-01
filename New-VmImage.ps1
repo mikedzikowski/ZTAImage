@@ -24,11 +24,11 @@ try {
 
    If ($sourceVm) {
       # Customize Virtual Machine and Sysprep
-      Write-host "Image Virtual Machine Found. Customizing by deploying image.Bicep. Please enter adminUserName and adminPassword" -ForegroundColor Yellow
+      Write-host "Image Virtual Machine Found. Customizing by deploying image.Bicep." -ForegroundColor Yellow
       New-AzResourceGroupDeployment -Name CustomizeImage  -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -Vmname $sourceVm.Name -Verbose
 
-      Start-Sleep -Seconds 30
-
+      Start-Sleep -Seconds 60
+      
       # Mark VM as Generalized - currently only supported with PowerShell
       Write-host "Marking VM as generalized..." -ForegroundColor White
       $generalize = Set-AzVm -ResourceGroupName $sourceVm.ResourceGroupName -Name $sourceVM.Name -Generalized
@@ -40,18 +40,23 @@ try {
    if (!$sourceVm) {
       # Build VM if source VM is not found
       Write-host "Image Virtual Machine was not found. Creating Image VM by deploying generalizedVM.Bicep. Please enter adminUserName and adminPassword." -ForegroundColor Yellow
+      
       New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Verbose -Vmname $VmName
 
+      Start-Sleep -Seconds 30
+      
       # Sleeping to ensure deployment completes
       Start-Sleep -Seconds 30
       # Create Source VM object
       $sourceVM = Get-AzVM -Name $VmName -ResourceGroupName $ResourceGroupName
 
+      Start-Sleep -Seconds 120
+
       # Customize Virtual Machine and Sysprep
       Write-host "Customizing by deploying image.bicep." -ForegroundColor White
       New-AzResourceGroupDeployment -Name CustomizeImage -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -Vmname $sourceVm.Name -Verbose
 
-      Start-Sleep -Seconds 30
+      Start-Sleep -Seconds 60
 
       # Mark VM as Generalized
       Write-host "Marking VM as generalized..." -ForegroundColor White
