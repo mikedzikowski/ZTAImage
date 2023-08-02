@@ -51,7 +51,7 @@
       "value": false
     },
     "storageAccountName": {
-      "value": "saimageartifacts"
+      "value": "yourstorageaccount"
     },
     "storageEndpoint": {
       "value": ".blob.core.usgovcloudapi.net"
@@ -63,7 +63,7 @@
       "value": "GovernmentCommunityCloud"
     },
     "userAssignedIdentityObjectId": {
-      "value": "258d3674-d759-4fe1-bddf-13413e16a6a7"
+      "value": "00000000-0000-0000-0000-000000000000"
     }
   }
 }
