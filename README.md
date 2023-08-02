@@ -18,7 +18,7 @@ Examle powershell to run the solution:
 
 How to view the status of runcommands:
 ```
-PS C:\git\ztaimage> $x = Get-AzVMRunCommand -ResourceGroupName test2_group -VMName vm-image -RunCommandName office -Expand InstanceView
+PS C:\git\ztaimage> $x = Get-AzVMRunCommand -ResourceGroupName rg-image -VMName vm-image -RunCommandName office -Expand InstanceView
 PS C:\git\ztaimage> $x.InstanceView
 
 
