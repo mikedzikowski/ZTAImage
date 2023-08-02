@@ -3,11 +3,22 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "adminUsername": {
-      "value": ""
+      "value": "xadmin"
     },
-    
     "adminPassword": {
-      "value": ""
+      "value": "yTYQqAts~e9{3Jab"
+    },
+    "OSVersion": {
+      "value": "win11-22h2-avd"
+    },
+    "vmSize": {
+      "value": "Standard_D2s_v5"
+    },
+    "securityType": {
+      "value": "TrustedLaunch"
+    },
+    "miName": {
+      "value": "image-mi"
     }
   }
 }

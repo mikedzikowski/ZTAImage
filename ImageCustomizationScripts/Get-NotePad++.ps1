@@ -1,6 +1,5 @@
 try
 {
-    Start-Sleep -Seconds 120
     $UserAssignedIdentityObjectId = '258d3674-d759-4fe1-bddf-13413e16a6a7'
     $StorageAccountName = 'saimageartifacts'
     $ContainerName = 'artifacts'

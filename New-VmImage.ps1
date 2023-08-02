@@ -15,7 +15,15 @@ param (
    [parameter(mandatory = $true)]
    $ImageOffer,
    [parameter(mandatory = $true)]
-   $ImageSku
+   $ImageSku,
+   [parameter(mandatory = $false)]
+   $StorageAccountType = 'Standard_LRS',
+   [parameter(mandatory = $false)]
+   $PublishingProfileEndOfLifeDate = '2030-12-01',
+   [parameter(mandatory = $false)]
+   $HyperVGeneration = 'V2',
+   [parameter(mandatory = $false)]
+   $Location = 'usgovvirginia'
 )
 
 try {
@@ -25,10 +33,10 @@ try {
    If ($sourceVm) {
       # Customize Virtual Machine and Sysprep
       Write-host "Image Virtual Machine Found. Customizing by deploying image.Bicep." -ForegroundColor Yellow
-      New-AzResourceGroupDeployment -Name CustomizeImage  -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -Vmname $sourceVm.Name -Verbose
+      New-AzResourceGroupDeployment -Name CustomizeImage  -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -Vmname $VmName -TemplateParameterFile .\modules\image.parameters.json -Verbose
 
       Start-Sleep -Seconds 60
-      
+
       # Mark VM as Generalized - currently only supported with PowerShell
       Write-host "Marking VM as generalized..." -ForegroundColor White
       $generalize = Set-AzVm -ResourceGroupName $sourceVm.ResourceGroupName -Name $sourceVM.Name -Generalized
@@ -40,11 +48,11 @@ try {
    if (!$sourceVm) {
       # Build VM if source VM is not found
       Write-host "Image Virtual Machine was not found. Creating Image VM by deploying generalizedVM.Bicep. Please enter adminUserName and adminPassword." -ForegroundColor Yellow
-      
-      New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Verbose -Vmname $VmName
+
+      New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Vmname $VmName -TemplateParameterFile .\modules\generalizedVM.parameters.json -Verbose
 
       Start-Sleep -Seconds 30
-      
+
       # Sleeping to ensure deployment completes
       Start-Sleep -Seconds 30
       # Create Source VM object
@@ -54,7 +62,7 @@ try {
 
       # Customize Virtual Machine and Sysprep
       Write-host "Customizing by deploying image.bicep." -ForegroundColor White
-      New-AzResourceGroupDeployment -Name CustomizeImage -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -Vmname $sourceVm.Name -Verbose
+      New-AzResourceGroupDeployment -Name CustomizeImage -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -VmName $VmName -TemplateParameterFile .\modules\image.parameters.json -VmName $VmName -Verbose
 
       Start-Sleep -Seconds 60
 
@@ -88,10 +96,10 @@ try {
          -Publisher $imagePublisher `
          -Offer $imageOffer `
          -Sku $imageSku `
-         -HyperVGeneration "V2"
+         -HyperVGeneration $HyperVGeneration
 
       # Set Target Regions for Replication
-      $region1 = @{Name = 'usgovvirginia'; ReplicaCount = 1 }
+      $region1 = @{Name = $Location; ReplicaCount = 1 }
       $targetRegions = @($region1)
 
       # Create New Gallery Image Version
@@ -101,19 +109,20 @@ try {
          -GalleryImageVersionName $imageVersion `
          -GalleryName $gallery.Name `
          -ResourceGroupName $gallery.ResourceGroupName `
-         -Location 'usgovvirginia' `
+         -Location $Location `
          -TargetRegion $targetRegions `
          -Source $sourceVM.Id.ToString() `
-         -PublishingProfileEndOfLifeDate '2030-12-01' `
-         -StorageAccountType 'Standard_LRS'
+         -PublishingProfileEndOfLifeDate $PublishingProfileEndOfLifeDate `
+         -StorageAccountType $StorageAccountType
 
       Write-host "Virtual Machine Image" $($galleryImage.name) "version $($newImage.name) has been created!" -ForegroundColor White
    }
    # Removing Image Virtual Machine
    Write-host "Removing Image Virtual Machine $($Sourcevm.name)..." -ForegroundColor White
    Remove-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVM.name -ForceDeletion $true -Force -Verbose
+
    Write-host "Removing Image Virtual Machine NSG associated with $($Sourcevm.name)..." -ForegroundColor White
-   Remove-AzNetworkSecurityGroup -Name "default-nsg" -ResourceGroupName $sourceVM.ResourceGroupName -Force
+   Remove-AzNetworkSecurityGroup -Name "nsg-image-vm" -ResourceGroupName $sourceVM.ResourceGroupName -Force
 }
 catch {
    Write-Host $_.error

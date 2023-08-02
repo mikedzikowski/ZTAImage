@@ -1,25 +1,25 @@
 targetScope = 'resourceGroup'
 
-param containerName string = 'artifacts'
-param installAccess bool = true
-param installExcel bool = true
-param installFsLogix bool = true
-param installNotepadPlusPlus bool = true
-param installOneDriveForBusiness bool = true
-param installOneNote bool = true
-param installOutlook bool = true
-param installPowerPoint bool = true
-param installProject bool = true
-param installPublisher bool = true
-param installSkypeForBusiness bool = true
-param installTeams bool = true
-param installVirtualDesktopOptimizationTool bool = true
-param installVisio bool = true
-param installWord bool = true
+param containerName string
+param installAccess bool
+param installExcel bool
+param installFsLogix bool
+param installNotepadPlusPlus bool
+param installOneDriveForBusiness bool
+param installOneNote bool
+param installOutlook bool
+param installPowerPoint bool
+param installProject bool
+param installPublisher bool
+param installSkypeForBusiness bool
+param installTeams bool
+param installVirtualDesktopOptimizationTool bool
+param installVisio bool
+param installWord bool
 param location string = resourceGroup().location
-param storageAccountName string = 'saimageartifacts'
-param storageEndpoint string = '.blob.core.usgovcloudapi.net'
-param sysprepScript string = 'Get-ScriptToPrepareVHD.ps1'
+param storageAccountName string
+param storageEndpoint string
+param sysprepScript string
 param vmName string
 @allowed([
   'Commercial'
@@ -27,7 +27,8 @@ param vmName string
   'GovernmentCommunityCloud'
   'GovernmentCommunityCloudHigh'
 ])
-param TenantType string = 'Commercial'
+param TenantType string
+param userAssignedIdentityObjectId string
 
 var installAccessVar = '${installAccess}installAccess'
 var installExcelVar = '${installExcel}installWord'
@@ -50,11 +51,30 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
   location: location
   parent: vm
   properties: {
+    parameters: [
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+    ]
     source: {
       script: '''
-        $UserAssignedIdentityObjectId = '258d3674-d759-4fe1-bddf-13413e16a6a7'
-        $StorageAccountName = 'saimageartifacts'
-        $ContainerName = 'artifacts'
+      param(
+        [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
+        [string]$ContainerName
+        )
+        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+        $StorageAccountName = $StorageAccountName
+        $ContainerName = $ContainerName
         $BlobName = 'npp.8.2.1.Installer.exe'
         $StorageAccountUrl = 'https://' + $StorageAccountName + '.blob.core.usgovcloudapi.net'
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"

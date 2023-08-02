@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerName": {
+      "value": "artifacts"
+    },
+    "installAccess": {
+      "value": true
+    },
+    "installExcel": {
+      "value": true
+    },
+    "installFsLogix": {
+      "value": true
+    },
+    "installNotepadPlusPlus": {
+      "value": true
+    },
+    "installOneDriveForBusiness": {
+      "value": false
+    },
+    "installOneNote": {
+      "value": false
+    },
+    "installOutlook": {
+      "value": false
+    },
+    "installPowerPoint": {
+      "value": false
+    },
+    "installProject": {
+      "value": false
+    },
+    "installPublisher": {
+      "value": false
+    },
+    "installSkypeForBusiness": {
+      "value": false
+    },
+    "installTeams": {
+      "value": false
+    },
+    "installVirtualDesktopOptimizationTool": {
+      "value": true
+    },
+    "installVisio": {
+      "value": false
+    },
+    "installWord": {
+      "value": false
+    },
+    "storageAccountName": {
+      "value": "saimageartifacts"
+    },
+    "storageEndpoint": {
+      "value": ".blob.core.usgovcloudapi.net"
+    },
+    "sysprepScript": {
+      "value": "Get-ScriptToPrepareVHD.ps1"
+    },
+    "TenantType": {
+      "value": "GovernmentCommunityCloud"
+    },
+    "userAssignedIdentityObjectId": {
+      "value": "258d3674-d759-4fe1-bddf-13413e16a6a7"
+    }
+  }
+}

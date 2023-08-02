@@ -1,20 +1,13 @@
-# [CmdletBinding()]
-# param (
-#    [parameter(mandatory = $true)]
-#    $UserAssignedIdentityObjectId,
-#    [parameter(mandatory = $true)]
-#    $StorageAccountName,
-#    [parameter(mandatory = $true)]
-#    $ContainerName,
-#    [parameter(mandatory = $true)]
-#    $BlobName
-# )
-
+param(
+    [string]$UserAssignedIdentityObjectId,
+    [string]$StorageAccountName,
+    [string]$ContainerName
+    )
 try
 {
-    $UserAssignedIdentityObjectId = '258d3674-d759-4fe1-bddf-13413e16a6a7'
-    $StorageAccountName = 'saimageartifacts'
-    $ContainerName = 'artifacts'
+    $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+    $StorageAccountName = $StorageAccountName
+    $ContainerName = $ContainerName
     $BlobName = 'New-PepareVHDToUploadToAzure.ps1'
     $StorageAccountUrl = 'https://' + $StorageAccountName + '.blob.core.usgovcloudapi.net'
     $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
@@ -29,3 +22,4 @@ catch
     Write-Host "An error occurred:"
     Write-Host $_
 }
+

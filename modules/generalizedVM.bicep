@@ -9,25 +9,25 @@ param adminPassword string
 @allowed([
   'win11-22h2-avd'
 ])
-param OSVersion string = 'win11-22h2-avd'
+param OSVersion string
 
 @description('Size of the virtual machine.')
-param vmSize string = 'Standard_D2s_v5'
+param vmSize string
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
 @description('Name of the virtual machine.')
-param vmName string = 'vm-image'
+param vmName string
 
 @description('Security Type of the Virtual Machine.')
 @allowed([
   'Standard'
   'TrustedLaunch'
 ])
-param securityType string = 'TrustedLaunch'
+param securityType string
 
-param miName string = 'image-mi'
+param miName string
 
 var nicName = '${vmName}-nic'
 var subnetName = 'default'
