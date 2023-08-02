@@ -3,13 +3,13 @@
 # PRE-REQS
 
 All resources are assumed to be within the same resource group. Resources required before deployment
-*Virtual Network
-*Storage Account
-*Private Endpoint (on storage account)
-*Private DNS Zone
-*Azure Compute Gallery
-*Managed Identity with RBAC Roles - Storage Blob Data Owner (scoped at the storage account) and Owner (scoped at the subscription)
-*Any EXEs, scripts, etc. called during deployment uploaded to a storage account container
+* Virtual Network
+* Storage Account
+* Private Endpoint (on storage account)
+* Private DNS Zone
+* Azure Compute Gallery
+* Managed Identity with RBAC Roles - Storage Blob Data Owner (scoped at the storage account) and Owner (scoped at the subscription)
+* Any EXEs, scripts, etc. called during deployment uploaded to a storage account container
 
 Examle powershell to run the solution:
 ```
