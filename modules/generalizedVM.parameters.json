@@ -19,6 +19,12 @@
     },
     "miName": {
       "value": "image-mi"
+    },
+    "virtualNetworkName": {
+      "value": "testtimage-vnet"
+    },
+    "subnetName": {
+      "value": "default"
     }
   }
 }

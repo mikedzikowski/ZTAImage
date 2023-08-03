@@ -26,12 +26,11 @@ param vmName string
   'TrustedLaunch'
 ])
 param securityType string
-
 param miName string
+param virtualNetworkName string
+param subnetName string
 
 var nicName = '${vmName}-nic'
-var subnetName = 'default'
-var virtualNetworkName = 'testtimage-vnet'
 var networkSecurityGroupName = 'nsg-image-vm'
 var securityProfileJson = {
   uefiSettings: {

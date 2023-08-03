@@ -62,7 +62,7 @@ try {
 
       # Customize Virtual Machine and Sysprep
       Write-host "Customizing by deploying image.bicep." -ForegroundColor White
-      New-AzResourceGroupDeployment -Name CustomizeImage -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -VmName $VmName -TemplateParameterFile .\modules\image.parameters.json -VmName $VmName -Verbose
+      New-AzResourceGroupDeployment -Name CustomizeImage -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -VmName $VmName -TemplateParameterFile .\modules\image.parameters.json -Verbose
 
       Start-Sleep -Seconds 60
 
@@ -121,6 +121,7 @@ try {
    Write-host "Removing Image Virtual Machine $($Sourcevm.name)..." -ForegroundColor White
    Remove-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVM.name -ForceDeletion $true -Force -Verbose
 
+   # Removing Image Virtual Machine NSG
    Write-host "Removing Image Virtual Machine NSG associated with $($Sourcevm.name)..." -ForegroundColor White
    Remove-AzNetworkSecurityGroup -Name "nsg-image-vm" -ResourceGroupName $sourceVM.ResourceGroupName -Force
 }

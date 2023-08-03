@@ -42,7 +42,7 @@ var installSkypeForBusinessVar = '${installSkypeForBusiness}installSkypeForBusin
 var installVisioVar = '${installVisio}installVisio'
 var installWordVar = '${installWord}installWord'
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing  = {
+resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: vmName
 }
 
@@ -64,19 +64,24 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
         name: 'ContainerName'
         value: containerName
       }
+      {
+        name: 'StorageEndpoint'
+        value: storageEndpoint
+      }
     ]
     source: {
       script: '''
       param(
         [string]$UserAssignedIdentityObjectId,
         [string]$StorageAccountName,
-        [string]$ContainerName
+        [string]$ContainerName,
+        [string]$StorageEndpoint
         )
         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
         $StorageAccountName = $StorageAccountName
         $ContainerName = $ContainerName
         $BlobName = 'npp.8.2.1.Installer.exe'
-        $StorageAccountUrl = 'https://' + $StorageAccountName + '.blob.core.usgovcloudapi.net'
+        $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
@@ -235,7 +240,7 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
     }
     timeoutInSeconds: 640
   }
-  dependsOn:[
+  dependsOn: [
     teams
     fslogix
     notepad
@@ -249,7 +254,7 @@ resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
   parent: vm
   properties: {
     source: {
-      script:'''
+      script: '''
       $ErrorActionPreference = "Stop"
       $ZIP = "$env:windir\temp\fslogix.zip"
       Invoke-WebRequest -Uri "https://aka.ms/fslogix_download" -OutFile $ZIP
@@ -263,7 +268,7 @@ resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
     }
     timeoutInSeconds: 640
   }
-  dependsOn:[
+  dependsOn: [
     notepad
     teams
     office
@@ -282,7 +287,7 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
       }
     ]
     source: {
-      script:'''
+      script: '''
       param(
         [string]$TenantType
         )
@@ -330,7 +335,7 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
       '''
     }
   }
-  dependsOn:[
+  dependsOn: [
     notepad
     office
   ]
@@ -341,17 +346,53 @@ resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
   location: location
   parent: vm
   properties: {
+    parameters: [
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'StorageEndpoint'
+        value: storageEndpoint
+      }
+    ]
     source: {
-      scriptUri: 'https://${storageAccountName}${storageEndpoint}/${containerName}/${sysprepScript}'
+      script: '''
+    param(
+      [string]$UserAssignedIdentityObjectId,
+      [string]$StorageAccountName,
+      [string]$ContainerName,
+      [string]$StorageEndpoint
+      )
+      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+      $StorageAccountName = $StorageAccountName
+      $ContainerName = $ContainerName
+      $BlobName = 'New-PepareVHDToUploadToAzure.ps1'
+      $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
+      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
+      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
+      Start-Sleep -Seconds 60
+      Set-Location -Path $env:windir\temp
+      .\New-PepareVHDToUploadToAzure.ps1
+      '''
     }
     timeoutInSeconds: 120
   }
   dependsOn: [
-     notepad
-     teams
-     vdot
-     fslogix
-     office
+    notepad
+    teams
+    vdot
+    fslogix
+    office
   ]
 }
 
