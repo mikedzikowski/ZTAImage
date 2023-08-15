@@ -22,8 +22,8 @@ param (
    $PublishingProfileEndOfLifeDate = '2030-12-01',
    [parameter(mandatory = $false)]
    $HyperVGeneration = 'V2',
-   [parameter(mandatory = $false)]
-   $Location = 'usgovvirginia'
+   [parameter(mandatory = $true)]
+   $Location
 )
 
 try {

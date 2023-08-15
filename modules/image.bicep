@@ -19,7 +19,6 @@ param installWord bool
 param location string = resourceGroup().location
 param storageAccountName string
 param storageEndpoint string
-param sysprepScript string
 param vmName string
 @allowed([
   'Commercial'
