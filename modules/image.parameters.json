@@ -14,9 +14,6 @@
     "installFsLogix": {
       "value": true
     },
-    "installNotepadPlusPlus": {
-      "value": true
-    },
     "installOneDriveForBusiness": {
       "value": false
     },
@@ -55,9 +52,6 @@
     },
     "storageEndpoint": {
       "value": ".blob.core.usgovcloudapi.net"
-    },
-    "sysprepScript": {
-      "value": "Get-ScriptToPrepareVHD.ps1"
     },
     "TenantType": {
       "value": "GovernmentCommunityCloud"

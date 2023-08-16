@@ -4,7 +4,6 @@ param containerName string
 param installAccess bool
 param installExcel bool
 param installFsLogix bool
-param installNotepadPlusPlus bool
 param installOneDriveForBusiness bool
 param installOneNote bool
 param installOutlook bool
@@ -41,15 +40,24 @@ var installSkypeForBusinessVar = '${installSkypeForBusiness}installSkypeForBusin
 var installVisioVar = '${installVisio}installVisio'
 var installWordVar = '${installWord}installWord'
 
+var exes = [
+  {
+    name: 'notepad'
+    blobName: 'npp.8.2.1.Installer.exe'
+    arguments: '/S'
+  }
+]
+
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: vmName
 }
 
-resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installNotepadPlusPlus) {
-  name: 'notepad'
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [ for exe in exes: {
+  name: 'app-${exe.name}'
   location: location
   parent: vm
   properties: {
+    treatFailureAsDeploymentFailure: true
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
@@ -67,6 +75,14 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
         name: 'StorageEndpoint'
         value: storageEndpoint
       }
+      {
+        name: 'Blobname'
+        value: exe.blobName
+      }
+      {
+        name: 'Arguments'
+        value: exe.arguments
+      }
     ]
     source: {
       script: '''
@@ -74,23 +90,77 @@ resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
         [string]$UserAssignedIdentityObjectId,
         [string]$StorageAccountName,
         [string]$ContainerName,
-        [string]$StorageEndpoint
+        [string]$StorageEndpoint,
+        [string]$BlobName,
+        [string]$Arguments
         )
         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
         $StorageAccountName = $StorageAccountName
         $ContainerName = $ContainerName
-        $BlobName = 'npp.8.2.1.Installer.exe'
+        $BlobName = $BlobName
         $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp
-        Start-Process -FilePath 'C:\windows\temp\npp.8.2.1.Installer.exe' /S -NoNewWindow -Wait -PassThru
+        Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
       '''
     }
   }
-}
+}]
+
+
+// resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installNotepadPlusPlus) {
+//   name: 'notepad'
+//   location: location
+//   parent: vm
+//   properties: {
+//     parameters: [
+//       {
+//         name: 'UserAssignedIdentityObjectId'
+//         value: userAssignedIdentityObjectId
+//       }
+//       {
+//         name: 'StorageAccountName'
+//         value: storageAccountName
+//       }
+//       {
+//         name: 'ContainerName'
+//         value: containerName
+//       }
+//       {
+//         name: 'StorageEndpoint'
+//         value: storageEndpoint
+//       }
+//       {
+//         name: 'Blobname'
+//         value: apps.blobName
+//       }
+//     ]
+//     source: {
+//       script: '''
+//       param(
+//         [string]$UserAssignedIdentityObjectId,
+//         [string]$StorageAccountName,
+//         [string]$ContainerName,
+//         [string]$StorageEndpoint
+//         )
+//         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+//         $StorageAccountName = $StorageAccountName
+//         $ContainerName = $ContainerName
+//         $BlobName = 'npp.8.2.1.Installer.exe'
+//         $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
+//         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
+//         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+//         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
+//         Start-Sleep -Seconds 30
+//         Set-Location -Path $env:windir\temp
+//         Start-Process -FilePath 'C:\windows\temp\npp.8.2.1.Installer.exe' /S -NoNewWindow -Wait -PassThru
+//       '''
+//     }
+//   }
+// }
 
 resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
   name: 'office'
@@ -213,7 +283,7 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
     }
   }
   dependsOn: [
-    notepad
+    applications
   ]
 }
 
@@ -242,7 +312,7 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
   dependsOn: [
     teams
     fslogix
-    notepad
+    applications
     office
   ]
 }
@@ -268,7 +338,7 @@ resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if
     timeoutInSeconds: 640
   }
   dependsOn: [
-    notepad
+    applications
     teams
     office
   ]
@@ -335,7 +405,7 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
     }
   }
   dependsOn: [
-    notepad
+    applications
     office
   ]
 }
@@ -387,7 +457,7 @@ resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
     timeoutInSeconds: 120
   }
   dependsOn: [
-    notepad
+    applications
     teams
     vdot
     fslogix

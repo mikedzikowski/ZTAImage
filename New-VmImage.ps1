@@ -30,6 +30,7 @@ try {
    Write-Host "Checking for Virtual Machine..." -ForegroundColor White
    $sourceVm = Get-AzVM -Name $VmName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 
+
    If ($sourceVm) {
       # Customize Virtual Machine and Sysprep
       Write-host "Image Virtual Machine Found. Customizing by deploying image.Bicep." -ForegroundColor Yellow
@@ -47,7 +48,7 @@ try {
    }
    if (!$sourceVm) {
       # Build VM if source VM is not found
-      Write-host "Image Virtual Machine was not found. Creating Image VM by deploying generalizedVM.Bicep. Please enter adminUserName and adminPassword." -ForegroundColor Yellow
+      Write-host "Image Virtual Machine was not found. Creating Image VM by deploying generalizedVM.Bicep." -ForegroundColor Yellow
 
       New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Vmname $VmName -TemplateParameterFile .\modules\generalizedVM.parameters.json -Verbose
 
