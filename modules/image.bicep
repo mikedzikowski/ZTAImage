@@ -110,58 +110,6 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
   }
 }]
 
-
-// resource notepad 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installNotepadPlusPlus) {
-//   name: 'notepad'
-//   location: location
-//   parent: vm
-//   properties: {
-//     parameters: [
-//       {
-//         name: 'UserAssignedIdentityObjectId'
-//         value: userAssignedIdentityObjectId
-//       }
-//       {
-//         name: 'StorageAccountName'
-//         value: storageAccountName
-//       }
-//       {
-//         name: 'ContainerName'
-//         value: containerName
-//       }
-//       {
-//         name: 'StorageEndpoint'
-//         value: storageEndpoint
-//       }
-//       {
-//         name: 'Blobname'
-//         value: apps.blobName
-//       }
-//     ]
-//     source: {
-//       script: '''
-//       param(
-//         [string]$UserAssignedIdentityObjectId,
-//         [string]$StorageAccountName,
-//         [string]$ContainerName,
-//         [string]$StorageEndpoint
-//         )
-//         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-//         $StorageAccountName = $StorageAccountName
-//         $ContainerName = $ContainerName
-//         $BlobName = 'npp.8.2.1.Installer.exe'
-//         $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
-//         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
-//         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-//         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
-//         Start-Sleep -Seconds 30
-//         Set-Location -Path $env:windir\temp
-//         Start-Process -FilePath 'C:\windows\temp\npp.8.2.1.Installer.exe' /S -NoNewWindow -Wait -PassThru
-//       '''
-//     }
-//   }
-// }
-
 resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
   name: 'office'
   location: location
