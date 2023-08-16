@@ -2,6 +2,11 @@
 
 # PRE-REQS
 
+# PRE-REQS
+
+* Azure Bicep - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep
+* Azure PowerShell Modules - https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0
+
 All resources are assumed to be within the same resource group. Resources required before deployment
 * Virtual Network
 * Storage Account
