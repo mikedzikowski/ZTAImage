@@ -8,12 +8,12 @@
 * Azure PowerShell Modules - https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0
 
 All resources are assumed to be within the same resource group. Resources required before deployment
-* Virtual Network
-* Storage Account
-* Private Endpoint (on storage account)
-* Private DNS Zone
-* Azure Compute Gallery
-* Managed Identity with RBAC Roles - Storage Blob Data Owner (scoped at the storage account or resource group where the storage account is deployed)
+* Existing Virtual Network
+* Existing Storage Account
+* Existing Private Endpoint (on storage account)
+* Existing Private DNS Zone
+* Existing Azure Compute Gallery
+* Existing Managed Identity with RBAC Roles - Storage Blob Data Owner (scoped at the storage account or resource group where the storage account is deployed)
 * Any EXEs, scripts, etc. called during deployment uploaded to a storage account container
 
 Example PowerShell to run the solution:
@@ -21,37 +21,37 @@ Example PowerShell to run the solution:
  $deploymentArguments = @{
          AdminUsername = 'xadmin'
          ContainerName ='artifacts'
-         GalleryName = 'testGallery2'
+         GalleryName = 'imageGallery'
          ImageName = 'developerImage'
          ImageOffer = 'windows-11'
          ImagePublisher = 'MicrosoftWindowsDesktop'
          ImageSku = 'win11-22h2-avd'
-         ImageVersion = "9.12.2"
+         ImageVersion = "1.0.0"
          InstallAccess =  $false
          InstallExcel =  $false
          InstallFsLogix =  $false
          InstallOneDriveForBusiness =  $false
          InstallOneNote =  $false
-         InstallOutlook =  $false
+         InstallOutlook =  $true
          InstallPowerPoint =  $false
          InstallProject =  $false
          InstallPublisher =  $false
-         InstallSkypeForBusiness =  $false
+         InstallSkypeForBusiness = $false
          InstallTeams =  $false
-         InstallVirtualDesktopOptimizationTool =  $false
-         InstallVisio =  $false
-         InstallWord = $false
-         Location = 'usgovvirginia'
+         InstallVirtualDesktopOptimizationTool = $false
+         InstallVisio = $false
+         InstallWord = $true
+         Location = 'eastus'
          MiName = 'image-mi'
          OSVersion = 'win11-22h2-avd'
-         ResourceGroupName = 'test2_group'
+         ResourceGroupName = 'rg-image-eastus2'
          SecurityType = 'TrustedLaunch'
-         StorageAccountName = saimageartifacts
-         StorageEndpoint = '.blob.core.usgovcloudapi.net'
+         StorageAccountName = 'imagestorageaccount'
+         StorageEndpoint = '.blob.core.windows.net'
          SubnetName = 'default'
-         TenantType = 'GovernmentCommunityCloud'
-         UserAssignedIdentityObjectId = '258d3674-d759-4fe1-bddf-13413e16a6a7'
-         VirtualNetworkName = 'testtimage-vnet'
+         TenantType = 'Commercial'
+         UserAssignedIdentityObjectId = '00000000-0000-0000-0000-000000000000'
+         VirtualNetworkName = 'vnet-eastus-1'
          VmName = 'vm-image'
          VmSize = 'Standard_D2s_v5'
     }
