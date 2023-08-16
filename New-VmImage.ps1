@@ -5,7 +5,7 @@ param (
    [parameter(mandatory = $true)]
    $ResourceGroupName,
    [parameter(mandatory = $true)]
-   $AibGalleryName,
+   $GalleryName,
    [parameter(mandatory = $true)]
    $ImageName,
    [parameter(mandatory = $true)]
@@ -80,7 +80,7 @@ try {
    }
    if ($generalize) {
       Write-host "VM marked as generalized..." -ForegroundColor White
-      $gallery = Get-AzGallery -GalleryName $aibGalleryName -ResourceGroupName $ResourceGroupName
+      $gallery = Get-AzGallery -GalleryName $GalleryName -ResourceGroupName $ResourceGroupName
 
       # Set Features Available with Image and Zero Trust
       $IsHibernateSupported = @{Name = 'IsHibernateSupported'; Value = 'True' }
