@@ -26,6 +26,10 @@ param (
    $Location
 )
 
+# Random Password for Image VM
+[string]$password = [System.Web.Security.Membership]::GeneratePassword(8,2)
+[Security.SecureString]$securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+
 try {
    Write-Host "Checking for Virtual Machine..." -ForegroundColor White
    $sourceVm = Get-AzVM -Name $VmName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
@@ -50,7 +54,7 @@ try {
       # Build VM if source VM is not found
       Write-host "Image Virtual Machine was not found. Creating Image VM by deploying generalizedVM.Bicep." -ForegroundColor Yellow
 
-      New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Vmname $VmName -TemplateParameterFile .\modules\generalizedVM.parameters.json -Verbose
+      New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Vmname $VmName -adminPassword $securePassword -TemplateParameterFile .\modules\generalizedVM.parameters.json -Verbose
 
       Start-Sleep -Seconds 30
 

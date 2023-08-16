@@ -45,7 +45,7 @@ var exes = [
     name: 'notepad'
     blobName: 'npp.8.2.1.Installer.exe'
     arguments: '/S'
-    enabled: true
+    enabled: installNotePadPlusPlus
   }
 ]
 
