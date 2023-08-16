@@ -45,6 +45,7 @@ var exes = [
     name: 'notepad'
     blobName: 'npp.8.2.1.Installer.exe'
     arguments: '/S'
+    enabled: true
   }
 ]
 
@@ -52,7 +53,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: vmName
 }
 
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [ for exe in exes: {
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [ for exe in exes: if(exe.enabled) {
   name: 'app-${exe.name}'
   location: location
   parent: vm
