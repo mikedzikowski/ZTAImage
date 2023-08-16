@@ -23,23 +23,97 @@ param (
    [parameter(mandatory = $false)]
    $HyperVGeneration = 'V2',
    [parameter(mandatory = $true)]
-   $Location
+   $Location,
+   [parameter(mandatory = $true)]
+   $AdminUserName,
+   [parameter(mandatory = $true)]
+   $OSVersion,
+   [parameter(mandatory = $true)]
+   $VmSize,
+   [parameter(mandatory = $true)]
+   $SecurityType,
+   [parameter(mandatory = $true)]
+   $MiName,
+   [parameter(mandatory = $true)]
+   $VirtualNetworkName,
+   [parameter(mandatory = $true)]
+   $SubnetName,
+   [parameter(mandatory = $true)]
+   $ContainerName,
+   [parameter(mandatory = $true)]
+   $InstallAccess,
+   [parameter(mandatory = $true)]
+   $InstallExcel,
+   [parameter(mandatory = $true)]
+   $InstallFsLogix,
+   [parameter(mandatory = $true)]
+   $InstallOneDriveForBusiness,
+   [parameter(mandatory = $true)]
+   $InstallOneNote,
+   [parameter(mandatory = $true)]
+   $InstallOutlook,
+   [parameter(mandatory = $true)]
+   $InstallPowerPoint,
+   [parameter(mandatory = $true)]
+   $InstallProject,
+   [parameter(mandatory = $true)]
+   $InstallPublisher,
+   [parameter(mandatory = $true)]
+   $InstallSkypeForBusiness,
+   [parameter(mandatory = $true)]
+   $InstallTeams,
+   [parameter(mandatory = $true)]
+   $InstallVirtualDesktopOptimizationTool,
+   [parameter(mandatory = $true)]
+   $InstallVisio,
+   [parameter(mandatory = $true)]
+   $InstallWord,
+   [parameter(mandatory = $true)]
+   $StorageAccountName,
+   [parameter(mandatory = $true)]
+   $StorageEndpoint,
+   [parameter(mandatory = $true)]
+   $TenantType,
+   [parameter(mandatory = $true)]
+   $UserAssignedIdentityObjectId
 )
 
 # Random Password for Image VM
-[string]$password = [System.Web.Security.Membership]::GeneratePassword(8,2)
+[string]$password = [System.Web.Security.Membership]::GeneratePassword(123,5)
 [Security.SecureString]$securePassword = ConvertTo-SecureString $password -AsPlainText -Force
 
 try {
    Write-Host "Checking for Virtual Machine..." -ForegroundColor White
    $sourceVm = Get-AzVM -Name $VmName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 
-
    If ($sourceVm) {
       # Customize Virtual Machine and Sysprep
       Write-host "Image Virtual Machine Found. Customizing by deploying image.Bicep." -ForegroundColor Yellow
-      New-AzResourceGroupDeployment -Name CustomizeImage  -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -Vmname $VmName -TemplateParameterFile .\modules\image.parameters.json -Verbose
-
+      $imageArgs = @{
+         containerName = $ContainerName
+         installAccess = $InstallAccess
+         installExcel = $InstallExcel
+         installFsLogix = $installFsLogix
+         installOneDriveForBusiness = $InstallOneDriveForBusiness
+         installOneNote = $InstallOneNote
+         installOutlook = $InstallOutlook
+         installPowerPoint = $InstallPowerPoint
+         installProject = $InstallProject
+         installPublisher = $InstallPublisher
+         installSkypeForBusiness = $InstallSkypeForBusiness
+         installTeams = $InstallTeams
+         installVirtualDesktopOptimizationTool = $InstallVirtualDesktopOptimizationTool
+         installVisio = $InstallVisio
+         installWord = $InstallWord
+         storageAccountName = $StorageAccountName
+         storageEndpoint = $StorageEndpoint
+         TenantType = $TenantType
+         userAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+         ResourceGroupName = $ResourceGroupName
+         VmName = $VmName
+      }
+      New-AzResourceGroupDeployment -Name customize -TemplateFile .\modules\image.bicep @imageArgs -Verbose
+      
       Start-Sleep -Seconds 60
 
       # Mark VM as Generalized - currently only supported with PowerShell
@@ -48,13 +122,23 @@ try {
 
       # Sleeping to ensure generalization completes
       Start-Sleep -Seconds 30
-
    }
    if (!$sourceVm) {
       # Build VM if source VM is not found
       Write-host "Image Virtual Machine was not found. Creating Image VM by deploying generalizedVM.Bicep." -ForegroundColor Yellow
-
-      New-AzResourceGroupDeployment -Name ImageVm -ResourceGroupName $ResourceGroupName -TemplateFile .\modules\generalizedVM.bicep -Vmname $VmName -adminPassword $securePassword -TemplateParameterFile .\modules\generalizedVM.parameters.json -Verbose
+      $vmDeploymentArguments = @{
+         AdminUsername = $AdminUserName
+         AdminPassword = $securePassword
+         MiName = $MiName
+         OSVersion = $OSVersion
+         ResourceGroupName = $ResourceGroupName
+         SecurityType = $SecurityType
+         SubnetName = $SubnetName
+         VirtualNetworkName = $VirtualNetworkName
+         VmName = $VmName
+         VmSize = $VmSize
+      }
+      New-AzResourceGroupDeployment -Name ImageVm -TemplateFile .\modules\generalizedVM.bicep @vmDeploymentArguments -Verbose
 
       Start-Sleep -Seconds 30
 
@@ -67,7 +151,30 @@ try {
 
       # Customize Virtual Machine and Sysprep
       Write-host "Customizing by deploying image.bicep." -ForegroundColor White
-      New-AzResourceGroupDeployment -Name CustomizeImage -ResourceGroupName $sourceVm.ResourceGroupName  -TemplateFile .\modules\image.bicep -VmName $VmName -TemplateParameterFile .\modules\image.parameters.json -Verbose
+      $imageArgs = @{
+         containerName = $ContainerName
+         installAccess = $InstallAccess
+         installExcel = $InstallExcel
+         installFsLogix = $installFsLogix
+         installOneDriveForBusiness = $InstallOneDriveForBusiness
+         installOneNote = $InstallOneNote
+         installOutlook = $InstallOutlook
+         installPowerPoint = $InstallPowerPoint
+         installProject = $InstallProject
+         installPublisher = $InstallPublisher
+         installSkypeForBusiness = $InstallSkypeForBusiness
+         installTeams = $InstallTeams
+         installVirtualDesktopOptimizationTool = $InstallVirtualDesktopOptimizationTool
+         installVisio = $InstallVisio
+         installWord = $InstallWord
+         storageAccountName = $StorageAccountName
+         storageEndpoint = $StorageEndpoint
+         TenantType = $TenantType
+         userAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+         ResourceGroupName = $ResourceGroupName
+         VmName = $VmName
+      }
+      New-AzResourceGroupDeployment -Name customize -TemplateFile .\modules\image.bicep @imageArgs -Verbose
 
       Start-Sleep -Seconds 60
 
