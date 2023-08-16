@@ -13,7 +13,7 @@ All resources are assumed to be within the same resource group. Resources requir
 
 Example PowerShell to run the solution:
 ```
-.\New-VMImage.ps1 -VmName vm-image  -ResourceGroupName rg-image -aibGalleryName gallery -imageVersion 1.0.0 -imageName imageName -imagePublisher imagePub -imageOffer imageOffer -imageSku imageSku -Location usgovvirginia -Verbose
+.\New-VMImage.ps1 -VmName vm-image  -ResourceGroupName rg-image -GalleryName gallery -imageVersion 1.0.0 -imageName imageName -imagePublisher imagePub -imageOffer imageOffer -imageSku imageSku -Location usgovvirginia -Verbose
 ```
 
 Example of how to view and troubleshoot the status of runcommands:
