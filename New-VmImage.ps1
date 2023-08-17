@@ -41,38 +41,39 @@ param (
    [parameter(mandatory = $true)]
    $ContainerName,
    [parameter(mandatory = $true)]
-   $InstallAccess,
+   [bool]$InstallAccess,
    [parameter(mandatory = $true)]
-   $InstallExcel,
+   [bool]$InstallExcel,
    [parameter(mandatory = $true)]
-   $InstallFsLogix,
+   [bool]$InstallFsLogix,
    [parameter(mandatory = $true)]
-   $InstallOneDriveForBusiness,
+   [bool]$InstallOneDriveForBusiness,
    [parameter(mandatory = $true)]
-   $InstallOneNote,
+   [bool]$InstallOneNote,
    [parameter(mandatory = $true)]
-   $InstallOutlook,
+   [bool]$InstallOutlook,
    [parameter(mandatory = $true)]
-   $InstallPowerPoint,
+   [bool]$InstallPowerPoint,
    [parameter(mandatory = $true)]
-   $InstallProject,
+   [bool]$InstallProject,
    [parameter(mandatory = $true)]
-   $InstallPublisher,
+   [bool]$InstallPublisher,
    [parameter(mandatory = $true)]
-   $InstallSkypeForBusiness,
+   [bool]$InstallSkypeForBusiness,
    [parameter(mandatory = $true)]
-   $InstallTeams,
+   [bool]$InstallTeams,
    [parameter(mandatory = $true)]
-   $InstallVirtualDesktopOptimizationTool,
+   [bool]$InstallVirtualDesktopOptimizationTool,
    [parameter(mandatory = $true)]
-   $InstallVisio,
+   [bool]$InstallVisio,
    [parameter(mandatory = $true)]
-   $InstallWord,
+   [bool]$InstallWord,
    [parameter(mandatory = $true)]
    $StorageAccountName,
    [parameter(mandatory = $true)]
    $StorageEndpoint,
    [parameter(mandatory = $true)]
+   [ValidateSet('Commercial', 'DepartmentOfDefense','GovernmentCommunityCloud','GovernmentCommunityCloudHigh')]
    $TenantType,
    [parameter(mandatory = $true)]
    $UserAssignedIdentityObjectId
