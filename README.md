@@ -17,7 +17,7 @@ All resources are assumed to be within the same resource group. Resources requir
 * Any EXEs, scripts, etc. called during deployment uploaded to a storage account container
 
 Example PowerShell to run the solution:
-```
+```powershell
  $deploymentArguments = @{
          AdminUsername = 'xadmin'
          ContainerName ='artifacts'
@@ -206,6 +206,7 @@ Type: String
 Specifies the tenant type used in the target environment.
 ```yaml
 Type: String
+AllowedValues: 'Commercial', 'DepartmentOfDefense','GovernmentCommunityCloud','GovernmentCommunityCloudHigh'
 ```
 ### -UserAssignedIdentityObjectId
 Specifies the object ID of the managed identity used during deployment.
@@ -228,9 +229,26 @@ Specifies the  size of the the virtual machine to be captuired.
 Type: String
 ```
 
+## Adding Additional Installers
+
+* Add additional installers by adding addtional var installers in image.bicep
+* Any blob called will have to be uploaded to the storage account and container that are part of the parameter set
+* Using the enabled argument will allow the installer to be modular and flexible during image creation
+
+```bicep
+var installers = [
+  {
+    name: 'myapp'
+    blobName: 'software.exe'
+    arguments: '/S'
+    enabled: true
+  }
+]
+```
+
 ## View status of runcommands during image creation
 Example of how to view and troubleshoot the status of runcommands:
-```
+``` powershell
 PS C:\git\ztaimage> $x = Get-AzVMRunCommand -ResourceGroupName rg-image -VMName vm-image -RunCommandName office -Expand InstanceView
 PS C:\git\ztaimage> $x.InstanceView
 
