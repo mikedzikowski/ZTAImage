@@ -1,13 +1,16 @@
 # Zero Trust and Azure Imaging
 
-# PRE-REQS
 
-# PRE-REQS
+
+# Software PRE-REQS
 
 * Azure Bicep - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep
 * Azure PowerShell Modules - https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0
 
-All resources are assumed to be within the same resource group. Resources required before deployment
+# Azure Resource PRE-REQS
+All resources are assumed to be within the same resource group.
+
+Resources required before deployment:
 * Existing Virtual Network
 * Existing Storage Account
 * Existing Private Endpoint (on storage account)
@@ -16,6 +19,7 @@ All resources are assumed to be within the same resource group. Resources requir
 * Existing Managed Identity with RBAC Roles - Storage Blob Data Owner (scoped at the storage account or resource group where the storage account is deployed)
 * Any EXEs, scripts, etc. called during deployment uploaded to a storage account container
 
+# Running ZTA Image Solution 
 Example PowerShell to run the solution:
 ```powershell
  $deploymentArguments = @{
