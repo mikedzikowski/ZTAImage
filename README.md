@@ -231,18 +231,24 @@ Type: String
 
 ## Adding Additional Installers
 
-* Add additional installers by adding addtional var installers in image.bicep
-* Any blob called will have to be uploaded to the storage account and container that are part of the parameter set
+* Add additional installers by adding addtional blocks of installers in module image.bicep
+* Any blob called will have to be uploaded to the storage account and container that are defined in the parameter set
 * Using the enabled argument will allow the installer to be modular and flexible during image creation
 
 ```bicep
 var installers = [
-  {
-    name: 'myapp'
-    blobName: 'software.exe'
-    arguments: '/S'
-    enabled: true
-  }
+    {
+        name: 'myapp1'
+        blobName: 'software1.exe'
+        arguments: '/S'
+        enabled: true
+    }
+    {
+        name: 'myapp2'
+        blobName: 'software2.exe'
+        arguments: '/S'
+        enabled: false
+    }
 ]
 ```
 
