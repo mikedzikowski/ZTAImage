@@ -59,6 +59,176 @@ Example PowerShell to run the solution:
 .\New-VMImage.ps1 @deploymentArguments -Verbose
 ```
 
+## PARAMETERS
+
+### -AdminUsername
+Specifies the local administrator user name of the virtual machine that will be captured.
+```yaml
+Type: String
+```
+### -ContainerName
+Specifies the container name where files, and scripts will be uploaded and consumed during the image process.
+```yaml
+Type: String
+```
+### -GalleryName
+Specifies the existing Azure Image Gallery where the image will be created.
+```yaml
+Type: String
+```
+### -ImageName
+Specifies the name of the image that will created.
+```yaml
+Type: String
+```
+### -ImageOffer
+Specifies the name of the image offer of the image that will be created.
+```yaml
+Type: String
+```
+### -ImagePublisher
+Specifies the name of the image publisher of the image that will be created.
+```yaml
+Type: String
+```
+### -ImageSku
+Specifies the name of the image SKU of the image that will be created.
+```yaml
+Type: String
+```
+### -ImageVersion
+Specifies the name of the image version of the image that will be created.
+```yaml
+Type: String
+```
+### -InstallAccess
+Specifies if Access will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallExcel
+Specifies if Excel will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallFsLogix
+Specifies if FsLogix will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallFsLogix
+Specifies if FsLogix will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallOneDriveForBusiness
+Specifies if OneDrive For Business will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallOneNote
+Specifies if OneNote will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallPowerPoint
+Specifies if PowerPoint will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallPublisher
+Specifies if Publisher will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallTeams
+Specifies if Teams will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallVirtualDesktopOptimizationTool
+
+Specifies if Virtual Desktop Optimization Tool (VDOT) will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallVisio
+Specifies if Visio will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -InstallWord
+Specifies if Word will be installed on the image created.
+```yaml
+Type: Boolean
+```
+### -Location
+Specifies a location for the resources of the solution to be deployed.
+```yaml
+Type: String
+```
+### -MiName
+Specifies the name of an existing managed identity to be used during deployment of the solution.
+```yaml
+Type: String
+```
+### -OSVersion
+Specifies the OS Version of the image to be captured.
+```yaml
+Type: String
+```
+### -ResourceGroupName
+Specifies the name of the resource group to create resources.
+```yaml
+Type: String
+```
+### -SecurityType
+Specifies the security type of the image to be captured.
+```yaml
+Type: String
+```
+### -StorageAccountName
+Specifies the name of the storage account where assets will be downloaded from and used during the image process.
+```yaml
+Type: String
+```
+### -StorageEndpoint
+Specifies the storage endpoint of the target storage account.
+```yaml
+Type: String
+```
+### -SubnetName
+Specifies the subnet of the virtual network to be used during the image process.
+```yaml
+Type: String
+```
+### -TenantType
+Specifies the tenant type used in the target environment.
+```yaml
+Type: String
+```
+### -UserAssignedIdentityObjectId
+Specifies the object ID of the managed identity used during deployment.
+```yaml
+Type: String
+```
+### -VirtualNetworkName
+Specifies the virtual network name of the vNet used during the image process.
+```yaml
+Type: String
+```
+### -VmName
+Specifies the name of the virtual machine to be captuired.
+```yaml
+Type: String
+```
+### -VmSize
+Specifies the  size of the the virtual machine to be captuired.
+```yaml
+Type: String
+```
+
+## View status of runcommands during image creation
 Example of how to view and troubleshoot the status of runcommands:
 ```
 PS C:\git\ztaimage> $x = Get-AzVMRunCommand -ResourceGroupName rg-image -VMName vm-image -RunCommandName office -Expand InstanceView
@@ -75,4 +245,3 @@ EndTime          :
 Statuses         :
 ```
 
-# ADDITIONAL DOCUMENTATION IN PROGRESS
