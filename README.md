@@ -19,7 +19,7 @@ The following resources must exist in your Azure environment before deployment:
   * Private DNS Zone
   * Blob container with executables, scripts, etc. that are required for the imaging deployment
 * Azure Compute Gallery
-* Managed Identity
+* User Assigned Identity
   * Role Assignment - "Storage Blob Data Owner" scoped at the storage account or parent resource group
 
 ## Deployment
@@ -68,7 +68,7 @@ The following resources must exist in your Azure environment before deployment:
 .\New-VMImage.ps1 @deploymentArguments -Verbose
 ```
 
-### PARAMETERS
+### Parameters
 
 #### -AdminUsername
 
