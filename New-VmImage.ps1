@@ -17,6 +17,7 @@ param (
    [parameter(mandatory = $true)]
    $ImageSku,
    [parameter(mandatory = $false)]
+   [ValidateSet('Standard_LRS', 'Standard_ZRS','Premium_LRS')]
    $StorageAccountType = 'Standard_LRS',
    [parameter(mandatory = $false)]
    $PublishingProfileEndOfLifeDate = '2030-12-01',
