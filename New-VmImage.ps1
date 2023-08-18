@@ -71,8 +71,6 @@ param (
    [parameter(mandatory = $true)]
    $StorageAccountName,
    [parameter(mandatory = $true)]
-   $StorageEndpoint,
-   [parameter(mandatory = $true)]
    [ValidateSet('Commercial', 'DepartmentOfDefense','GovernmentCommunityCloud','GovernmentCommunityCloudHigh')]
    $TenantType,
    [parameter(mandatory = $true)]
@@ -82,6 +80,11 @@ param (
 # Random Password for Image VM
 [string]$password = [System.Web.Security.Membership]::GeneratePassword(123,5)
 [Security.SecureString]$securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+
+# Storage Endpoint
+$Environment = (Get-AzContext).Environment.Name
+$StorageEndpointSuffix = (Get-AzEnvironment -Name $Environment).StorageEndpointSuffix
+$StorageEndpoint = '.blob.' + $StorageEndpointSuffix
 
 try {
    Write-Host "Checking for Virtual Machine..." -ForegroundColor White

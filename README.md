@@ -56,7 +56,6 @@ The following resources must exist in your Azure environment before deployment:
          ResourceGroupName = 'rg-image-eastus2'
          SecurityType = 'TrustedLaunch'
          StorageAccountName = 'imagestorageaccount'
-         StorageEndpoint = '.blob.core.windows.net'
          SubnetName = 'default'
          TenantType = 'Commercial'
          UserAssignedIdentityObjectId = '00000000-0000-0000-0000-000000000000'
@@ -265,14 +264,6 @@ Type: String
 #### -StorageAccountName
 
 Specifies the name of the storage account where assets will be downloaded from and used during the image process.
-
-```yaml
-Type: String
-```
-
-#### -StorageEndpoint
-
-Specifies the storage endpoint of the target storage account.
 
 ```yaml
 Type: String
