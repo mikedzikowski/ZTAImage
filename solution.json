@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "11127928027028746040"
+      "templateHash": "4293363738715504458"
     }
   },
   "parameters": {
@@ -39,60 +39,46 @@
       "type": "string"
     },
     "installAccess": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installExcel": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installFsLogix": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installOneDriveForBusiness": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installOneNote": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installOutlook": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installPowerPoint": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installProject": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installPublisher": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installSkypeForBusiness": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installTeams": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installVirtualDesktopOptimizationTool": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installVisio": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "installWord": {
-      "type": "bool",
-      "defaultValue": true
+      "type": "bool"
     },
     "location": {
       "type": "string",
@@ -881,7 +867,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "3040550807584171265"
+              "templateHash": "17874412614860089285"
             }
           },
           "parameters": {
@@ -1128,12 +1114,20 @@
                     "value": "[parameters('imageVmName')]"
                   },
                   {
+                    "name": "managementVmRg",
+                    "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '/')[4]]"
+                  },
+                  {
+                    "name": "managementVmName",
+                    "value": "[parameters('vmName')]"
+                  },
+                  {
                     "name": "Environment",
                     "value": "[parameters('cloud')]"
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$Environment\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Get Vm using PowerShell\r\n        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized\r\n      "
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Get Vm using PowerShell\r\n        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized\r\n\r\n        # Remove Image VM and Management VM\r\n        Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait\r\n      "
                 }
               },
               "dependsOn": [

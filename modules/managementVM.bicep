@@ -213,6 +213,14 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         value: imageVm.name
       }
       {
+        name: 'managementVmRg'
+        value: split(vm.id, '/')[4]
+      }
+      {
+        name: 'managementVmName'
+        value: vm.name
+      }
+      {
         name: 'Environment'
         value: cloud
       }
@@ -228,6 +236,8 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         [string]$Arguments,
         [string]$imageVmRg,
         [string]$imageVmName,
+        [string]$managementVmRg,
+        [string]$managementVmName,
         [string]$Environment
         )
         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
@@ -251,8 +261,9 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized
 
         # Remove Image VM and Management VM
-        Remove-AzVM -Name $sourceVm.Name -ResourceGroupName $sourceVM.ResourceGroupName -ForceDeletion $true -Force -NoWait
-        #Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait
+        Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait
+
+        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait
       '''
     }
   }
