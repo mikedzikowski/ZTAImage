@@ -276,7 +276,7 @@
                             "name": "customSoftware",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "customSoftware",
-                            "defaultValue":  ["No"],
+                            "defaultValue":  "No",
                             "toolTip": "Select True to add custom software to the image",
                             "constraints": {
                                 "allowedValues": [
