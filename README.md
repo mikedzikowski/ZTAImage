@@ -22,50 +22,20 @@ The following resources must exist in your Azure environment before deployment:
 * User Assigned Identity
   * Role Assignment - "Storage Blob Data Owner" scoped at the storage account or parent resource group
 
-## Deployment
+## Creating Template Spec
 
 ### Example
 
 ```powershell
- $deploymentArguments = @{
-         AdminUsername = 'xadmin'
-         ContainerName ='artifacts'
-         GalleryName = 'imageGallery'
-         ImageName = 'developerImage'
-         ImageOffer = 'windows-11'
-         ImagePublisher = 'MicrosoftWindowsDesktop'
-         ImageSku = 'win11-22h2-avd'
-         ImageVersion = "1.0.0"
-         InstallAccess =  $false
-         InstallExcel =  $false
-         InstallFsLogix =  $false
-         InstallOneDriveForBusiness =  $false
-         InstallOneNote =  $false
-         InstallOutlook =  $true
-         InstallPowerPoint =  $false
-         InstallProject =  $false
-         InstallPublisher =  $false
-         InstallSkypeForBusiness = $false
-         InstallTeams =  $false
-         InstallVirtualDesktopOptimizationTool = $false
-         InstallVisio = $false
-         InstallWord = $true
-         Location = 'eastus'
-         MiName = 'image-mi'
-         OSVersion = 'win11-22h2-avd'
-         ResourceGroupName = 'rg-image-eastus2'
-         SecurityType = 'TrustedLaunch'
-         StorageAccountName = 'imagestorageaccount'
-         StorageEndpoint = '.blob.core.windows.net'
-         SubnetName = 'default'
-         TenantType = 'Commercial'
-         UserAssignedIdentityObjectId = '00000000-0000-0000-0000-000000000000'
-         VirtualNetworkName = 'vnet-eastus-1'
-         VmName = 'vm-image'
-         VmSize = 'Standard_D2s_v5'
-    }
-
-.\New-VMImage.ps1 @deploymentArguments -Verbose
+New-AzTemplateSpec `
+    -Name ZTA `
+    -ResourceGroupName rg-image-usgovvirginia-01 `
+    -Version '1.0' `
+    -Location usgovvirginia `
+    -DisplayName "Zero Trust Image Template" `
+    -TemplateFile '.\solution.json' `
+    -UIFormDefinitionFile .\ztaimage\uiDefinition.json  `
+    -Force
 ```
 
 ### Parameters
