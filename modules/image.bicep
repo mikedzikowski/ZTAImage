@@ -27,6 +27,7 @@ param vmName string
 ])
 param TenantType string
 param userAssignedIdentityObjectId string
+param customizations array
 
 var installAccessVar = '${installAccess}installAccess'
 var installExcelVar = '${installExcel}installWord'
@@ -40,21 +41,15 @@ var installSkypeForBusinessVar = '${installSkypeForBusiness}installSkypeForBusin
 var installVisioVar = '${installVisio}installVisio'
 var installWordVar = '${installWord}installWord'
 
-var exes = [
-  {
-    name: 'notepad'
-    blobName: 'npp.8.2.1.Installer.exe'
-    arguments: '/S'
-    enabled: true
-  }
-]
+
+var installers = customizations
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: vmName
 }
 
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [ for exe in exes: if(exe.enabled) {
-  name: 'app-${exe.name}'
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers : {
+  name: 'app-${installer.name}'
   location: location
   parent: vm
   properties: {
@@ -78,11 +73,11 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
       }
       {
         name: 'Blobname'
-        value: exe.blobName
+        value: installer.blobName
       }
       {
         name: 'Arguments'
-        value: exe.arguments
+        value: installer.arguments
       }
     ]
     source: {
@@ -99,13 +94,20 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         $StorageAccountName = $StorageAccountName
         $ContainerName = $ContainerName
         $BlobName = $BlobName
-        $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
-        $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
+        $StorageAccountUrl = $StorageEndpoint
+        $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
+        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp
-        Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+        if($Blobname.contains('*.exe'))
+        {
+          Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+        }
+        if($Blobname.contains('*.msi'))
+        {
+          Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+        }
       '''
     }
   }
@@ -394,10 +396,10 @@ resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
       $StorageAccountName = $StorageAccountName
       $ContainerName = $ContainerName
       $BlobName = 'New-PepareVHDToUploadToAzure.ps1'
-      $StorageAccountUrl = 'https://' + $StorageAccountName + $StorageEndpoint
-      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl/&object_id=$UserAssignedIdentityObjectId"
+      $StorageAccountUrl = $StorageEndpoint
+      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl/$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
       Start-Sleep -Seconds 60
       Set-Location -Path $env:windir\temp
       .\New-PepareVHDToUploadToAzure.ps1

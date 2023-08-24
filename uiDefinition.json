@@ -1,0 +1,690 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Zero Trust Imaging",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Basics",
+                    "elements": [
+                        {
+                            "name": "scope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            },
+                            "resourceTypeMetadata": []
+                        }
+                    ]
+                },
+                {
+                    "name": "info",
+                    "label": "Zero Trust Image Resources",
+                    "elements": [
+                        {
+                            "name": "infoPreReq",
+                            "type": "Microsoft.Common.InfoBox",
+                            "options": {
+                                "text": "Prior to deployment, make sure you meet the prerequisites outlined in the resource pre-reqs section in Zero Trust Image solution documentation:",
+                                "uri": "https://github.com/mikedzikowski/ZTAImage#prequisites",
+                                "icon": "Warning"
+                            }
+                        },
+                        {
+                            "name": "resources",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Existing Resources",
+                            "elements": [
+                                {
+                                    "name": "ResourceGroupsApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/resourceGroups?api-version=2021-04-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "resourceGroup",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Resource Group",
+                                    "multiselect": false,
+                                    "defaultValue": "",
+                                    "toolTip": "Select the name of the existing resource group.",
+                                    "filterPlaceholder": "",
+                                    "defaultDescription": "",
+                                    "constraints": {
+                                        "allowedValues": "[map(steps('info').resources.ResourceGroupsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "required": true
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                },
+                                {
+                                    "name": "storageSelector",
+                                    "type": "Microsoft.Solutions.ResourceSelector",
+                                    "label": "Select storage account",
+                                    "resourceType": "Microsoft.Storage/storageAccounts",
+                                    "options": {
+                                        "filter": {
+                                            "subscription": "onBasics",
+                                            "location": "onBasics"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "container",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Container",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: storagecontainer"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "managedIdentity",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Select user assigned identity",
+                            "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                            "options": {
+                                "filter": {
+                                    "subscription": "onBasics",
+                                    "location": "onBasics"
+                                }
+                            }
+                        },
+                        {
+                            "name": "network",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network",
+                            "visible": true,
+                            "elements": [
+                                {
+                                    "name": "virtualNetworksApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Network/virtualNetworks?api-version=2022-11-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "virtualNetwork",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Virtual Network",
+                                    "defaultValue": "",
+                                    "toolTip": "Select an existing virtual network for image capture.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(filter(steps('info').network.virtualNetworksApi.value, (item) => equals(item.location, steps('basics').scope.location.name)), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
+                                },
+                                {
+                                    "name": "subnetsApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('info').network.virtualNetwork, '/subnets?api-version=2022-05-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "subnet",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Subnet",
+                                    "defaultValue": "",
+                                    "toolTip": "Select an existing subnet for the image capture.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(steps('info').network.subnetsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "gallery",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Select compute gallery",
+                            "resourceType": "Microsoft.Compute/galleries",
+                            "options": {
+                                "filter": {
+                                    "subscription": "onBasics",
+                                    "location": "onBasics"
+                                }
+                            }
+                        },
+                        {
+                            "name": "TenantType",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Tenant Type",
+                            "placeholder": "",
+                            "defaultValue": [],
+                            "toolTip": "Multiple values can be selected",
+                            "multiselect": false,
+                            "selectAll": true,
+                            "filter": true,
+                            "filterPlaceholder": "Filter items ...",
+                            "multiLine": false,
+                            "defaultDescription": "Select your Azure Tenant type",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Commercial",
+                                        "description": "Azure Commercial Tenant Type",
+                                        "value": "Commercial"
+                                    },
+                                    {
+                                        "label": "DepartmentOfDefense",
+                                        "description": "Azure DepartmentOfDefense Tenant Type",
+                                        "value": "DepartmentOfDefense"
+                                    },
+                                    {
+                                        "label": "GovernmentCommunityCloud",
+                                        "description": "Azure GovernmentCommunityCloud Tenant Type",
+                                        "value": "GovernmentCommunityCloud"
+                                    },
+                                    {
+                                        "label": "GovernmentCommunityCloudHigh",
+                                        "description": "Azure GovernmentCommunityCloudHigh Tenant Type",
+                                        "value": "GovernmentCommunityCloudHigh"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "image",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Image",
+                            "elements": [
+                                {
+                                    "name": "excludeFromLatest",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Exclude Image From Latest",
+                                    "defaultValue": "false",
+                                    "toolTip": "Exclude Image From Latest",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "name",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Image Name",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: developerImage"
+                                },
+                                {
+                                    "name": "version",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Image Version",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: 1.0.0"
+                                },
+                                {
+                                    "name": "offer",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Image Offer",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: windows-11"
+                                },
+                                {
+                                    "name": "publisher",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Image Publisher",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: MicrosoftWindowsDesktop"
+                                },
+                                {
+                                    "name": "sku",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Image Sku",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: win11-22h2-avd"
+                                },
+                                {
+                                    "name": "vmSize",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "vmSize",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: Standard_D4_v4"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "customizations",
+                    "type": "Microsoft.Common.Section",
+                    "label": "Customizations",
+                    "visible": true,
+                    "elements": [
+                        {
+                            "name": "customizations",
+                            "type": "Microsoft.Common.EditableGrid",
+                            "ariaLabel": "Customizations",
+                            "label": "Customizations",
+                            "constraints": {
+                                "width": "Full",
+                                "rows": {
+                                    "count": {
+                                        "min": 1,
+                                        "max": 10
+                                    }
+                                },
+                                "columns": [
+                                    {
+                                        "id": "name",
+                                        "header": "Name",
+                                        "width": "1fr",
+                                        "element": {
+                                            "type": "Microsoft.Common.TextBox",
+                                            "placeholder": "Example: vscode",
+                                            "constraints": {
+                                                "required": true,
+                                                "validations": []
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "id": "blobname",
+                                        "header": "Blobname",
+                                        "width": "10fr",
+                                        "element": {
+                                            "type": "Microsoft.Common.TextBox",
+                                            "placeholder": "Example: VSCodeSetup-x64-1.81.1.exe",
+                                            "constraints": {
+                                                "allowedValues": [
+                                                    {
+                                                        "label": "blobname",
+                                                        "value": "text"
+                                                    }
+                                                ],
+                                                "required": true
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "id": "arguments",
+                                        "header": "Arguments",
+                                        "width": "10fr",
+                                        "element": {
+                                            "type": "Microsoft.Common.TextBox",
+                                            "placeholder": "Example: /silent /mergetasks='!runcode'",
+                                            "constraints": {
+                                                "allowedValues": [
+                                                    {
+                                                        "label": "Arguments",
+                                                        "value": "text"
+                                                    }
+                                                ],
+                                                "required": true
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "office",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Office",
+                            "elements": [
+                                {
+                                    "name": "InstallAccess",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "InstallAccess",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Access",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installExcel",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "installExcel",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Excel",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installFsLogix",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "installFsLogix",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install FsLogix",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installOneDriveForBusiness",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install One Dive For Business",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to Install One Dive For Business",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installOneNote",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install OneNote",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install OneNote",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installOutlook",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Outlook",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Outlook",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installPowerPoint",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install PowerPoint",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to Install PowerPoint",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installProject",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Project",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Project",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installPublisher",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Publisher",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Publisher",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installSkypeForBusiness",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Skype For Business",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Skype For Business",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installTeams",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Teams",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Teams",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installVirtualDesktopOptimizationTool",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Virtual Desktop OptimizationTool",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Virtual Desktop OptimizationTool",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installVisio",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "installVisio",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Visio",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "installWord",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Word",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Word",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": "true"
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": "false"
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "parameters": {
+                "containerName": "[steps('info').resources.container]",
+                "customizations": "[steps('customizations').customizations]",
+                "excludeFromLatest": "[steps('info').image.excludeFromLatest]",
+                "galleryName": "[steps('info').gallery.name]",
+                "galleryResourceGroup": "[first(skip(split(steps('info').gallery.id, '/'), 4))]",
+                "imageName": "[steps('info').image.name]",
+                "imageVersion": "[steps('info').image.version]",
+                "imageVmRg": "[steps('info').resources.resourceGroup]",
+                "installAccess": "[steps('customizations').office.InstallAccess]",
+                "installExel": "[steps('customizations').office.installExcel]",
+                "installFsLogix": "[steps('customizations').office.installFsLogix]",
+                "installOneDriveForBusiness": "[steps('customizations').office.installOneDriveForBusiness]",
+                "installOneNote": "[steps('customizations').office.installOneDriveForBusiness]",
+                "installPowerPoint": "[steps('customizations').office.installPowerPoint]",
+                "installProject": "[steps('customizations').office.installProject]",
+                "installPublisher": "[steps('customizations').office.installPublisher]",
+                "installSkypeForBusiness": "[steps('customizations').office.installSkypeForBusiness]",
+                "installTeams": "[steps('customizations').office.installTeams]",
+                "installVirtualDesktopOptimizationTool": "[steps('customizations').office.installVirtualDesktopOptimizationTool]",
+                "installVisio": "[steps('customizations').office.installVisio]",
+                "installWord": "[steps('customizations').office.installWord]",
+                "location": "[steps('basics').scope.location.name]",
+                "managementVmRg": "[steps('info').resources.resourceGroup]",
+                "miName": "[steps('info').managedIdentity.name]",
+                "miResourceGroup": "[first(skip(split(steps('info').managedIdentity.id, '/'), 4))]",
+                "offer": "[steps('info').image.offer]",
+                "OsVersion": "[steps('info').image.sku]",
+                "saResourceGroup": "[first(skip(split(steps('info').resources.storageSelector.id, '/'), 4))]",
+                "sku": "[steps('info').image.sku]",
+                "storageAccountName": "[steps('info').resources.storageSelector.name]",
+                "subnetName": "[first(skip(split(steps('info').network.subnet, '/'), 10))]",
+                "TenantType": "[steps('info').TenantType]",
+                "virtualNetworkName": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 8))]",
+                "virtualNetworkResourceGroup": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 4))]",
+                "vmSize": "[steps('info').image.vmSize]",
+                "publisher": "[steps('info').image.publisher]"
+            },
+            "kind": "Subscription",
+            "location": "[steps('basics').scope.location.name]",
+            "subscriptionId": "[steps('basics').scope.subscription.id]"
+        }
+    }
+}

@@ -6,9 +6,6 @@ param adminUsername string
 param adminPassword string
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
-@allowed([
-  'win11-22h2-avd'
-])
 param OSVersion string
 
 @description('Size of the virtual machine.')
@@ -27,7 +24,14 @@ param vmName string
 ])
 param securityType string
 param miName string
+
+@description('Name of the virtual machine.')
+param miResourceGroup string
+
+@description('Name of the virtual machine.')
+param virtualResourceGroup string
 param virtualNetworkName string
+
 param subnetName string
 
 var nicName = '${vmName}-nic'
@@ -62,10 +66,12 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-0
 }
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
+  scope: resourceGroup(virtualResourceGroup)
   name: virtualNetworkName
 }
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  scope: resourceGroup(miResourceGroup)
   name: miName
 }
 
@@ -146,3 +152,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     virtualNetwork
   ]
 }
+
+output imageVm string = vm.name
+output imageId string = vm.id
+output imageRg string = split(vm.id, '/')[4]
