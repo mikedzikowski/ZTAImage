@@ -100,12 +100,22 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp
-        if($Blobname.contains('*.exe'))
+        if($Blobname -like ("*.exe"))
         {
           Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
-        if($Blobname.contains('*.msi'))
+        if($Blobname -like ("*.msi"))
         {
+          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait
+        }
+        if($Blobname -like ("*.bat"))
+        {
+          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait
+        }
+        if($Blobname -like ("*.zip"))
+        {
+          Expand-Archive -Path $env:windir\temp\$BlobName -DestinationPath $env:windir\temp\
+          # Update line 119 to meet requirements of installer(s)
           Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
       '''

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "2635826141481010165"
+      "templateHash": "1560509231446722265"
     }
   },
   "parameters": {
@@ -508,7 +508,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "17171568615411784979"
+              "templateHash": "11163628953740917520"
             }
           },
           "parameters": {
@@ -639,7 +639,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        if($Blobname.contains('*.exe'))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n        if($Blobname.contains('*.msi'))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n      "
+                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Expand-Archive -Path $env:windir\\temp\\$BlobName -DestinationPath $env:windir\\temp\\\r\n          # Update line 119 to meet requirements of installer(s)\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n      "
                 }
               }
             },
