@@ -1,26 +1,31 @@
 # Zero Trust and Azure Imaging
 
+This zero trust imaging solution for Azure allows you create images in an Azure environment that adheres to zero trust. While other options exist in Azure, its either a manual process or it doesn't adhere to zero trust. Azure Image Builder (AIB) is a great imaging service in Azure but does not adhere to zero trust. The service creates a staging resource group with a storage account that cannot be configured with a private endpoint.  This breaks the zero trust principles. This solution uses a storage account with a private endpoint to store applications and the existing, preconfigured resources that comply with the principles.
 
+## Prequisites
 
-# Software PRE-REQS
+### Software
 
-* Azure Bicep - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep
-* Azure PowerShell Modules - https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0
+* [Azure Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep)
+* [Azure PowerShell Modules](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0)
 
-# Azure Resource PRE-REQS
-All resources are assumed to be within the same resource group.
+### Existing Azure Resources
 
-Resources required before deployment:
-* Existing Virtual Network
-* Existing Storage Account
-* Existing Private Endpoint (on storage account)
-* Existing Private DNS Zone
-* Existing Azure Compute Gallery
-* Existing Managed Identity with RBAC Roles - Storage Blob Data Owner (scoped at the storage account or resource group where the storage account is deployed)
-* Any EXEs, scripts, etc. called during deployment uploaded to a storage account container
+The following resources must exist in your Azure environment before deployment:
 
-# Running ZTA Image Solution 
-Example PowerShell to run the solution:
+* Virtual Network
+* Storage Account
+  * Private Endpoint
+  * Private DNS Zone
+  * Blob container with executables, scripts, etc. that are required for the imaging deployment
+* Azure Compute Gallery
+* User Assigned Identity
+  * Role Assignment - "Storage Blob Data Owner" scoped at the storage account or parent resource group
+
+## Deployment
+
+### Example
+
 ```powershell
  $deploymentArguments = @{
          AdminUsername = 'xadmin'
@@ -63,179 +68,268 @@ Example PowerShell to run the solution:
 .\New-VMImage.ps1 @deploymentArguments -Verbose
 ```
 
-## PARAMETERS
+### Parameters
 
-### -AdminUsername
+#### -AdminUsername
+
 Specifies the local administrator user name of the virtual machine that will be captured.
+
 ```yaml
 Type: String
 ```
-### -ContainerName
+
+#### -ContainerName
+
 Specifies the container name where files, and scripts will be uploaded and consumed during the image process.
+
 ```yaml
 Type: String
 ```
-### -GalleryName
+
+#### -GalleryName
+
 Specifies the existing Azure Image Gallery where the image will be created.
+
 ```yaml
 Type: String
 ```
-### -ImageName
+
+#### -ImageName
+
 Specifies the name of the image that will created.
+
 ```yaml
 Type: String
 ```
-### -ImageOffer
+
+#### -ImageOffer
+
 Specifies the name of the image offer of the image that will be created.
+
 ```yaml
 Type: String
 ```
-### -ImagePublisher
+
+#### -ImagePublisher
+
 Specifies the name of the image publisher of the image that will be created.
+
 ```yaml
 Type: String
 ```
-### -ImageSku
+
+#### -ImageSku
+
 Specifies the name of the image SKU of the image that will be created.
+
 ```yaml
 Type: String
 ```
-### -ImageVersion
+
+#### -ImageVersion
+
 Specifies the name of the image version of the image that will be created.
+
 ```yaml
 Type: String
 ```
-### -InstallAccess
+
+#### -InstallAccess
+
 Specifies if Access will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallExcel
+
+#### -InstallExcel
+
 Specifies if Excel will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallFsLogix
+
+#### -InstallFsLogix
+
 Specifies if FsLogix will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallFsLogix
-Specifies if FsLogix will be installed on the image created.
-```yaml
-Type: Boolean
-```
-### -InstallOneDriveForBusiness
+
+#### -InstallOneDriveForBusiness
+
 Specifies if OneDrive For Business will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallOneNote
+
+#### -InstallOneNote
+
 Specifies if OneNote will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallPowerPoint
+
+#### -InstallPowerPoint
+
 Specifies if PowerPoint will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallPublisher
+
+#### -InstallPublisher
+
 Specifies if Publisher will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallTeams
+
+#### -InstallTeams
+
 Specifies if Teams will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallVirtualDesktopOptimizationTool
+
+#### -InstallVirtualDesktopOptimizationTool
 
 Specifies if Virtual Desktop Optimization Tool (VDOT) will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallVisio
+
+#### -InstallVisio
+
 Specifies if Visio will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -InstallWord
+
+#### -InstallWord
+
 Specifies if Word will be installed on the image created.
+
 ```yaml
 Type: Boolean
 ```
-### -Location
+
+#### -Location
+
 Specifies a location for the resources of the solution to be deployed.
+
 ```yaml
 Type: String
 ```
-### -MiName
+
+#### -MiName
+
 Specifies the name of an existing managed identity to be used during deployment of the solution.
+
 ```yaml
 Type: String
 ```
-### -OSVersion
+
+#### -OSVersion
+
 Specifies the OS Version of the image to be captured.
+
 ```yaml
 Type: String
 ```
-### -ResourceGroupName
+
+#### -ResourceGroupName
+
 Specifies the name of the resource group to create resources.
+
 ```yaml
 Type: String
 ```
-### -SecurityType
+
+#### -SecurityType
+
 Specifies the security type of the image to be captured.
+
 ```yaml
 Type: String
 ```
-### -StorageAccountName
+
+#### -StorageAccountName
+
 Specifies the name of the storage account where assets will be downloaded from and used during the image process.
+
 ```yaml
 Type: String
 ```
-### -StorageEndpoint
+
+#### -StorageEndpoint
+
 Specifies the storage endpoint of the target storage account.
+
 ```yaml
 Type: String
 ```
-### -SubnetName
+
+#### -SubnetName
+
 Specifies the subnet of the virtual network to be used during the image process.
+
 ```yaml
 Type: String
 ```
-### -TenantType
+
+#### -TenantType
+
 Specifies the tenant type used in the target environment.
+
 ```yaml
 Type: String
 AllowedValues: 'Commercial', 'DepartmentOfDefense','GovernmentCommunityCloud','GovernmentCommunityCloudHigh'
 ```
-### -UserAssignedIdentityObjectId
+
+#### -UserAssignedIdentityObjectId
+
 Specifies the object ID of the managed identity used during deployment.
+
 ```yaml
 Type: String
 ```
-### -VirtualNetworkName
+
+#### -VirtualNetworkName
+
 Specifies the virtual network name of the vNet used during the image process.
+
 ```yaml
 Type: String
 ```
-### -VmName
+
+#### -VmName
+
 Specifies the name of the virtual machine to be captuired.
+
 ```yaml
 Type: String
 ```
-### -VmSize
+
+#### -VmSize
+
 Specifies the  size of the the virtual machine to be captuired.
+
 ```yaml
 Type: String
 ```
 
-## Adding Additional Installers
+### Adding Applications
 
-* Add additional installers by adding addtional blocks of installers in module image.bicep
+* Add additional applications by adding addtional blocks of installers in module image.bicep
 * Any blob called will have to be uploaded to the storage account and container that are defined in the parameter set
 * Using the enabled argument will allow the installer to be modular and flexible during image creation
 
@@ -256,8 +350,10 @@ var installers = [
 ]
 ```
 
-## View status of runcommands during image creation
-Example of how to view and troubleshoot the status of runcommands:
+### View Run Command Status
+
+The applications are installed using the Run Command extension on the Azure virtual machine.  To the view and troubleshoot the status of a Run Command use the example below:
+
 ``` powershell
 PS C:\git\ztaimage> $x = Get-AzVMRunCommand -ResourceGroupName rg-image -VMName vm-image -RunCommandName office -Expand InstanceView
 PS C:\git\ztaimage> $x.InstanceView
@@ -272,4 +368,3 @@ StartTime        : 8/2/2023 2:14:27 PM
 EndTime          :
 Statuses         :
 ```
-
