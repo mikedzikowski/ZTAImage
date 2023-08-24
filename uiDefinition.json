@@ -273,15 +273,37 @@
                     "visible": true,
                     "elements": [
                         {
+                            "name": "customSoftware",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "customSoftware",
+                            "defaultValue":  ["No"],
+                            "toolTip": "Select True to add custom software to the image",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": "true"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "false"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
                             "name": "customizations",
                             "type": "Microsoft.Common.EditableGrid",
-                            "ariaLabel": "Customizations",
-                            "label": "Customizations",
+                            "ariaLabel": "customizations",
+                            "label": "customizations",
+                            "visible": "[steps('customizations').customSoftware]",
                             "constraints": {
                                 "width": "Full",
                                 "rows": {
                                     "count": {
-                                        "min": 1,
+                                        "min": 0,
                                         "max": 10
                                     }
                                 },
