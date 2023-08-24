@@ -282,11 +282,11 @@
                                 "allowedValues": [
                                     {
                                         "label": "Yes",
-                                        "value": "true"
+                                        "value": true
                                     },
                                     {
                                         "label": "No",
-                                        "value": "false"
+                                        "value": false
                                     }
                                 ],
                                 "required": true
