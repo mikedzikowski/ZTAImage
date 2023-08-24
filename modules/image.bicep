@@ -116,7 +116,7 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         {
           Expand-Archive -Path $env:windir\temp\$BlobName -DestinationPath $env:windir\temp\
           # Update line 119 to meet requirements of installer(s)
-          Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+          # Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
       '''
     }
