@@ -9,20 +9,20 @@ param guidValue string = newGuid()
 param imageName string
 param imageVersion string
 param imageVmRg string
-param installAccess bool = true
-param installExcel bool =  true
-param installFsLogix bool =  true
-param installOneDriveForBusiness bool = true
-param installOneNote bool =  true
-param installOutlook bool = true
-param installPowerPoint bool = true
-param installProject bool =  true
-param installPublisher bool =  true
-param installSkypeForBusiness bool = true
-param installTeams bool =  true
-param installVirtualDesktopOptimizationTool bool =  true
-param installVisio bool =  true
-param installWord bool =  true
+param installAccess bool
+param installExcel bool
+param installFsLogix bool
+param installOneDriveForBusiness bool
+param installOneNote bool
+param installOutlook bool
+param installPowerPoint bool
+param installProject bool
+param installPublisher bool
+param installSkypeForBusiness bool
+param installTeams bool
+param installVirtualDesktopOptimizationTool bool
+param installVisio bool
+param installWord bool
 param location string = deployment().location
 param managementVmRg string
 param miName string
