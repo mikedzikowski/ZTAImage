@@ -249,6 +249,10 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg
         # Generalize VM Using PowerShell
         Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized
+
+        # Remove Image VM and Management VM
+        Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait
+        #Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait
       '''
     }
   }
