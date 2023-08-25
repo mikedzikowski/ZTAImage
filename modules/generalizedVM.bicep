@@ -85,7 +85,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, subnetName)
+            id: '${virtualNetwork.id}/subnets/${subnetName}'
           }
         }
       }

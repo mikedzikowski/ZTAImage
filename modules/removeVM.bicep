@@ -36,6 +36,7 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
   parent: vm
   properties: {
     treatFailureAsDeploymentFailure: false
+    asyncExecution: true
     parameters: [
       {
         name: 'miId'

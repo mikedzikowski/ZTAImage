@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "4329945771081953"
+      "templateHash": "8870852755242204609"
     }
   },
   "parameters": {
@@ -207,7 +207,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "8459275683319016293"
+              "templateHash": "7730516102171352136"
             }
           },
           "parameters": {
@@ -327,7 +327,7 @@
                     "properties": {
                       "privateIPAllocationMethod": "Dynamic",
                       "subnet": {
-                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
+                        "id": "[format('{0}/subnets/{1}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('virtualResourceGroup')), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), parameters('subnetName'))]"
                       }
                     }
                   }
@@ -868,7 +868,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "2089871402868990477"
+              "templateHash": "18375635917655016737"
             }
           },
           "parameters": {
@@ -1005,7 +1005,7 @@
                     "properties": {
                       "privateIPAllocationMethod": "Dynamic",
                       "subnet": {
-                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
+                        "id": "[format('{0}/subnets/{1}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('virtualNetworkResourceGroup')), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), parameters('subnetName'))]"
                       }
                     }
                   }
@@ -1359,7 +1359,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "719472099642127739"
+              "templateHash": "15973514781965602820"
             }
           },
           "parameters": {
@@ -1403,6 +1403,7 @@
               "location": "[parameters('location')]",
               "properties": {
                 "treatFailureAsDeploymentFailure": false,
+                "asyncExecution": true,
                 "parameters": [
                   {
                     "name": "miId",
