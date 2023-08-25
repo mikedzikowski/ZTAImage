@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "4293363738715504458"
+      "templateHash": "4329945771081953"
     }
   },
   "parameters": {
@@ -137,7 +137,8 @@
       "type": "string"
     },
     "customizations": {
-      "type": "array"
+      "type": "array",
+      "defaultValue": []
     }
   },
   "variables": {
@@ -867,7 +868,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "17874412614860089285"
+              "templateHash": "2089871402868990477"
             }
           },
           "parameters": {
@@ -1127,7 +1128,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Get Vm using PowerShell\r\n        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized\r\n\r\n        # Remove Image VM and Management VM\r\n        Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait\r\n      "
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Get Vm using PowerShell\r\n        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized\r\n\r\n        # Remove Image VM and Management VM\r\n        #Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait\r\n\r\n        #Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait\r\n      "
                 }
               },
               "dependsOn": [
@@ -1313,6 +1314,132 @@
         }
       },
       "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('imageVmRg')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('managementVmRg')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('remove-vm-{0}', parameters('deploymentNameSuffix'))]",
+      "subscriptionId": "[variables('subscriptionId')]",
+      "resourceGroup": "[parameters('managementVmRg')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "imageVmName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('imageVmRg')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.imageVm.value]"
+          },
+          "imageVmRg": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('imageVmRg')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.imageRg.value]"
+          },
+          "miName": {
+            "value": "[parameters('miName')]"
+          },
+          "miResourceGroup": {
+            "value": "[parameters('miResourceGroup')]"
+          },
+          "cloud": {
+            "value": "[variables('cloud')]"
+          },
+          "vmName": {
+            "value": "[variables('managementVmName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.20.4.51522",
+              "templateHash": "719472099642127739"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "vmName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the virtual machine."
+              }
+            },
+            "miName": {
+              "type": "string"
+            },
+            "miResourceGroup": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the virtual machine."
+              }
+            },
+            "cloud": {
+              "type": "string"
+            },
+            "imageVmName": {
+              "type": "string"
+            },
+            "imageVmRg": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/virtualMachines/runCommands",
+              "apiVersion": "2023-03-01",
+              "name": "[format('{0}/{1}', parameters('vmName'), 'removeVm')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "treatFailureAsDeploymentFailure": false,
+                "parameters": [
+                  {
+                    "name": "miId",
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('miResourceGroup')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('miName')), '2023-01-31').clientId]"
+                  },
+                  {
+                    "name": "imageVmRg",
+                    "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('imageVmRg')), 'Microsoft.Compute/virtualMachines', parameters('imageVmName')), '/')[4]]"
+                  },
+                  {
+                    "name": "imageVmName",
+                    "value": "[parameters('imageVmName')]"
+                  },
+                  {
+                    "name": "managementVmRg",
+                    "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '/')[4]]"
+                  },
+                  {
+                    "name": "managementVmName",
+                    "value": "[parameters('vmName')]"
+                  },
+                  {
+                    "name": "Environment",
+                    "value": "[parameters('cloud')]"
+                  }
+                ],
+                "source": {
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Install PowerSHell Modules\r\n        #Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Get Vm using PowerShell\r\n        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        $job1 = Start-Job -ScriptBlock {\r\n          Start-Sleep 30\r\n          Remove-AzVM -Name $sourceVm.Name -ResourceGroupName $sourceVM.ResourceGroupName -NoWait  -ForceDeletion $true -Force\r\n        }\r\n\r\n        $job2  = Start-Job -ScriptBlock {\r\n          Start-Sleep 30\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait\r\n        }\r\n      "
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('imageVmRg')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('galleryResourceGroup')), 'Microsoft.Resources/deployments', format('gallery-image-{0}', parameters('deploymentNameSuffix')))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('imageVmRg')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('managementVmRg')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]

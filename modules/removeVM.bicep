@@ -1,0 +1,99 @@
+
+@description('Location for all resources.')
+param location string = resourceGroup().location
+
+@description('Name of the virtual machine.')
+param vmName string
+
+param miName string
+
+@description('Name of the virtual machine.')
+param miResourceGroup string
+
+param cloud string
+
+param imageVmName string
+param imageVmRg string
+
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  scope: resourceGroup(miResourceGroup)
+  name: miName
+}
+
+resource imageVm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
+  scope: resourceGroup(imageVmRg)
+  name: imageVmName
+}
+
+resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
+  name: vmName
+}
+
+resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
+  name: 'removeVm'
+  location: location
+  parent: vm
+  properties: {
+    treatFailureAsDeploymentFailure: false
+    parameters: [
+      {
+        name: 'miId'
+        value: managedIdentity.properties.clientId
+      }
+      {
+        name: 'imageVmRg'
+        value: split(imageVm.id, '/')[4]
+      }
+      {
+        name: 'imageVmName'
+        value: imageVm.name
+      }
+      {
+        name: 'managementVmRg'
+        value: split(vm.id, '/')[4]
+      }
+      {
+        name: 'managementVmName'
+        value: vm.name
+      }
+      {
+        name: 'Environment'
+        value: cloud
+      }
+    ]
+    source: {
+      script: '''
+      param(
+        [string]$miId,
+        [string]$imageVmRg,
+        [string]$imageVmName,
+        [string]$managementVmRg,
+        [string]$managementVmName,
+        [string]$Environment
+        )
+        # Install PowerSHell Modules
+        #Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments
+
+        # Connect to Azure
+        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
+        # Get Vm using PowerShell
+        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg
+        # Generalize VM Using PowerShell
+        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized
+
+        # Remove Image VM and Management VM
+
+        $job1 = Start-Job -ScriptBlock {
+          Start-Sleep 30
+          Remove-AzVM -Name $sourceVm.Name -ResourceGroupName $sourceVM.ResourceGroupName -NoWait  -ForceDeletion $true -Force
+        }
+
+        $job2  = Start-Job -ScriptBlock {
+          Start-Sleep 30
+          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait
+        }
+      '''
+    }
+  }
+}

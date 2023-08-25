@@ -45,7 +45,7 @@ param TenantType string
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param vmSize string
-param customizations array
+param customizations array = []
 
 var cloud = environment().name
 var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
@@ -169,6 +169,27 @@ module image 'modules/gallery.bicep' = {
     sku: sku
   }
   dependsOn: [
+    managementVm
+  ]
+}
+
+module remove 'modules/removeVM.bicep' = {
+  name: 'remove-vm-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, managementVmRg)
+  params: {
+    location: location
+    imageVmName: imageVm.outputs.imageVm
+    imageVmRg: imageVm.outputs.imageRg
+    miName: managedIdentity.name
+    miResourceGroup: miResourceGroup
+    cloud: cloud
+    vmName: managementVmName
+  }
+  dependsOn: [
+    customize
+    imageVm
+    image
+    gallery
     managementVm
   ]
 }

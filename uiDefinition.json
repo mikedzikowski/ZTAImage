@@ -273,11 +273,32 @@
                     "visible": true,
                     "elements": [
                         {
+                            "name": "customSoftware",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "customSoftware",
+                            "defaultValue":  ["No"],
+                            "toolTip": "Select True to add custom software to the image",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": false
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
                             "name": "customizations",
                             "type": "Microsoft.Common.EditableGrid",
-                            "ariaLabel": "customizations",
-                            "label": "customizations",
-                            "visible": true,
+                            "ariaLabel": "Customizations",
+                            "label": "Customizations",
+                            "visible": "[steps('customizations').customSoftware]",
                             "constraints": {
                                 "width": "Full",
                                 "rows": {
@@ -647,7 +668,7 @@
         "outputs": {
             "parameters": {
                 "containerName": "[steps('info').resources.container]",
-                "customizations": "[steps('customizations').customizations]",
+                "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "excludeFromLatest": "[steps('info').image.excludeFromLatest]",
                 "galleryName": "[steps('info').gallery.name]",
                 "galleryResourceGroup": "[first(skip(split(steps('info').gallery.id, '/'), 4))]",
