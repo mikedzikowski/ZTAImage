@@ -9,6 +9,10 @@ This zero trust imaging solution for Azure allows you create images in an Azure 
 * [Azure Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep)
 * [Azure PowerShell Modules](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0)
 
+### Upload the following scripts to your storage account container
+
+* [Scripts](https://github.com/mikedzikowski/ZTAImage/tree/main/ImageCustomizationScripts)
+
 ### Existing Azure Resources
 
 The following resources must exist in your Azure environment before deployment:
