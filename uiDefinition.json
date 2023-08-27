@@ -51,7 +51,7 @@
                                     "label": "Resource Group",
                                     "multiselect": false,
                                     "defaultValue": "",
-                                    "toolTip": "Select the name of the existing resource group.",
+                                    "toolTip": "Select the name of the existing resource group where the image will be created. Recommended to use the same resource group where the compute gallery resides.",
                                     "filterPlaceholder": "",
                                     "defaultDescription": "",
                                     "constraints": {
