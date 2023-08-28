@@ -3,7 +3,7 @@
 This zero trust imaging solution for Azure allows you create images in an Azure environment that adheres to zero trust. While other options exist in Azure, its either a manual process or it doesn't adhere to zero trust. Azure Image Builder (AIB) is a great imaging service in Azure but does not adhere to zero trust. The service creates a staging resource group with a storage account that cannot be configured with a private endpoint.  This breaks the zero trust principles. This solution uses a storage account with a private endpoint to store applications and the existing, preconfigured resources that comply with the principles.
 
 ```mermaid
-graph LR;
+graph TD;
 
     A[Download Software Prerequisites] -->B(Upload scripts and Installers to Storage Account)-->C(Ensure Azure Resource Requirements are met) -->D(Clone Repo) --> E(Create TemplateSpec)--> F(Ready for Zero Trust Imaging)
 ```
