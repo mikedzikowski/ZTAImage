@@ -45,7 +45,7 @@ The following resources must exist in your Azure environment before deployment:
 * Azure Compute Gallery
 * User Assigned Identity
   * Role Assignment - "Storage Blob Data Owner" scoped at the storage account or parent resource group
-  * Role Assignment - "Virtual Machine Contributor" scoped at the resource group where the image and management vms will be deployed
+  * Role Assignment - "Virtual Machine Contributor" scoped at the resource group where the image and management vms will be deployed (or the following action must be allowed for the UAMI - Microsoft.Compute/virtualMachines/generalize/action)
 
 ## Creating Template Spec
 
