@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "9837064020335295583"
+      "templateHash": "11057808107971100319"
     }
   },
   "parameters": {
@@ -1359,7 +1359,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "13261155152302643705"
+              "templateHash": "15228983173359582769"
             }
           },
           "parameters": {
@@ -1431,7 +1431,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Install PowerSHell Modules\r\n        #Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Get Vm using PowerShell\r\n        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n\r\n        # Remove Image VM and Management VM\r\n        Remove-AzVM -Name $sourceVm.Name -ResourceGroupName $sourceVM.ResourceGroupName -Wait -ForceDeletion $true -Force -AsJob\r\n\r\n        Start-sleep 30\r\n        \r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n\r\n      "
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Install PowerSHell Modules\r\n        #Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments\r\n\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n      \r\n        # Remove Image VM and Management VM\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -NoWait -ForceDeletion $true -Force\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n\r\n      \r\n\r\n\r\n      "
                 }
               }
             }
