@@ -80,20 +80,14 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
         Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
         # Get Vm using PowerShell
         $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg
-        # Generalize VM Using PowerShell
-        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized
 
         # Remove Image VM and Management VM
+        Remove-AzVM -Name $sourceVm.Name -ResourceGroupName $sourceVM.ResourceGroupName -Wait -ForceDeletion $true -Force -AsJob
 
-        $job1 = Start-Job -ScriptBlock {
-          Start-Sleep 30
-          Remove-AzVM -Name $sourceVm.Name -ResourceGroupName $sourceVM.ResourceGroupName -NoWait  -ForceDeletion $true -Force
-        }
+        Start-sleep 30
+        
+        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
 
-        $job2  = Start-Job -ScriptBlock {
-          Start-Sleep 30
-          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait
-        }
       '''
     }
   }
