@@ -5,7 +5,7 @@ This zero trust imaging solution for Azure allows you create images in an Azure 
 ```mermaid
 graph TD;
 
-    A[Download Software Prerequisites] -->B(Upload scripts and Installers to Storage Account)-->C(Ensure Azure Resource Requirements are met) -->D(Clone Repo) --> E(Create TemplateSpec)--> F(Ready for Zero Trust Imaging)
+    A[Download Software Prerequisites] -->B(Upload Scripts and Installers to Storage Account)-->C(Review Azure Resource Requirements) -->D(Clone Repo) --> E(Create TemplateSpec)--> F(Ready for Zero Trust Imaging)
 ```
 
 ## Prequisites
