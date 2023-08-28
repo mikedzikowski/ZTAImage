@@ -53,7 +53,7 @@ New-AzTemplateSpec `
     -Location usgovvirginia `
     -DisplayName "Zero Trust Image Template" `
     -TemplateFile '.\solution.json' `
-    -UIFormDefinitionFile .\ztaimage\uiDefinition.json  `
+    -UIFormDefinitionFile '.\uiDefinition.json'  `
     -Force
 ```
 
