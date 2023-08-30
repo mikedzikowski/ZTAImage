@@ -28,6 +28,7 @@ param vmName string
 param TenantType string
 param userAssignedIdentityObjectId string
 param customizations array
+param vDotInstaller string 
 
 var installAccessVar = '${installAccess}installAccess'
 var installExcelVar = '${installExcel}installWord'
@@ -253,19 +254,57 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
   location: location
   parent: vm
   properties: {
+    parameters: [
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'StorageEndpoint'
+        value: storageEndpoint
+      }
+      {
+        name: 'BlobName'
+        value: vDotInstaller
+      }
+    ]
     source: {
       script: '''
-      $ErrorActionPreference = "Stop"
-      $ZIP = "$env:windir\temp\fslogix.zip\VDOT.zip"
-      Invoke-WebRequest -Uri "https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip" -OutFile $ZIP
-      Unblock-File -Path $ZIP
-      Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp" -Force
-      $Path = (Get-ChildItem -Path "$env:windir\temp" -Recurse | Where-Object {$_.Name -eq "Windows_VDOT.ps1"}).FullName
-      $Script = Get-Content -Path $Path
-      $ScriptUpdate = $Script.Replace("Set-NetAdapterAdvancedProperty","#Set-NetAdapterAdvancedProperty")
-      $ScriptUpdate | Set-Content -Path $Path
-      & $Path -Optimizations @("AppxPackages","Autologgers","DefaultUserSettings","LGPO";"NetworkOptimizations","ScheduledTasks","Services","WindowsMediaPlayer") -AdvancedOptimizations "All" -AcceptEULA
-      Write-Host "Optimized the operating system using the Virtual Desktop Optimization Tool"
+      param(
+        [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
+        [string]$ContainerName,
+        [string]$StorageEndpoint,
+        [string]$BlobName
+        )
+        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+        $StorageAccountName = $StorageAccountName
+        $ContainerName = $ContainerName
+        $BlobName = $BlobName
+        $StorageAccountUrl = $StorageEndpoint
+        $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
+        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+        $ZIP = "$env:windir\temp\VDOT.zip"
+        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ZIP
+        Start-Sleep -Seconds 30
+        Set-Location -Path $env:windir\temp
+        $ErrorActionPreference = "Stop"
+        Unblock-File -Path $ZIP
+        Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp" -Force
+        $Path = (Get-ChildItem -Path "$env:windir\temp" -Recurse | Where-Object {$_.Name -eq "Windows_VDOT.ps1"}).FullName
+        $Script = Get-Content -Path $Path
+        $ScriptUpdate = $Script.Replace("Set-NetAdapterAdvancedProperty","#Set-NetAdapterAdvancedProperty")
+        $ScriptUpdate | Set-Content -Path $Path
+        & $Path -Optimizations @("AppxPackages","Autologgers","DefaultUserSettings","LGPO";"NetworkOptimizations","ScheduledTasks","Services","WindowsMediaPlayer") -AdvancedOptimizations "All" -AcceptEULA
+        Write-Host "Optimized the operating system using the Virtual Desktop Optimization Tool"
       '''
     }
     timeoutInSeconds: 640
@@ -367,61 +406,6 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
   }
   dependsOn: [
     applications
-    office
-  ]
-}
-
-resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
-  name: 'sysprep'
-  location: location
-  parent: vm
-  properties: {
-    parameters: [
-      {
-        name: 'UserAssignedIdentityObjectId'
-        value: userAssignedIdentityObjectId
-      }
-      {
-        name: 'StorageAccountName'
-        value: storageAccountName
-      }
-      {
-        name: 'ContainerName'
-        value: containerName
-      }
-      {
-        name: 'StorageEndpoint'
-        value: storageEndpoint
-      }
-    ]
-    source: {
-      script: '''
-    param(
-      [string]$UserAssignedIdentityObjectId,
-      [string]$StorageAccountName,
-      [string]$ContainerName,
-      [string]$StorageEndpoint
-      )
-      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-      $StorageAccountName = $StorageAccountName
-      $ContainerName = $ContainerName
-      $BlobName = 'New-PepareVHDToUploadToAzure.ps1'
-      $StorageAccountUrl = $StorageEndpoint
-      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
-      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
-      Start-Sleep -Seconds 60
-      Set-Location -Path $env:windir\temp
-      .\New-PepareVHDToUploadToAzure.ps1
-      '''
-    }
-    timeoutInSeconds: 120
-  }
-  dependsOn: [
-    applications
-    teams
-    vdot
-    fslogix
     office
   ]
 }

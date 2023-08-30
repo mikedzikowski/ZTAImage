@@ -30,13 +30,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: vmName
 }
 
-resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
-  name: 'removeVm'
+resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
+  name: 'restartVm'
   location: location
   parent: vm
   properties: {
     treatFailureAsDeploymentFailure: false
-    asyncExecution: true
+    asyncExecution: false
     parameters: [
       {
         name: 'miId'
@@ -51,14 +51,6 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
         value: imageVm.name
       }
       {
-        name: 'managementVmRg'
-        value: split(vm.id, '/')[4]
-      }
-      {
-        name: 'managementVmName'
-        value: vm.name
-      }
-      {
         name: 'Environment'
         value: cloud
       }
@@ -69,17 +61,29 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
         [string]$miId,
         [string]$imageVmRg,
         [string]$imageVmName,
-        [string]$managementVmRg,
-        [string]$managementVmName,
         [string]$Environment
         )
         # Connect to Azure
         Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
- 
-        # Remove Image VM and Management VM
-        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -NoWait -ForceDeletion $true -Force
-        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
+        # Restart VM
+        Restart-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg
 
+        $lastProvisioningState = ""
+        $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code
+        $condition = ($provisioningState -eq "PowerState/running")
+        while (!$condition) {
+          if ($lastProvisioningState -ne $provisioningState) {
+            write-host $imageVmName "under" $imageVmRg "is" $provisioningState "(waiting for state change)"
+          }
+          $lastProvisioningState = $provisioningState
+
+          Start-Sleep -Seconds 5
+          $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code
+
+          $condition = ($provisioningState -eq "PowerState/running")
+        }
+        write-host $imageVmName "under" $imageVmRg "is" $provisioningState
+        start-sleep 30
       '''
     }
   }

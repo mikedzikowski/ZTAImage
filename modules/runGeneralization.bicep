@@ -30,13 +30,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: vmName
 }
 
-resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
-  name: 'removeVm'
+resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
+  name: 'generalize'
   location: location
   parent: vm
   properties: {
     treatFailureAsDeploymentFailure: false
-    asyncExecution: true
+    asyncExecution: false
     parameters: [
       {
         name: 'miId'
@@ -75,10 +75,9 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
         )
         # Connect to Azure
         Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
- 
-        # Remove Image VM and Management VM
-        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -NoWait -ForceDeletion $true -Force
-        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
+
+        # Generalize VM Using PowerShell
+        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized
 
       '''
     }

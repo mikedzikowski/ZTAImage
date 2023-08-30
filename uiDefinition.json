@@ -236,10 +236,46 @@
                                 },
                                 {
                                     "name": "offer",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Image Offer",
-                                    "defaultValue": "",
-                                    "placeholder": "Example: windows-11"
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Offer",
+                                    "defaultValue": "Windows 11",
+                                    "toolTip": "Select the desired marketplace image offer.",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "Office 365",
+                                                "value": "office-365"
+                                            },
+                                            {
+                                                "label": "Windows 10",
+                                                "value": "Windows-10"
+                                            },
+                                            {
+                                                "label": "Windows 11",
+                                                "value": "windows-11"
+                                            }
+                                        ],
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "skuApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/MicrosoftWindowsDesktop/artifacttypes/vmimage/offers/', steps('info').image.offer, '/skus?api-version=2022-08-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "sku",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "SKU",
+                                    "defaultValue": "win11-22h2-avd",
+                                    "toolTip": "Select the desired marketplace image SKU.",
+                                    "constraints": {
+                                        "allowedValues": "[map(steps('info').image.skuApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "required": true
+                                    }
                                 },
                                 {
                                     "name": "publisher",
@@ -249,18 +285,28 @@
                                     "placeholder": "Example: MicrosoftWindowsDesktop"
                                 },
                                 {
-                                    "name": "sku",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Image Sku",
-                                    "defaultValue": "",
-                                    "placeholder": "Example: win11-22h2-avd"
+                                    "name": "vmSizesApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/vmSizes?api-version=2023-03-01')]"
+                                    }
                                 },
                                 {
                                     "name": "vmSize",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "vmSize",
-                                    "defaultValue": "",
-                                    "placeholder": "Example: Standard_D4_v4"
+                                    "type": "Microsoft.Compute.SizeSelector",
+                                    "label": "Virtual Machine Size",
+                                    "toolTip": "",
+                                    "recommendedSizes": [
+                                        "Standard_D4_v4"
+                                    ],
+                                    "constraints": {
+                                    },
+                                    "options": {
+                                        "hideDiskTypeFilter": false
+                                    },
+                                    "osPlatform": "Windows",
+                                    "visible": true
                                 }
                             ]
                         }
@@ -363,7 +409,7 @@
                         {
                             "name": "office",
                             "type": "Microsoft.Common.Section",
-                            "label": "Office",
+                            "label": "Software",
                             "elements": [
                                 {
                                     "name": "InstallAccess",
@@ -606,17 +652,30 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
                                     "visible": true
                                 },
+                                {
+                                    "name": "vDotBlob",
+                                    "type": "Microsoft.Storage.StorageBlobSelector",
+                                    "visible": "[steps('customizations').office.installVirtualDesktopOptimizationTool]",
+                                    "toolTip": "Select vDot blob",
+                                    "label": "VDOT Package (.zip)",
+                                    "options": {
+                                      "text": "Select Package"
+                                    },
+                                    "constraints": {
+                                      "allowedFileExtensions": [ "zip"]
+                                    }
+                                  },
                                 {
                                     "name": "installVisio",
                                     "type": "Microsoft.Common.OptionsGroup",
@@ -703,7 +762,8 @@
                 "TenantType": "[steps('info').TenantType]",
                 "virtualNetworkName": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 8))]",
                 "virtualNetworkResourceGroup": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 4))]",
-                "vmSize": "[steps('info').image.vmSize]"
+                "vmSize": "[steps('info').image.vmSize]",
+                "vDotInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').scope.location.name]",

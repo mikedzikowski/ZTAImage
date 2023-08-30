@@ -46,6 +46,7 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param vmSize string
 param customizations array = []
+param vDotInstaller string
 
 var cloud = environment().name
 var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
@@ -53,7 +54,7 @@ var adminUsername = 'xadmin'
 var subscriptionId = subscription().subscriptionId
 var securityType = 'TrustedLaunch'
 var imageVmName = 'vm-image'
-var managementVmName = 'vm-mangage'
+var managementVmName = 'vm-management'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   scope: resourceGroup(subscriptionId, saResourceGroup)
@@ -120,6 +121,7 @@ module customize 'modules/image.bicep' = {
     TenantType: TenantType
     userAssignedIdentityObjectId: managedIdentity.properties.principalId
     vmName: imageVmName
+    vDotInstaller: vDotInstaller
   }
   dependsOn: [
     imageVm
@@ -134,8 +136,6 @@ module managementVm 'modules/managementVM.bicep' = {
     adminPassword: adminPw
     adminUsername: adminUsername
     containerName: containerName
-    imageVmName: imageVm.outputs.imageVm
-    imageVmRg: imageVm.outputs.imageRg
     miName: managedIdentity.name
     miResourceGroup: miResourceGroup
     securityType: securityType
@@ -145,11 +145,71 @@ module managementVm 'modules/managementVM.bicep' = {
     virtualNetworkResourceGroup: split(virtualNetwork.id, '/')[4]
     vmName: managementVmName
     vmSize: vmSize
+  }
+  dependsOn: [
+    customize
+    imageVm
+    managedIdentity
+    gallery
+  ]
+}
+
+module restart 'modules/restartVM.bicep' = {
+  name: 'restart-vm-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, managementVmRg)
+  params: {
+    location: location
+    imageVmName: imageVm.outputs.imageVm
+    imageVmRg: imageVm.outputs.imageRg
+    miName: managedIdentity.name
+    miResourceGroup: miResourceGroup
+    cloud: cloud
+    vmName: managementVmName
+  }
+  dependsOn: [
+    customize
+    imageVm
+    managementVm
+  ]
+}
+
+module sysprep 'modules/sysprep.bicep' = {
+  name: 'sysprep-vm-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, managementVmRg)
+  params: {
+    location: location
+    vmName: imageVm.outputs.imageVm
+    containerName: containerName
+    storageAccountName: storageAccountName
+    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
+    userAssignedIdentityObjectId: managedIdentity.properties.principalId
+  }
+  dependsOn: [
+    customize
+    imageVm
+    restart
+    managementVm
+  ]
+}
+
+module generalizeVm 'modules/runGeneralization.bicep' = {
+  name: 'generalize-vm-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, managementVmRg)
+  params: {
+    location: location
+    imageVmName: imageVm.outputs.imageVm
+    imageVmRg: imageVm.outputs.imageRg
+    miName: managedIdentity.name
+    miResourceGroup: miResourceGroup
+    vmName: managementVmName
     cloud: cloud
   }
   dependsOn: [
     customize
     imageVm
+    managementVm
+    restart
+    sysprep
   ]
 }
 
@@ -170,6 +230,10 @@ module image 'modules/gallery.bicep' = {
   }
   dependsOn: [
     managementVm
+    customize
+    generalizeVm
+    restart
+    sysprep
   ]
 }
 
@@ -190,6 +254,8 @@ module remove 'modules/removeVM.bicep' = {
     imageVm
     image
     gallery
+    generalizeVm
     managementVm
+    sysprep
   ]
 }

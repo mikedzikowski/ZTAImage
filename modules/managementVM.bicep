@@ -33,11 +33,7 @@ param subnetName string
 
 param containerName string
 
-param cloud string
-
 param storageEndpoint string
-param imageVmName string
-param imageVmRg string
 
 var installers = [
   {
@@ -66,11 +62,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   scope: resourceGroup(miResourceGroup)
   name: miName
-}
-
-resource imageVm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
-  scope: resourceGroup(imageVmRg)
-  name: imageVmName
 }
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
@@ -173,12 +164,11 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   ]
 }
 
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [ for installer in installers: if(installer.enabled) {
-  name: 'app-${installer.name}'
+resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [ for installer in installers: if(installer.enabled) {
+  name: 'app${installer.name}'
   location: location
   parent: vm
   properties: {
-    treatFailureAsDeploymentFailure: true
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
@@ -193,52 +183,23 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         value: storageEndpoint
       }
       {
-        name: 'Blobname'
+        name: 'BlobName'
         value: installer.blobName
       }
       {
         name: 'Arguments'
         value: installer.arguments
       }
-      {
-        name: 'miId'
-        value: managedIdentity.properties.clientId
-      }
-      {
-        name: 'imageVmRg'
-        value: split(imageVm.id, '/')[4]
-      }
-      {
-        name: 'imageVmName'
-        value: imageVm.name
-      }
-      {
-        name: 'managementVmRg'
-        value: split(vm.id, '/')[4]
-      }
-      {
-        name: 'managementVmName'
-        value: vm.name
-      }
-      {
-        name: 'Environment'
-        value: cloud
-      }
     ]
     source: {
       script: '''
       param(
-        [string]$miId,
         [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
         [string]$ContainerName,
         [string]$StorageEndpoint,
         [string]$BlobName,
-        [string]$Arguments,
-        [string]$imageVmRg,
-        [string]$imageVmName,
-        [string]$managementVmRg,
-        [string]$managementVmName,
-        [string]$Environment
+        [string]$Arguments
         )
         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
         $ContainerName = $ContainerName
@@ -246,25 +207,16 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         $StorageAccountUrl = $StorageEndpoint
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
+        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$Blobname
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp
 
         # Install PowerSHell Modules
-        Start-Process -FilePath msiexec.exe -Wait -ArgumentList $Arguments
-
-        # Connect to Azure
-        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
-        # Get Vm using PowerShell
-        $sourceVM = Get-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg
-        # Generalize VM Using PowerShell
-        Set-AzVm -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVm.Name -Generalized
-
-        # Remove Image VM and Management VM
-        #Remove-AzVM -Name $sourceVm.Name -ForceDeletion $true -Force -ResourceGroupName $sourceVM.ResourceGroupName -NoWait
-
-        #Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -ForceDeletion $true -Force -NoWait
+        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait
+        Get-InstalledModule | Where-Object {$_.name -like "Az"}
       '''
     }
   }
+  dependsOn: [
+  ]
 }]
