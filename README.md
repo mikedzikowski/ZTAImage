@@ -18,7 +18,8 @@ graph TD;
 ### Upload the following scripts and files to your storage account container
 
 * [Scripts](https://github.com/mikedzikowski/ZTAImage/tree/main/ImageCustomizationScripts)
-* [Installers](https://github.com/Azure/azure-powershell/releases/download/v10.2.0-August2023/Az-Cmdlets-10.2.0.37547-x64.msi)
+* [Az Modules Installers](https://github.com/Azure/azure-powershell/releases/download/v10.2.0-August2023/Az-Cmdlets-10.2.0.37547-x64.msi)
+* [vDot Installers](https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip)
 
 If the above installer Az Modules version is not used, please update the following lines in managementVM.Bicep to match the MSI installer version used in your environment:
 
