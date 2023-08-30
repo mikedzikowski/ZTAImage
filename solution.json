@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "8335242733973715187"
+      "templateHash": "16003692994101655802"
     }
   },
   "parameters": {
@@ -853,7 +853,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "12839388840321697129"
+              "templateHash": "17188749256623825597"
             }
           },
           "parameters": {
@@ -1079,7 +1079,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
+                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile \"$env:windir\\temp\\$Blobname\"\r\n        Start-Sleep -Seconds 60\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
                 }
               },
               "dependsOn": [
@@ -1663,7 +1663,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "13019106370572715463"
+              "templateHash": "15292980979494363469"
             }
           },
           "parameters": {
@@ -1735,7 +1735,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -Wait -ForceDeletion $true -Force\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n      "
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -Nowait -ForceDeletion $true -Force\r\n\r\n        start-sleep 60\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n      "
                 }
               }
             }
