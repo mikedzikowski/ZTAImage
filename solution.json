@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "16003692994101655802"
+      "templateHash": "12115383057351227492"
     }
   },
   "parameters": {
@@ -201,6 +201,12 @@
           },
           "vmSize": {
             "value": "[parameters('vmSize')]"
+          },
+          "offer": {
+            "value": "[parameters('offer')]"
+          },
+          "publisher": {
+            "value": "[parameters('publisher')]"
           }
         },
         "template": {
@@ -210,7 +216,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "7730516102171352136"
+              "templateHash": "5409850735053889594"
             }
           },
           "parameters": {
@@ -250,6 +256,12 @@
               "metadata": {
                 "description": "Name of the virtual machine."
               }
+            },
+            "publisher": {
+              "type": "string"
+            },
+            "offer": {
+              "type": "string"
             },
             "securityType": {
               "type": "string",
@@ -359,8 +371,8 @@
                 },
                 "storageProfile": {
                   "imageReference": {
-                    "publisher": "microsoftwindowsdesktop",
-                    "offer": "windows-11",
+                    "publisher": "[parameters('publisher')]",
+                    "offer": "[parameters('offer')]",
                     "sku": "[parameters('OSVersion')]",
                     "version": "latest"
                   },

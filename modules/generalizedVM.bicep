@@ -17,6 +17,9 @@ param location string = resourceGroup().location
 @description('Name of the virtual machine.')
 param vmName string
 
+param publisher string
+param offer string
+
 @description('Security Type of the Virtual Machine.')
 @allowed([
   'Standard'
@@ -116,8 +119,8 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     }
     storageProfile: {
       imageReference: {
-        publisher: 'microsoftwindowsdesktop'
-        offer: 'windows-11'
+        publisher: publisher
+        offer: offer
         sku: OSVersion
         version: 'latest'
       }

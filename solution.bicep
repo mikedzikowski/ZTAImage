@@ -92,6 +92,8 @@ module imageVm 'modules/generalizedVM.bicep' = {
     virtualResourceGroup: split(virtualNetwork.id, '/')[4]
     vmName: imageVmName
     vmSize: vmSize
+    offer: offer
+    publisher: publisher
   }
 }
 
