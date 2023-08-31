@@ -74,11 +74,24 @@
                                     }
                                 },
                                 {
+                                    "name": "containerApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('info').resources.storageSelector.id, '/blobServices/default/containers?api-version=2023-01-01')]"
+                                    }
+                                },
+                                {
                                     "name": "container",
-                                    "type": "Microsoft.Common.TextBox",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
                                     "label": "Container",
                                     "defaultValue": "",
-                                    "placeholder": "Example: storagecontainer"
+                                    "toolTip": "Select an existing container.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(steps('info').resources.containerApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
                                 }
                             ]
                         },
