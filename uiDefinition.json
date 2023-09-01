@@ -739,7 +739,7 @@
         },
         "outputs": {
             "parameters": {
-                "containerName": "[steps('info').resources.container]",
+                "containerName": "[first(skip(split(steps('info').resources.container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "excludeFromLatest": "[steps('info').image.excludeFromLatest]",
                 "galleryName": "[steps('info').gallery.name]",
