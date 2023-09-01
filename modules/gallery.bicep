@@ -19,7 +19,7 @@ resource gallery 'Microsoft.Compute/galleries@2022-03-03' existing = {
 }
 
 resource image 'Microsoft.Compute/galleries/images@2022-03-03' = {
-  name: imageName
+  name: '${imageName}-${sku}'
   location: location
   parent: gallery
   properties: {
@@ -42,7 +42,7 @@ resource image 'Microsoft.Compute/galleries/images@2022-03-03' = {
     identifier: {
       offer: offer
       publisher: publisher
-      sku: sku
+      sku: '${sku}-${imageName}'
     }
     osState: 'Generalized'
     osType: 'Windows'

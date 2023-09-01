@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "12115383057351227492"
+      "templateHash": "8622280313522176451"
     }
   },
   "parameters": {
@@ -1505,7 +1505,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "7690822609167651738"
+              "templateHash": "18357211012335726275"
             }
           },
           "parameters": {
@@ -1561,7 +1561,7 @@
             {
               "type": "Microsoft.Compute/galleries/images",
               "apiVersion": "2022-03-03",
-              "name": "[format('{0}/{1}', parameters('galleryName'), parameters('imageName'))]",
+              "name": "[format('{0}/{1}', parameters('galleryName'), format('{0}-{1}', parameters('imageName'), parameters('sku')))]",
               "location": "[parameters('location')]",
               "properties": {
                 "architecture": "x64",
@@ -1583,7 +1583,7 @@
                 "identifier": {
                   "offer": "[parameters('offer')]",
                   "publisher": "[parameters('publisher')]",
-                  "sku": "[parameters('sku')]"
+                  "sku": "[format('{0}-{1}', parameters('sku'), parameters('imageName'))]"
                 },
                 "osState": "Generalized",
                 "osType": "Windows"
@@ -1592,7 +1592,7 @@
             {
               "type": "Microsoft.Compute/galleries/images/versions",
               "apiVersion": "2022-03-03",
-              "name": "[format('{0}/{1}/{2}', parameters('galleryName'), parameters('imageName'), parameters('imageVersionNumber'))]",
+              "name": "[format('{0}/{1}/{2}', parameters('galleryName'), format('{0}-{1}', parameters('imageName'), parameters('sku')), parameters('imageVersionNumber'))]",
               "location": "[parameters('location')]",
               "properties": {
                 "publishingProfile": {
@@ -1619,7 +1619,7 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Compute/galleries/images', parameters('galleryName'), parameters('imageName'))]"
+                "[resourceId('Microsoft.Compute/galleries/images', parameters('galleryName'), format('{0}-{1}', parameters('imageName'), parameters('sku')))]"
               ]
             }
           ]
