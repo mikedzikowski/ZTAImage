@@ -3,7 +3,6 @@ targetScope = 'resourceGroup'
 param containerName string
 param installAccess bool
 param installExcel bool
-param installFsLogix bool
 param installOneDriveForBusiness bool
 param installOneNote bool
 param installOutlook bool
@@ -28,7 +27,11 @@ param vmName string
 param TenantType string
 param userAssignedIdentityObjectId string
 param customizations array
-param vDotInstaller string 
+param vDotInstaller string
+param officeInstaller string
+param teamsInstaller string
+param vcRedistInstaller string
+param msrdcwebrtcsvcInstaller string
 
 var installAccessVar = '${installAccess}installAccess'
 var installExcelVar = '${installExcel}installWord'
@@ -174,6 +177,26 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
         name: 'InstallVisio'
         value: installVisioVar
       }
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'StorageEndpoint'
+        value: storageEndpoint
+      }
+      {
+        name: 'BlobName'
+        value: officeInstaller
+      }
     ]
     source: {
       script: '''
@@ -188,8 +211,20 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
       [string]$InstallVisio,
       [string]$InstallWord,
       [string]$InstallOneNote,
-      [string]$InstallPowerPoint
+      [string]$InstallPowerPoint,
+      [string]$UserAssignedIdentityObjectId,
+      [string]$StorageAccountName,
+      [string]$ContainerName,
+      [string]$StorageEndpoint,
+      [string]$BlobName
       )
+      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+      $StorageAccountName = $StorageAccountName
+      $ContainerName = $ContainerName
+      $BlobName = $BlobName
+      $StorageAccountUrl = $StorageEndpoint
+      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
+      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
       $sku = (Get-ComputerInfo).OsName
       $o365ConfigHeader = Set-Content "$env:windir\temp\office365x64.xml" '<Configuration><Add OfficeClientEdition="64" Channel="Current">'
       $o365OfficeHeader = Add-Content "$env:windir\temp\office365x64.xml" '<Product ID="O365ProPlusRetail"><Language ID="en-us" /><ExcludeApp ID="Teams"/>'
@@ -234,9 +269,10 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
       $o365Configfooter = Add-Content "$env:windir\temp\office365x64.xml" '</Configuration>'
       $ErrorActionPreference = "Stop"
       $Installer = "$env:windir\temp\office.exe"
-      $DownloadLinks = Invoke-WebRequest -Uri "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117" -UseBasicParsing
-      $URL = $DownloadLinks.Links.href | Where-Object {$_ -like "https://download.microsoft.com/download/*officedeploymenttool*"} | Select-Object -First 1
-      Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing
+      #$DownloadLinks = Invoke-WebRequest -Uri "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117" -UseBasicParsing
+      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like "https://download.microsoft.com/download/*officedeploymenttool*"} | Select-Object -First 1
+      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $Installer
       Start-Process -FilePath $Installer -ArgumentList "/extract:$env:windir\temp /quiet /passive /norestart" -Wait -PassThru | Out-Null
       Write-Host "Downloaded & extracted the Office 365 Deployment Toolkit"
       Start-Process -FilePath "$env:windir\temp\setup.exe" -ArgumentList "/configure $env:windir\temp\office365x64.xml" -Wait -PassThru -ErrorAction "Stop" | Out-Null
@@ -311,38 +347,37 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
   }
   dependsOn: [
     teams
-    fslogix
     applications
     office
   ]
 }
 
-resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installFsLogix) {
-  name: 'fslogix'
-  location: location
-  parent: vm
-  properties: {
-    source: {
-      script: '''
-      $ErrorActionPreference = "Stop"
-      $ZIP = "$env:windir\temp\fslogix.zip"
-      Invoke-WebRequest -Uri "https://aka.ms/fslogix_download" -OutFile $ZIP
-      Unblock-File -Path $ZIP
-      Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp\fslogix" -Force
-      Write-Host "Downloaded the latest version of FSLogix"
-      $ErrorActionPreference = "Stop"
-      Start-Process -FilePath "$env:windir\temp\fslogix\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Wait -PassThru | Out-Null
-      Write-Host "Installed the latest version of FSLogix"
-      '''
-    }
-    timeoutInSeconds: 640
-  }
-  dependsOn: [
-    applications
-    teams
-    office
-  ]
-}
+// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installFsLogix) {
+//   name: 'fslogix'
+//   location: location
+//   parent: vm
+//   properties: {
+//     source: {
+//       script: '''
+//       $ErrorActionPreference = "Stop"
+//       $ZIP = "$env:windir\temp\fslogix.zip"
+//       Invoke-WebRequest -Uri "https://aka.ms/fslogix_download" -OutFile $ZIP
+//       Unblock-File -Path $ZIP
+//       Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp\fslogix" -Force
+//       Write-Host "Downloaded the latest version of FSLogix"
+//       $ErrorActionPreference = "Stop"
+//       Start-Process -FilePath "$env:windir\temp\fslogix\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Wait -PassThru | Out-Null
+//       Write-Host "Installed the latest version of FSLogix"
+//       '''
+//     }
+//     timeoutInSeconds: 640
+//   }
+//   dependsOn: [
+//     applications
+//     teams
+//     office
+//   ]
+// }
 
 resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installTeams) {
   name: 'teams'
@@ -354,11 +389,46 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
         name: 'TenantType'
         value: TenantType
       }
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'StorageEndpoint'
+        value: storageEndpoint
+      }
+      {
+        name: 'BlobName'
+        value: teamsInstaller
+      }
+      {
+        name: 'BlobName2'
+        value: vcRedistInstaller
+      }
+      {
+        name: 'BlobName3'
+        value: msrdcwebrtcsvcInstaller
+      }
     ]
     source: {
       script: '''
       param(
-        [string]$TenantType
+        [string]$TenantType,
+        [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
+        [string]$ContainerName,
+        [string]$StorageEndpoint,
+        [string]$BlobName,
+        [string]$BlobName2,
+        [string]$BlobName3
         )
       If($TenantType -eq "Commercial")
       {
@@ -377,29 +447,43 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
         $TeamsUrl = "https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
       }
       Write-Host $($TeamsUrl)
+      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
+      $StorageAccountName = $StorageAccountName
+      $ContainerName = $ContainerName
+      $BlobName = $BlobName
+      $StorageAccountUrl = $StorageEndpoint
+      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
+      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+      $vcRedistFile = "$env:windir\temp\vc_redist.x64.exe"
+      $webSocketFile = "$env:windir\temp\webSocketSvc.msi"
+      $teamsFile = "$env:windir\temp\teams.msi"
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $teamsFile
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName2" -OutFile $vcRedistFile
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName3" -OutFile  $webSocketFile
+
       # Enable media optimizations for Team
       Start-Process "reg" -ArgumentList "add HKLM\SOFTWARE\Microsoft\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f" -Wait -PassThru -ErrorAction "Stop"
       Write-Host "Enabled media optimizations for Teams"
       # Download & install the latest version of Microsoft Visual C++ Redistributable
       $ErrorActionPreference = "Stop"
-      $File = "$env:windir\temp\vc_redist.x64.exe"
-      Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vc_redist.x64.exe" -OutFile $File
-      Start-Process -FilePath $File -Args "/install /quiet /norestart /log vcdist.log" -Wait -PassThru | Out-Null
+      #$File = "$env:windir\temp\vc_redist.x64.exe"
+      #Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vc_redist.x64.exe" -OutFile $File
+      Start-Process -FilePath  $vcRedistFile -Args "/install /quiet /norestart /log vcdist.log" -Wait -PassThru | Out-Null
       Write-Host "Installed the latest version of Microsoft Visual C++ Redistributable"
       # Download & install the Remote Desktop WebRTC Redirector Service
       $ErrorActionPreference = "Stop"
-      $File = "$env:windir\temp\webSocketSvc.msi"
-      Invoke-WebRequest -Uri "https://aka.ms/msrdcwebrtcsvc/msi" -OutFile $File
-      Start-Process -FilePath msiexec.exe -Args "/i $File /quiet /qn /norestart /passive /log webSocket.log" -Wait -PassThru | Out-Null
+      #$File = "$env:windir\temp\webSocketSvc.msi"
+      #Invoke-WebRequest -Uri "https://aka.ms/msrdcwebrtcsvc/msi" -OutFile $File
+      Start-Process -FilePath msiexec.exe -Args "/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log" -Wait -PassThru | Out-Null
       Write-Host "Installed the Remote Desktop WebRTC Redirector Service"
       # Install Teams
       $ErrorActionPreference = "Stop"
-      $File = "$env:windir\temp\teams.msi"
-      Write-host $($TeamsUrl)
-      Invoke-WebRequest -Uri "$TeamsUrl" -OutFile $File
+      #$File = "$env:windir\temp\teams.msi"
+      #Write-host $($TeamsUrl)
+      #Invoke-WebRequest -Uri "$TeamsUrl" -OutFile $File
       $sku = (Get-ComputerInfo).OsName
       $PerMachineConfiguration = if(($Sku).Contains("multi") -eq "true"){"ALLUSER=1"}else{""}
-      Start-Process -FilePath msiexec.exe -Args "/i $File /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1" -Wait -PassThru | Out-Null
+      Start-Process -FilePath msiexec.exe -Args "/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1" -Wait -PassThru | Out-Null
       Write-Host "Installed Teams"
       '''
     }

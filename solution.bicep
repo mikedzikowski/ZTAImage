@@ -11,7 +11,6 @@ param imageVersion string
 param imageVmRg string
 param installAccess bool
 param installExcel bool
-param installFsLogix bool
 param installOneDriveForBusiness bool
 param installOneNote bool
 param installOutlook bool
@@ -47,6 +46,10 @@ param virtualNetworkResourceGroup string
 param vmSize string
 param customizations array = []
 param vDotInstaller string
+param officeInstaller string
+param teamsInstaller string
+param msrdcwebrtcsvcInstaller string
+param vcRedistInstaller string
 
 var cloud = environment().name
 var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
@@ -106,7 +109,6 @@ module customize 'modules/image.bicep' = {
     customizations: customizations
     installAccess:  installAccess
     installExcel: installExcel
-    installFsLogix: installFsLogix
     installOneDriveForBusiness: installOneDriveForBusiness
     installOneNote: installOneNote
     installOutlook: installOutlook
@@ -124,6 +126,10 @@ module customize 'modules/image.bicep' = {
     userAssignedIdentityObjectId: managedIdentity.properties.principalId
     vmName: imageVmName
     vDotInstaller: vDotInstaller
+    officeInstaller: officeInstaller
+    msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
+    teamsInstaller: teamsInstaller
+    vcRedistInstaller: vcRedistInstaller
   }
   dependsOn: [
     imageVm

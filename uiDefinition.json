@@ -48,7 +48,7 @@
                                 {
                                     "name": "resourceGroup",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "Resource Group",
+                                    "label": "Deployment Resource Group",
                                     "multiselect": false,
                                     "defaultValue": "",
                                     "toolTip": "Select the name of the existing resource group where the image will be created. Recommended to use the same resource group where the compute gallery resides.",
@@ -313,8 +313,7 @@
                                     "recommendedSizes": [
                                         "Standard_D4_v4"
                                     ],
-                                    "constraints": {
-                                    },
+                                    "constraints": {},
                                     "options": {
                                         "hideDiskTypeFilter": false
                                     },
@@ -335,7 +334,9 @@
                             "name": "customSoftware",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "customSoftware",
-                            "defaultValue":  ["No"],
+                            "defaultValue": [
+                                "No"
+                            ],
                             "toolTip": "Select True to add custom software to the image",
                             "constraints": {
                                 "allowedValues": [
@@ -425,7 +426,42 @@
                             "label": "Software",
                             "elements": [
                                 {
-                                    "name": "InstallAccess",
+                                    "name": "installOffice",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Office",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Office",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": false
+                                            }
+                                        ],
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "officeBlob",
+                                    "type": "Microsoft.Storage.StorageBlobSelector",
+                                    "visible": "[steps('customizations').office.installOffice]",
+                                    "toolTip": "Select office blob",
+                                    "label": "Office (.exe)",
+                                    "options": {
+                                        "text": "Select Package"
+                                    },
+                                    "constraints": {
+                                        "allowedFileExtensions": [
+                                            "exe"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "installAccess",
                                     "type": "Microsoft.Common.OptionsGroup",
                                     "label": "InstallAccess",
                                     "defaultValue": "false",
@@ -434,16 +470,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installExcel",
@@ -455,37 +491,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
-                                },
-                                {
-                                    "name": "installFsLogix",
-                                    "type": "Microsoft.Common.OptionsGroup",
-                                    "label": "installFsLogix",
-                                    "defaultValue": "false",
-                                    "toolTip": "Select True to install FsLogix",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "true",
-                                                "value": "true"
-                                            },
-                                            {
-                                                "label": "false",
-                                                "value": "false"
-                                            }
-                                        ],
-                                        "required": true
-                                    },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installOneDriveForBusiness",
@@ -497,16 +512,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installOneNote",
@@ -518,16 +533,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installOutlook",
@@ -539,16 +554,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installPowerPoint",
@@ -560,16 +575,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installProject",
@@ -581,16 +596,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installPublisher",
@@ -602,16 +617,16 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installSkypeForBusiness",
@@ -623,16 +638,58 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
-                                    "visible": true
+                                    "visible": "[steps('customizations').office.installOffice]"
+                                },
+                                {
+                                    "name": "installVisio",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "installVisio",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Visio",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": false
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": "[steps('customizations').office.installOffice]"
+                                },
+                                {
+                                    "name": "installWord",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install Word",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install Word",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": false
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
                                     "name": "installTeams",
@@ -644,16 +701,61 @@
                                         "allowedValues": [
                                             {
                                                 "label": "true",
-                                                "value": "true"
+                                                "value": true
                                             },
                                             {
                                                 "label": "false",
-                                                "value": "false"
+                                                "value": false
                                             }
                                         ],
                                         "required": true
                                     },
                                     "visible": true
+                                },
+                                {
+                                    "name": "teamsBlob",
+                                    "type": "Microsoft.Storage.StorageBlobSelector",
+                                    "visible": "[steps('customizations').office.installTeams]",
+                                    "toolTip": "Select teams blob",
+                                    "label": "Teams Installer (.msi)",
+                                    "options": {
+                                        "text": "Select Package"
+                                    },
+                                    "constraints": {
+                                        "allowedFileExtensions": [
+                                            "msi"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "msrdcwebrtcsvcInstaller",
+                                    "type": "Microsoft.Storage.StorageBlobSelector",
+                                    "visible": "[steps('customizations').office.installTeams]",
+                                    "toolTip": "Select Remote Desktop WebRTC Redirector Service",
+                                    "label": "Remote Desktop WebRTC Redirector Service Installer (.msi)",
+                                    "options": {
+                                        "text": "Select Package"
+                                    },
+                                    "constraints": {
+                                        "allowedFileExtensions": [
+                                            "msi"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "vcRedistInstaller",
+                                    "type": "Microsoft.Storage.StorageBlobSelector",
+                                    "visible": "[steps('customizations').office.installTeams]",
+                                    "toolTip": "Select Microsoft Visual C++ Redistributable",
+                                    "label": "Microsoft Visual C++ Redistributable Installer (.exe)",
+                                    "options": {
+                                        "text": "Select Package"
+                                    },
+                                    "constraints": {
+                                        "allowedFileExtensions": [
+                                            "exe"
+                                        ]
+                                    }
                                 },
                                 {
                                     "name": "installVirtualDesktopOptimizationTool",
@@ -683,53 +785,13 @@
                                     "toolTip": "Select vDot blob",
                                     "label": "VDOT Package (.zip)",
                                     "options": {
-                                      "text": "Select Package"
+                                        "text": "Select Package"
                                     },
                                     "constraints": {
-                                      "allowedFileExtensions": [ "zip"]
+                                        "allowedFileExtensions": [
+                                            "zip"
+                                        ]
                                     }
-                                  },
-                                {
-                                    "name": "installVisio",
-                                    "type": "Microsoft.Common.OptionsGroup",
-                                    "label": "installVisio",
-                                    "defaultValue": "false",
-                                    "toolTip": "Select True to install Visio",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "true",
-                                                "value": "true"
-                                            },
-                                            {
-                                                "label": "false",
-                                                "value": "false"
-                                            }
-                                        ],
-                                        "required": true
-                                    },
-                                    "visible": true
-                                },
-                                {
-                                    "name": "installWord",
-                                    "type": "Microsoft.Common.OptionsGroup",
-                                    "label": "Install Word",
-                                    "defaultValue": "false",
-                                    "toolTip": "Select True to install Word",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "true",
-                                                "value": "true"
-                                            },
-                                            {
-                                                "label": "false",
-                                                "value": "false"
-                                            }
-                                        ],
-                                        "required": true
-                                    },
-                                    "visible": true
                                 }
                             ]
                         }
@@ -747,20 +809,19 @@
                 "imageName": "[steps('info').image.name]",
                 "imageVersion": "[steps('info').image.version]",
                 "imageVmRg": "[steps('info').resources.resourceGroup]",
-                "installAccess": "[steps('customizations').office.InstallAccess]",
-                "installExcel": "[steps('customizations').office.installExcel]",
-                "installFsLogix": "[steps('customizations').office.installFsLogix]",
-                "installOneDriveForBusiness": "[steps('customizations').office.installOneDriveForBusiness]",
-                "installOneNote": "[steps('customizations').office.installOneDriveForBusiness]",
-                "installOutlook": "[steps('customizations').office.installOutlook]",
-                "installPowerPoint": "[steps('customizations').office.installPowerPoint]",
-                "installProject": "[steps('customizations').office.installProject]",
-                "installPublisher": "[steps('customizations').office.installPublisher]",
-                "installSkypeForBusiness": "[steps('customizations').office.installSkypeForBusiness]",
+                "installAccess": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installAccess,'false')]",
+                "installExcel": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installExcel,'false')]",
+                "installOneDriveForBusiness": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDriveForBusiness,'false')]",
+                "installOneNote": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneNote,'false')]",
+                "installOutlook": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOutlook,'false')]",
+                "installPowerPoint": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installPowerPoint,'false')]",
+                "installProject": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installProject,'false')]",
+                "installPublisher": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installPublisher,'false')]",
+                "installSkypeForBusiness": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installSkypeForBusiness,'false')]",
                 "installTeams": "[steps('customizations').office.installTeams]",
                 "installVirtualDesktopOptimizationTool": "[steps('customizations').office.installVirtualDesktopOptimizationTool]",
-                "installVisio": "[steps('customizations').office.installVisio]",
-                "installWord": "[steps('customizations').office.installWord]",
+                "installVisio": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installVisio,'false')]",
+                "installWord": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installWord,'false')]",
                 "location": "[steps('basics').scope.location.name]",
                 "managementVmRg": "[steps('info').resources.resourceGroup]",
                 "miName": "[steps('info').managedIdentity.name]",
@@ -776,7 +837,11 @@
                 "virtualNetworkName": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 8))]",
                 "virtualNetworkResourceGroup": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 4))]",
                 "vmSize": "[steps('info').image.vmSize]",
-                "vDotInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]"
+                "vDotInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]",
+                "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
+                "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
+                "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
+                "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').scope.location.name]",
