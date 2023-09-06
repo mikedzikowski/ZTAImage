@@ -298,6 +298,21 @@
                                     "placeholder": "Example: MicrosoftWindowsDesktop"
                                 },
                                 {
+                                    "name": "replicaCount",
+                                    "type": "Microsoft.Common.Slider",
+                                    "min": 1,
+                                    "max": 50,
+                                    "label": "Replica count",
+                                    "subLabel": "count",
+                                    "defaultValue": 1,
+                                    "showStepMarkers": false,
+                                    "toolTip": "Regional replica count which specifies the number of replicas you want to create per region",
+                                    "constraints": {
+                                        "required": false
+                                    },
+                                    "visible": true
+                                },
+                                {
                                     "name": "vmSizesApi",
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
@@ -841,7 +856,8 @@
                 "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
                 "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
                 "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
-                "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]"
+                "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]",
+                "replicaCount": "[steps('info').image.replicaCount]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').scope.location.name]",

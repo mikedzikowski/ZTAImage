@@ -87,7 +87,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-0
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
-  name: nicName
+  name: take('${vmName}-nic-${uniqueString(vmName)}', 15)
   location: location
   properties: {
     ipConfigurations: [
@@ -108,7 +108,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
 }
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
-  name: vmName
+ name: vmName
   location: location
   identity: {
     type: 'UserAssigned'

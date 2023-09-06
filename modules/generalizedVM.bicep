@@ -79,7 +79,7 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
-  name: nicName
+  name: take('${vmName}-nic-${uniqueString(vmName)}', 15)
   location: location
   properties: {
     ipConfigurations: [

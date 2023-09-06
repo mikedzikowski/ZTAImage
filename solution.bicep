@@ -29,7 +29,7 @@ param miResourceGroup string
 param offer string
 param OsVersion string
 param publisher string
-param replicaCount int = 1
+param replicaCount int
 param saResourceGroup string
 param sku string
 param storageAccountName string
@@ -56,8 +56,8 @@ var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
 var adminUsername = 'xadmin'
 var subscriptionId = subscription().subscriptionId
 var securityType = 'TrustedLaunch'
-var imageVmName = 'vm-image'
-var managementVmName = 'vm-management'
+var imageVmName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
+var managementVmName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   scope: resourceGroup(subscriptionId, saResourceGroup)
