@@ -116,11 +116,23 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         {
           Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait
         }
+        if($Blobname -like ("*.ps1"))
+        {
+          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait
+        }
         if($Blobname -like ("*.zip"))
         {
-          Expand-Archive -Path $env:windir\temp\$BlobName -DestinationPath $env:windir\temp\
-          # Update line 119 to meet requirements of installer(s)
-          # Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+          New-Item -Path .\ -Name $Blobname -ItemType "directory"
+          Set-Location -Path $env:windir\temp\$Blobname
+          Expand-Archive -Path $env:windir\temp\$Blobname -DestinationPath $env:windir\temp\$blobname -Force
+          $appDirectory = Get-ChildItem .\
+          Set-Location -Path $env:windir\temp\$BlobName\$appDirectory\
+          $setupFile = Get-ChildItem .\
+          if($setupFile.name.Contains('setup.exe'))
+          {
+              $installer = 'setup.exe'
+          }
+          Start-Process -FilePath "$env:windir\temp\$BlobName\$appDirectory\$installer" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
       '''
     }
