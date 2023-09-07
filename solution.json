@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "14455276513610462273"
+      "templateHash": "9624518680158074739"
     }
   },
   "parameters": {
@@ -530,7 +530,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "12115021645612245867"
+              "templateHash": "2397036185486102622"
             }
           },
           "parameters": {
@@ -673,7 +673,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Expand-Archive -Path $env:windir\\temp\\$BlobName -DestinationPath $env:windir\\temp\\\r\n          # Update line 119 to meet requirements of installer(s)\r\n          # Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n      "
+                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          New-Item -Path .\\ -Name $Blobname -ItemType \"directory\"\r\n          Set-Location -Path $env:windir\\temp\\$Blobname\r\n          Expand-Archive -Path $env:windir\\temp\\$Blobname -DestinationPath $env:windir\\temp\\$blobname -Force\r\n          $appDirectory = Get-ChildItem .\\\r\n          Set-Location -Path $env:windir\\temp\\$BlobName\\$appDirectory\\\r\n          $setupFile = Get-ChildItem .\\\r\n          if($setupFile.name.Contains('setup.exe'))\r\n          {\r\n              $installer = 'setup.exe'\r\n          }\r\n          Start-Process -FilePath \"$env:windir\\temp\\$BlobName\\$appDirectory\\$installer\" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n      "
                 }
               }
             },
