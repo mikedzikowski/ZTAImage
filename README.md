@@ -38,6 +38,7 @@ var installers = [
     enabled: true
   }
 ]
+```
 
 ### Example Custom Installers
 
