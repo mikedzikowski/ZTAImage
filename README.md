@@ -38,7 +38,10 @@ var installers = [
     enabled: true
   }
 ]
-``````
+
+### Example Custom Installers
+
+![Alt text](images/installer.png)
 
 ### Existing Azure Resources
 
