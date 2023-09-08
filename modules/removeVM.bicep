@@ -78,9 +78,7 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
 
         # Remove Image VM and Management VM
 
-        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -Nowait -ForceDeletion $true -Force
-
-        start-sleep 60
+        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force
 
         Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
       '''
