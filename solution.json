@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "9624518680158074739"
+      "templateHash": "17561379637364841028"
     }
   },
   "parameters": {
@@ -530,7 +530,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "2397036185486102622"
+              "templateHash": "1133112182981500396"
             }
           },
           "parameters": {
@@ -668,12 +668,16 @@
                     "value": "[variables('installers')[copyIndex()].blobName]"
                   },
                   {
+                    "name": "Installer",
+                    "value": "[variables('installers')[copyIndex()].name]"
+                  },
+                  {
                     "name": "Arguments",
                     "value": "[variables('installers')[copyIndex()].arguments]"
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          New-Item -Path .\\ -Name $Blobname -ItemType \"directory\"\r\n          Set-Location -Path $env:windir\\temp\\$Blobname\r\n          Expand-Archive -Path $env:windir\\temp\\$Blobname -DestinationPath $env:windir\\temp\\$blobname -Force\r\n          $appDirectory = Get-ChildItem .\\\r\n          Set-Location -Path $env:windir\\temp\\$BlobName\\$appDirectory\\\r\n          $setupFile = Get-ChildItem .\\\r\n          if($setupFile.name.Contains('setup.exe'))\r\n          {\r\n              $installer = 'setup.exe'\r\n          }\r\n          Start-Process -FilePath \"$env:windir\\temp\\$BlobName\\$appDirectory\\$installer\" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n      "
+                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Installer,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\$Installer\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\r\n          Expand-Archive -Path $env:windir\\temp\\Installer\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          $appDirectory = Get-ChildItem .\\\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\$Blobname\\$appDirectory\\\r\n          $setupFile = Get-ChildItem .\\\r\n          if($setupFile.name.Contains('setup.exe'))\r\n          {\r\n              $installer = 'setup.exe'\r\n          }\r\n          Start-Process -FilePath \"$env:windir\\temp\\$BlobName\\$appDirectory\\$installer\" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n        Remove-Item -Path $env:windir\\temp\\$Installer -Force -Recurse\r\n      "
                 }
               }
             },
@@ -1730,7 +1734,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "15292980979494363469"
+              "templateHash": "5373918885589699842"
             }
           },
           "parameters": {
@@ -1802,7 +1806,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -Nowait -ForceDeletion $true -Force\r\n\r\n        start-sleep 60\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n      "
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n      "
                 }
               }
             }

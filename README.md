@@ -64,7 +64,7 @@ The following resources must exist in your Azure environment before deployment:
 
 ```powershell
 New-AzTemplateSpec `
-    -Name 'Zero Trust Imaging'`
+    -Name 'ZeroTrustImaging' `
     -ResourceGroupName rg-image-usgovvirginia-01 `
     -Version '1.0' `
     -Location usgovvirginia `

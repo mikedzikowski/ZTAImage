@@ -80,6 +80,10 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         value: installer.blobName
       }
       {
+        name: 'Installer'
+        value: installer.name
+      }
+      {
         name: 'Arguments'
         value: installer.arguments
       }
@@ -92,6 +96,7 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         [string]$ContainerName,
         [string]$StorageEndpoint,
         [string]$BlobName,
+        [string]$Installer,
         [string]$Arguments
         )
         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
@@ -101,16 +106,35 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         $StorageAccountUrl = $StorageEndpoint
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$BlobName
+        New-Item -Path $env:windir\temp -Name $Installer -ItemType "directory" -Force
+        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$Installer\$Blobname
         Start-Sleep -Seconds 30
-        Set-Location -Path $env:windir\temp
+        Set-Location -Path $env:windir\temp\$Installer
         if($Blobname -like ("*.exe"))
         {
-          Start-Process -FilePath $env:windir\temp\$BlobName -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+          Start-Process -FilePath $env:windir\temp\$Installer\$Installer\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like "*$($installer)*"
+          if($status)
+          {
+            Write-Host $status.Name "is installed"
+          }
+          else
+          {
+            Write-host $Installer "did not install properly, please check arguments"
+          }
         }
         if($Blobname -like ("*.msi"))
         {
           Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait
+          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like "*$($installer)*"
+          if($status)
+          {
+            Write-Host $status.Name "is installed"
+          }
+          else
+          {
+            Write-host $Installer "did not install properly, please check arguments"
+          }
         }
         if($Blobname -like ("*.bat"))
         {
@@ -122,11 +146,11 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         }
         if($Blobname -like ("*.zip"))
         {
-          New-Item -Path .\ -Name $Blobname -ItemType "directory"
-          Set-Location -Path $env:windir\temp\$Blobname
-          Expand-Archive -Path $env:windir\temp\$Blobname -DestinationPath $env:windir\temp\$blobname -Force
+          Set-Location -Path $env:windir\temp\$Installer
+          Expand-Archive -Path $env:windir\temp\Installer\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
+          Set-Location -Path $env:windir\temp\$Installer\Files
           $appDirectory = Get-ChildItem .\
-          Set-Location -Path $env:windir\temp\$BlobName\$appDirectory\
+          Set-Location -Path $env:windir\temp\$Installer\$Blobname\$appDirectory\
           $setupFile = Get-ChildItem .\
           if($setupFile.name.Contains('setup.exe'))
           {
@@ -134,9 +158,11 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
           }
           Start-Process -FilePath "$env:windir\temp\$BlobName\$appDirectory\$installer" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
+        Remove-Item -Path $env:windir\temp\$Installer -Force -Recurse
       '''
     }
   }
+  dependsOn:[]
 }]
 
 resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
