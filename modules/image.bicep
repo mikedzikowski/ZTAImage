@@ -127,6 +127,7 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         }
         if($Blobname -like ("*.msi"))
         {
+          Set-Location -Path $env:windir\temp\$Installer\Files
           Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait
           $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like "*$($installer)*"
           if($status)
