@@ -52,6 +52,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: vmName
 }
 
+@batchSize(1)
 resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers : {
   name: 'app-${installer.name}'
   location: location
@@ -107,12 +108,13 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         New-Item -Path $env:windir\temp -Name $Installer -ItemType "directory" -Force
-        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$Installer\$Blobname
+        New-Item -Path $env:windir\temp\$Installer -Name 'Files' -ItemType "directory" -Force
+        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$Installer\Files\$Blobname
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp\$Installer
         if($Blobname -like ("*.exe"))
         {
-          Start-Process -FilePath $env:windir\temp\$Installer\$Installer\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+          Start-Process -FilePath $env:windir\temp\$Installer\Files\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
           $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like "*$($installer)*"
           if($status)
           {
@@ -146,19 +148,18 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         }
         if($Blobname -like ("*.zip"))
         {
-          Set-Location -Path $env:windir\temp\$Installer
-          Expand-Archive -Path $env:windir\temp\Installer\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
           Set-Location -Path $env:windir\temp\$Installer\Files
+          Expand-Archive -Path $env:windir\temp\$Installer\Files\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
+          Remove-Item -Path .\$Blobname
           $appDirectory = Get-ChildItem .\
-          Set-Location -Path $env:windir\temp\$Installer\$Blobname\$appDirectory\
+          Set-Location -Path $env:windir\temp\$Installer\Files\$appDirectory\
           $setupFile = Get-ChildItem .\
           if($setupFile.name.Contains('setup.exe'))
           {
-              $installer = 'setup.exe'
+              $appInstaller = 'setup.exe'
           }
-          Start-Process -FilePath "$env:windir\temp\$BlobName\$appDirectory\$installer" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
+          Start-Process -FilePath "$env:windir\temp\$installer\Files\$appDirectory\$appInstaller" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
-        Remove-Item -Path $env:windir\temp\$Installer -Force -Recurse
       '''
     }
   }
