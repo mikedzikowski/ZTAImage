@@ -7,7 +7,6 @@ param galleryName string
 param galleryResourceGroup string
 param guidValue string = newGuid()
 param imageName string
-param imageVersion string
 param imageVmRg string
 param installAccess bool
 param installExcel bool
@@ -50,7 +49,10 @@ param officeInstaller string
 param teamsInstaller string
 param msrdcwebrtcsvcInstaller string
 param vcRedistInstaller string
+param imageMajorVersion int
+param imageMinorVersion int
 
+var imageSuffix = take(deploymentNameSuffix, 8)
 var cloud = environment().name
 var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
 var adminUsername = 'xadmin'
@@ -58,6 +60,7 @@ var subscriptionId = subscription().subscriptionId
 var securityType = 'TrustedLaunch'
 var imageVmName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
 var managementVmName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
+var autoImageVersion ='${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   scope: resourceGroup(subscriptionId, saResourceGroup)
@@ -229,7 +232,7 @@ module image 'modules/gallery.bicep' = {
     excludeFromLatest: excludeFromLatest
     galleryName: gallery.name
     imageName: imageName
-    imageVersionNumber: imageVersion
+    imageVersionNumber: autoImageVersion
     imageVmId: imageVm.outputs.imageId
     offer: offer
     publisher: publisher

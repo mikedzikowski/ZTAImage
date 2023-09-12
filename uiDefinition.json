@@ -241,11 +241,36 @@
                                     "placeholder": "Example: developerImage"
                                 },
                                 {
-                                    "name": "version",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Image Version",
-                                    "defaultValue": "",
-                                    "placeholder": "Example: 1.0.0"
+                                    "name": "majorVersion",
+                                    "type": "Microsoft.Common.Slider",
+                                    "min": 1,
+                                    "max": 12,
+                                    "label": "Image Major Version. The minor and patch versions will be auto generated.",
+                                    "subLabel": "Maj. Version",
+                                    "defaultValue": 1,
+                                    "showStepMarkers": false,
+                                    "toolTip": "Pick the size in MB",
+                                    "constraints": {
+                                        "required": false
+                                    },
+                                    "visible": true,
+                                    "required": true
+                                },
+                                {
+                                    "name": "minorVersion",
+                                    "type": "Microsoft.Common.Slider",
+                                    "min": 1,
+                                    "max": 12,
+                                    "label": "Image Patch Version. The minor version will be auto generated.",
+                                    "subLabel": "Patch Version",
+                                    "defaultValue": 1,
+                                    "showStepMarkers": false,
+                                    "toolTip": "Pick the size in MB",
+                                    "constraints": {
+                                        "required": false
+                                    },
+                                    "visible": true,
+                                    "required": true
                                 },
                                 {
                                     "name": "offer",
@@ -294,8 +319,12 @@
                                     "name": "publisher",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Image Publisher",
-                                    "defaultValue": "",
-                                    "placeholder": "Example: MicrosoftWindowsDesktop"
+                                    "defaultValue": "MicrosoftWindowsDesktop",
+                                    "placeholder": "Example: MicrosoftWindowsDesktop",
+                                    "visible": true,
+                                    "constraints": {
+                                        "required": true
+                                    }
                                 },
                                 {
                                     "name": "replicaCount",
@@ -822,7 +851,8 @@
                 "galleryName": "[steps('info').gallery.name]",
                 "galleryResourceGroup": "[first(skip(split(steps('info').gallery.id, '/'), 4))]",
                 "imageName": "[steps('info').image.name]",
-                "imageVersion": "[steps('info').image.version]",
+                "imageMajorVersion": "[steps('info').image.majorVersion]",
+                "imageMinorVersion": "[steps('info').image.minorVersion]",
                 "imageVmRg": "[steps('info').resources.resourceGroup]",
                 "installAccess": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installAccess,'false')]",
                 "installExcel": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installExcel,'false')]",

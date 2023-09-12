@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "4196526157877634378"
+      "templateHash": "862967584055632396"
     }
   },
   "parameters": {
@@ -30,9 +30,6 @@
       "defaultValue": "[newGuid()]"
     },
     "imageName": {
-      "type": "string"
-    },
-    "imageVersion": {
       "type": "string"
     },
     "imageVmRg": {
@@ -150,16 +147,24 @@
     },
     "vcRedistInstaller": {
       "type": "string"
+    },
+    "imageMajorVersion": {
+      "type": "int"
+    },
+    "imageMinorVersion": {
+      "type": "int"
     }
   },
   "variables": {
+    "imageSuffix": "[take(parameters('deploymentNameSuffix'), 8)]",
     "cloud": "[environment().name]",
     "adminPw": "[format('{0}-{1}', toUpper(uniqueString(subscription().id)), parameters('guidValue'))]",
     "adminUsername": "xadmin",
     "subscriptionId": "[subscription().subscriptionId]",
     "securityType": "TrustedLaunch",
     "imageVmName": "[take(format('vmimg-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
-    "managementVmName": "[take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]"
+    "managementVmName": "[take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
+    "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]"
   },
   "resources": [
     {
@@ -1323,7 +1328,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "5574413250296480838"
+              "templateHash": "9751821673219954444"
             }
           },
           "parameters": {
@@ -1374,7 +1379,7 @@
                   }
                 ],
                 "source": {
-                  "script": "    param(\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint\r\n      )\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
+                  "script": "    param(\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint\r\n      )\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n      Start-Sleep -Seconds 60\r\n      Set-Location -Path $env:windir\\temp\r\n      .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
                 }
               }
             }
@@ -1429,7 +1434,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.20.4.51522",
-              "templateHash": "11195340104592744482"
+              "templateHash": "6604552074758435535"
             }
           },
           "parameters": {
@@ -1501,7 +1506,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized\r\n\r\n      "
+                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        Start-Sleep 30\r\n        \r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized\r\n\r\n        Write-Host \"Generalized\" \r\n\r\n      "
                 }
               }
             }
@@ -1541,7 +1546,7 @@
             "value": "[parameters('imageName')]"
           },
           "imageVersionNumber": {
-            "value": "[parameters('imageVersion')]"
+            "value": "[variables('autoImageVersion')]"
           },
           "imageVmId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), parameters('imageVmRg')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.imageId.value]"

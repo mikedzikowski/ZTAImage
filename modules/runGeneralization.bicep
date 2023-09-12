@@ -76,8 +76,12 @@ resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' =
         # Connect to Azure
         Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
 
+        Start-Sleep 30
+        
         # Generalize VM Using PowerShell
         Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized
+
+        Write-Host "Generalized" 
 
       '''
     }
