@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "17597361707939209489"
+      "templateHash": "809730485905162370"
     }
   },
   "parameters": {
@@ -14,7 +14,7 @@
     },
     "deploymentNameSuffix": {
       "type": "string",
-      "defaultValue": "[utcNow('yyyyMMddHHmmss')]"
+      "defaultValue": "[utcNow('yyMMddHHss')]"
     },
     "excludeFromLatest": {
       "type": "bool"
