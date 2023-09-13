@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 param containerName string
-param deploymentNameSuffix string = utcNow()
+param deploymentNameSuffix string = utcNow('yyyyMMddHHmmss')
 param excludeFromLatest bool
 param galleryName string
 param galleryResourceGroup string
