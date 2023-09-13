@@ -52,7 +52,7 @@ param vcRedistInstaller string
 param imageMajorVersion int
 param imageMinorVersion int
 
-var imageSuffix = take(deploymentNameSuffix, 8)
+var imageSuffix = deploymentNameSuffix
 var cloud = environment().name
 var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
 var adminUsername = 'xadmin'
