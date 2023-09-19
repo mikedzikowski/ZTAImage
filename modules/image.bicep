@@ -152,14 +152,6 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
           Set-Location -Path $env:windir\temp\$Installer\Files
           Expand-Archive -Path $env:windir\temp\$Installer\Files\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
           Remove-Item -Path .\$Blobname
-          $appDirectory = Get-ChildItem .\
-          Set-Location -Path $env:windir\temp\$Installer\Files\$appDirectory\
-          $setupFile = Get-ChildItem .\
-          if($setupFile.name.Contains('setup.exe'))
-          {
-              $appInstaller = 'setup.exe'
-          }
-          Start-Process -FilePath "$env:windir\temp\$installer\Files\$appDirectory\$appInstaller" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru
         }
       '''
     }
@@ -277,6 +269,9 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
       if($InstallOneDriveForBusiness -notlike '*true*'){
           $excludeOneDriveForBusiness = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Groove" />'
       }
+      if($InstallOneDriveForBusiness -notlike '*true*'){
+        $excludeOneDriveForBusiness = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Groove" />'
+    }
       if($InstallOneNote -notlike '*true*'){
           $excludeOneNote = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="OneNote" />'
       }
