@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "18187644888566453595"
+      "version": "0.21.1.54444",
+      "templateHash": "11160131791881116613"
     }
   },
   "parameters": {
@@ -228,8 +228,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "2763743569430606919"
+              "version": "0.21.1.54444",
+              "templateHash": "5182513317606225077"
             }
           },
           "parameters": {
@@ -534,8 +534,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "17103747752220227029"
+              "version": "0.21.1.54444",
+              "templateHash": "2690705464960577107"
             }
           },
           "parameters": {
@@ -684,7 +684,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Installer,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname\r\n          $appDirectory = Get-ChildItem .\\\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\\$appDirectory\\\r\n          $setupFile = Get-ChildItem .\\\r\n          if($setupFile.name.Contains('setup.exe'))\r\n          {\r\n              $appInstaller = 'setup.exe'\r\n          }\r\n          Start-Process -FilePath \"$env:windir\\temp\\$installer\\Files\\$appDirectory\\$appInstaller\" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n        }\r\n      "
+                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Installer,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname\r\n        }\r\n      "
                 }
               }
             },
@@ -762,7 +762,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n      [string]$InstallAccess,\r\n      [string]$InstallExcel,\r\n      [string]$InstallOneDriveForBusiness,\r\n      [string]$InstallOutlook,\r\n      [string]$InstallProject,\r\n      [string]$InstallPublisher,\r\n      [string]$InstallSkypeForBusiness,\r\n      [string]$InstallVisio,\r\n      [string]$InstallWord,\r\n      [string]$InstallOneNote,\r\n      [string]$InstallPowerPoint,\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint,\r\n      [string]$BlobName\r\n      )\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = $BlobName\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          $excludeAccess = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          $excludeExcel = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n          $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n      }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          $excludeOneNote = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          $excludeOutlook = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          $excludePowerPoint = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          $excludePublisher = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      $o365Settings = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          $o365SharedActivation = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      $o365Configfooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $ErrorActionPreference = \"Stop\"\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
+                  "script": "      param(\r\n      [string]$InstallAccess,\r\n      [string]$InstallExcel,\r\n      [string]$InstallOneDriveForBusiness,\r\n      [string]$InstallOutlook,\r\n      [string]$InstallProject,\r\n      [string]$InstallPublisher,\r\n      [string]$InstallSkypeForBusiness,\r\n      [string]$InstallVisio,\r\n      [string]$InstallWord,\r\n      [string]$InstallOneNote,\r\n      [string]$InstallPowerPoint,\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint,\r\n      [string]$BlobName\r\n      )\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = $BlobName\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          $excludeAccess = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          $excludeExcel = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n          $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n        $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n    }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          $excludeOneNote = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          $excludeOutlook = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          $excludePowerPoint = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          $excludePublisher = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      $o365Settings = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          $o365SharedActivation = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      $o365Configfooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $ErrorActionPreference = \"Stop\"\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
                 }
               },
               "dependsOn": [
@@ -930,8 +930,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "22795464538351707"
+              "version": "0.21.1.54444",
+              "templateHash": "6068327910121123271"
             }
           },
           "parameters": {
@@ -1212,8 +1212,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "9295675734673923979"
+              "version": "0.21.1.54444",
+              "templateHash": "18411261280221317388"
             }
           },
           "parameters": {
@@ -1327,8 +1327,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "9751821673219954444"
+              "version": "0.21.1.54444",
+              "templateHash": "3815565017179969967"
             }
           },
           "parameters": {
@@ -1433,8 +1433,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "6604552074758435535"
+              "version": "0.21.1.54444",
+              "templateHash": "10630835006985004461"
             }
           },
           "parameters": {
@@ -1570,8 +1570,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "18357211012335726275"
+              "version": "0.21.1.54444",
+              "templateHash": "3148300241670431851"
             }
           },
           "parameters": {
@@ -1740,8 +1740,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "5373918885589699842"
+              "version": "0.21.1.54444",
+              "templateHash": "3885153026645136548"
             }
           },
           "parameters": {
