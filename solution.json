@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "11160131791881116613"
+      "templateHash": "6218071558566488645"
     }
   },
   "parameters": {
@@ -156,7 +156,7 @@
     }
   },
   "variables": {
-    "imageSuffix": "[parameters('deploymentNameSuffix')]",
+    "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
     "cloud": "[environment().name]",
     "adminPw": "[format('{0}-{1}', toUpper(uniqueString(subscription().id)), parameters('guidValue'))]",
     "adminUsername": "xadmin",
