@@ -151,7 +151,7 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         {
           Set-Location -Path $env:windir\temp\$Installer\Files
           Expand-Archive -Path $env:windir\temp\$Installer\Files\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
-          Remove-Item -Path .\$Blobname
+          Remove-Item -Path .\$Blobname -Force -Recurse 
         }
       '''
     }
