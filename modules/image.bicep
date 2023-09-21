@@ -141,11 +141,11 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         }
         if($Blobname -like ("*.bat"))
         {
-          Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait
+          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\temp\$Installer\Files\$Arguments -Wait
         }
         if($Blobname -like ("*.ps1"))
         {
-          Start-Process -FilePath PowerShell.exe -ArgumentList $Arguments -Wait
+          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\temp\$Installer\Files\$Arguments -Wait
         }
         if($Blobname -like ("*.zip"))
         {
