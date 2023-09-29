@@ -1189,14 +1189,14 @@
                 "storageAccountResourceGroupName": "[first(skip(split(steps('storage').storageSelector.id, '/'), 4))]",
                 "subnetName": "[first(skip(split(steps('virtualMachines').network.subnet, '/'), 10))]",
                 "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
-                "tenantType": "[steps('info').tenantType]",
+                "tenantType": "[steps('customizations').tenantType]",
                 "userAssignedIdentityName": "[steps('virtualMachines').managedIdentity.name]",
                 "userAssignedIdentityResourceGroupName": "[first(skip(split(steps('virtualMachines').managedIdentity.id, '/'), 4))]",
                 "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
                 "vDOTInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]",
                 "virtualMachineSize": "[steps('virtualMachines').vmSize]",
                 "virtualNetworkName": "[first(skip(split(steps('virtualMachines').network.virtualNetwork, '/'), 8))]",
-                "virtualNetworkResourceGroupName": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 4))]"
+                "virtualNetworkResourceGroupName": "[first(skip(split(steps('virtualMachines').network.virtualNetwork, '/'), 4))]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').scope.location.name]",
