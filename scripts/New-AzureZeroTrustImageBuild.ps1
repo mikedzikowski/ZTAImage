@@ -108,6 +108,9 @@ param(
 	[Parameter(Mandatory)]
 	[string]$ResourceGroupName,
 
+	[Parameter(Mandatory)]
+	[string]$SharedGalleryImageResourceId,
+
     [Parameter(Mandatory=$false)]
 	[string]$SourceGalleryName,
 
@@ -247,7 +250,8 @@ try
 			officeInstaller = $OfficeInstaller
 			oUPath = $OUPath
 			replicaCount = $ReplicaCount
-			resourceGroupName = $resourceGroupName
+			resourceGroupName = $ResourceGroupName
+			sharedGalleryImageResourceId = $SharedGalleryImageResourceId
 			sourceImageType = $SourceImageType
 			storageAccountName = $StorageAccountName
 			storageAccountResourceGroupName = $StorageAccountResourceGroupName
