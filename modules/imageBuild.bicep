@@ -40,6 +40,7 @@ param msrdcwebrtcsvcInstaller string
 param officeInstaller string
 param replicaCount int
 param resourceGroupName string
+param sharedGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
 param storageAccountResourceGroupName string
@@ -96,6 +97,8 @@ module generalizedVM 'generalizedVM.bicep' = {
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     marketplaceImageSKU: marketplaceImageSKU
+    sharedGalleryImageResourceId: sharedGalleryImageResourceId
+    sourceImageType: sourceImageType
     subnetName: subnetName
     tags: tags
     userAssignedIdentityName: userAssignedIdentity.name

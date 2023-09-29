@@ -45,6 +45,7 @@ param oUPath string
 param replicaCount int
 param resourceGroupName string
 param securityPrincipalObjectIds array
+param sharedGalleryImageResourceId string
 @allowed([
   'AzureComputeGallery'
   'AzureMarketplace'
@@ -177,6 +178,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
     securityPrincipalObjectIds: securityPrincipalObjectIds
+    sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     storageAccountResourceGroupName: storageAccountResourceGroupName
@@ -238,6 +240,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     officeInstaller: officeInstaller
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
+    sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     storageAccountResourceGroupName: storageAccountResourceGroupName

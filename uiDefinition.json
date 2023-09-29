@@ -64,12 +64,12 @@
                             "constraints": {
                                 "allowedValues": [
                                     {
-                                        "label": "Azure Marketplace",
-                                        "value": "marketplace"
+                                        "label": "Azure Compute Gallery",
+                                        "value": "AzureComputeGallery"
                                     },
                                     {
-                                        "label": "Compute Gallery",
-                                        "value": "gallery"
+                                        "label": "Azure Marketplace",
+                                        "value": "AzureMarketplace"
                                     }
                                 ],
                                 "required": true
@@ -170,7 +170,7 @@
                                     "defaultValue": "",
                                     "toolTip": "Select the desired image definition.",
                                     "constraints": {
-                                        "allowedValues": "[map(steps('source').gallery.imageDefinitionApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "allowedValues": "[map(steps('source').gallery.imageDefinitionApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
                                         "required": true
                                     }
                                 }
@@ -1174,15 +1174,17 @@
                 "localAdministratorUsername": "[steps('virtualMachines').localAdminCredentials.username]",
                 "location": "[steps('basics').scope.location.name]",
                 "logAnalyticsWorkspaceResourceId": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.logAnalyticsWorkspace.id, '')]",
-                "marketplaceImageOffer": "[if(equals(steps('source').type, 'marketplace'), steps('source').marketplace.offer, '')]",
-                "marketplaceImagePublisher": "[if(equals(steps('source').type, 'marketplace'), steps('source').marketplace.publisher, '')]",
-                "marketplaceImageSKU": "[if(equals(steps('source').type, 'marketplace'), steps('source').marketplace.sku, '')]",
+                "marketplaceImageOffer": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.offer, '')]",
+                "marketplaceImagePublisher": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.publisher, '')]",
+                "marketplaceImageSKU": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.sku, '')]",
                 "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]",
                 "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
                 "resourceGroupName": "[steps('basics').resourceGroup]",
                 "securityPrincipalObjectIds": "[map(steps('automation').groups, item => item.objectId)]",
+                "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
+                "sourceImageType": "[steps('source').type]",
                 "storageAccountName": "[steps('storage').storageSelector.name]",
                 "storageAccountResourceGroupName": "[first(skip(split(steps('storage').storageSelector.id, '/'), 4))]",
                 "subnetName": "[first(skip(split(steps('virtualMachines').network.subnet, '/'), 10))]",

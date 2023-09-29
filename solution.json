@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "3003088034318531553"
+      "templateHash": "7591483872526940472"
     }
   },
   "parameters": {
@@ -462,7 +462,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "6052422639974633391"
+              "templateHash": "2612314591995678861"
             }
           },
           "parameters": {
@@ -852,7 +852,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.21.1.54444",
-                      "templateHash": "12469890564132896983"
+                      "templateHash": "15754961073078882978"
                     }
                   },
                   "parameters": {
@@ -874,7 +874,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.21.1.54444",
-                          "templateHash": "14182240961712742628"
+                          "templateHash": "10004335665907086585"
                         }
                       },
                       "parameters": {
@@ -913,9 +913,6 @@
                         },
                         "imageMinorVersion": {
                           "type": "int"
-                        },
-                        "imageName": {
-                          "type": "string"
                         },
                         "imageVirtualMachineName": {
                           "type": "string"
@@ -2375,9 +2372,6 @@
                               "imageDefinitionName": {
                                 "value": "[[parameters('imageDefinitionName')]"
                               },
-                              "imageName": {
-                                "value": "[[parameters('imageName')]"
-                              },
                               "imageVersionNumber": {
                                 "value": "[[variables('autoImageVersion')]"
                               },
@@ -2393,9 +2387,6 @@
                               "marketplaceImagePublisher": {
                                 "value": "[[parameters('marketplaceImagePublisher')]"
                               },
-                              "marketplaceImageSKU": {
-                                "value": "[[parameters('marketplaceImageSKU')]"
-                              },
                               "replicaCount": {
                                 "value": "[[parameters('replicaCount')]"
                               }
@@ -2407,7 +2398,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.21.1.54444",
-                                  "templateHash": "17790546068270668756"
+                                  "templateHash": "905448038635729815"
                                 }
                               },
                               "parameters": {
@@ -2428,9 +2419,6 @@
                                 "imageDefinitionName": {
                                   "type": "string"
                                 },
-                                "imageName": {
-                                  "type": "string"
-                                },
                                 "imageVersionNumber": {
                                   "type": "string"
                                 },
@@ -2445,9 +2433,6 @@
                                   "type": "string"
                                 },
                                 "marketplaceImagePublisher": {
-                                  "type": "string"
-                                },
-                                "marketplaceImageSKU": {
                                   "type": "string"
                                 },
                                 "replicaCount": {
@@ -2488,7 +2473,7 @@
                                     "identifier": {
                                       "offer": "[[parameters('marketplaceImageOffer')]",
                                       "publisher": "[[parameters('marketplaceImagePublisher')]",
-                                      "sku": "[[format('{0}-{1}', parameters('marketplaceImageSKU'), parameters('imageName'))]"
+                                      "sku": "[[parameters('imageDefinitionName')]"
                                     },
                                     "osState": "Generalized",
                                     "osType": "Windows"

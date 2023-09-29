@@ -40,6 +40,7 @@ param msrdcwebrtcsvcInstaller string
 param officeInstaller string
 param oUPath string
 param replicaCount int
+param sharedGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
 param storageAccountResourceGroupName string
@@ -248,6 +249,7 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
       officeInstaller: officeInstaller
       replicaCount: string(replicaCount)
       resourceGroupName: resourceGroupName
+      sharedGalleryImageResourceId: sharedGalleryImageResourceId
       sourceImageType: sourceImageType
       storageAccountName: storageAccountName
       storageAccountResourceGroupName: storageAccountResourceGroupName

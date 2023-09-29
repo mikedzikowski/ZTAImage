@@ -44,6 +44,7 @@ param officeInstaller string
 param oUPath string
 param replicaCount int
 param securityPrincipalObjectIds array
+param sharedGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
 param storageAccountResourceGroupName string
@@ -148,6 +149,7 @@ module automationAccount 'automationAccount.bicep' = {
     officeInstaller: officeInstaller
     oUPath: oUPath
     replicaCount: replicaCount
+    sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     storageAccountResourceGroupName: storageAccountResourceGroupName

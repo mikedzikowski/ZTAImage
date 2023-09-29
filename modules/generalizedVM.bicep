@@ -7,6 +7,8 @@ param location string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param marketplaceImageSKU string
+param sharedGalleryImageResourceId string
+param sourceImageType string
 param subnetName string
 param tags object
 param userAssignedIdentityName string
@@ -15,6 +17,15 @@ param virtualMachineName string
 param virtualMachineSize string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
+
+var imageReference = sourceImageType == 'AzureComputeGallery' ? {
+  sharedGalleryImageId: sharedGalleryImageResourceId
+} : {
+  publisher: marketplaceImagePublisher
+  offer: marketplaceImageOffer
+  sku: marketplaceImageSKU
+  version: 'latest'
+}
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
   name: 'nsg-image-vm'
@@ -91,12 +102,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       adminPassword: localAdministratorPassword
     }
     storageProfile: {
-      imageReference: {
-        publisher: marketplaceImagePublisher
-        offer: marketplaceImageOffer
-        sku: marketplaceImageSKU
-        version: 'latest'
-      }
+      imageReference: imageReference
       osDisk: {
         createOption: 'FromImage'
         deleteOption: 'Delete'
