@@ -1,20 +1,21 @@
 targetScope = 'resourceGroup'
 
 param containerName string
-param location string = resourceGroup().location
+param location string
 param storageAccountName string
 param storageEndpoint string
-param vmName string
+param tags object
 param userAssignedIdentityObjectId string
-
+param virtualMachineName string
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
-  name: vmName
+  name: virtualMachineName
 }
 
 resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
   name: 'sysprep'
   location: location
+  tags: tags
   parent: vm
   properties: {
     asyncExecution: false
@@ -58,6 +59,5 @@ resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
       '''
     }
   }
-  dependsOn: [
-  ]
+  dependsOn: []
 }

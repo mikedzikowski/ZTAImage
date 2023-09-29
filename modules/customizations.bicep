@@ -1,6 +1,7 @@
 targetScope = 'resourceGroup'
 
 param containerName string
+param customizations array
 param installAccess bool
 param installExcel bool
 param installOneDriveForBusiness bool
@@ -14,26 +15,21 @@ param installTeams bool
 param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
-param location string = resourceGroup().location
+param location string
+param msrdcwebrtcsvcInstaller string
+param officeInstaller string
 param storageAccountName string
 param storageEndpoint string
-param vmName string
-@allowed([
-  'Commercial'
-  'DepartmentOfDefense'
-  'GovernmentCommunityCloud'
-  'GovernmentCommunityCloudHigh'
-])
-param TenantType string
-param userAssignedIdentityObjectId string
-param customizations array
-param vDotInstaller string
-param officeInstaller string
+param tags object
 param teamsInstaller string
+param tenantType string
+param userAssignedIdentityObjectId string
 param vcRedistInstaller string
-param msrdcwebrtcsvcInstaller string
+param vDotInstaller string
+param vmName string
 
 var installAccessVar = '${installAccess}installAccess'
+var installers = customizations
 var installExcelVar = '${installExcel}installWord'
 var installOneDriveForBusinessVar = '${installOneDriveForBusiness}installOneDrive'
 var installOneNoteVar = '${installOneNote}installOneNote'
@@ -45,17 +41,15 @@ var installSkypeForBusinessVar = '${installSkypeForBusiness}installSkypeForBusin
 var installVisioVar = '${installVisio}installVisio'
 var installWordVar = '${installWord}installWord'
 
-
-var installers = customizations
-
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: vmName
 }
 
 @batchSize(1)
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers : {
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers: {
   name: 'app-${installer.name}'
   location: location
+  tags: tags
   parent: vm
   properties: {
     treatFailureAsDeploymentFailure: true
@@ -156,12 +150,12 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
       '''
     }
   }
-  dependsOn:[]
 }]
 
 resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
   name: 'office'
   location: location
+  tags: tags
   parent: vm
   properties: {
     parameters: [
@@ -323,6 +317,7 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
 resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installVirtualDesktopOptimizationTool) {
   name: 'vdot'
   location: location
+  tags: tags
   parent: vm
   properties: {
     parameters: [
@@ -417,12 +412,13 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
 resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installTeams) {
   name: 'teams'
   location: location
+  tags: tags
   parent: vm
   properties: {
     parameters: [
       {
         name: 'TenantType'
-        value: TenantType
+        value: tenantType
       }
       {
         name: 'UserAssignedIdentityObjectId'
@@ -529,4 +525,4 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
   ]
 }
 
-output TenantType string = TenantType
+output tenantType string = tenantType

@@ -1,54 +1,25 @@
-@description('Username for the Virtual Machine.')
-param adminUsername string
-
-@description('Password for the Virtual Machine.')
+param diskEncryptionSetResourceId string
 @secure()
-param adminPassword string
-
-@description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
-param OSVersion string
-
-@description('Size of the virtual machine.')
-param vmSize string
-
-@description('Location for all resources.')
-param location string = resourceGroup().location
-
-@description('Name of the virtual machine.')
-param vmName string
-
-param publisher string
-param offer string
-
-@description('Security Type of the Virtual Machine.')
-@allowed([
-  'Standard'
-  'TrustedLaunch'
-])
-param securityType string
-param miName string
-
-@description('Name of the virtual machine.')
-param miResourceGroup string
-
-@description('Name of the virtual machine.')
-param virtualResourceGroup string
-param virtualNetworkName string
-
+param localAdministratorPassword string
+@secure()
+param localAdministratorUsername string
+param location string
+param marketplaceImageOffer string
+param marketplaceImagePublisher string
+param marketplaceImageSKU string
 param subnetName string
+param tags object
+param userAssignedIdentityName string
+param userAssignedIdentityResourceGroupName string
+param virtualMachineName string
+param virtualMachineSize string
+param virtualNetworkName string
+param virtualNetworkResourceGroupName string
 
-var nicName = '${vmName}-nic'
-var networkSecurityGroupName = 'nsg-image-vm'
-var securityProfileJson = {
-  uefiSettings: {
-    secureBootEnabled: true
-    vTpmEnabled: true
-  }
-  securityType: securityType
-}
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
-  name: networkSecurityGroupName
+  name: 'nsg-image-vm'
   location: location
+  tags: tags
   properties: {
     securityRules: [
       {
@@ -69,18 +40,19 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-0
 }
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
-  scope: resourceGroup(virtualResourceGroup)
+  scope: resourceGroup(virtualNetworkResourceGroupName)
   name: virtualNetworkName
 }
 
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(miResourceGroup)
-  name: miName
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  scope: resourceGroup(userAssignedIdentityResourceGroupName)
+  name: userAssignedIdentityName
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
-  name: take('${vmName}-nic-${uniqueString(vmName)}', 15)
+  name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
   location: location
+  tags: tags
   properties: {
     ipConfigurations: [
       {
@@ -99,46 +71,48 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
   ]
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
-  name: vmName
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
+  name: virtualMachineName
   location: location
+  tags: tags
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${managedIdentity.id}': {}
+      '${userAssignedIdentity.id}': {}
     }
   }
   properties: {
     hardwareProfile: {
-      vmSize: vmSize
+      vmSize: virtualMachineSize
     }
     osProfile: {
-      computerName: vmName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
+      computerName: virtualMachineName
+      adminUsername: localAdministratorUsername
+      adminPassword: localAdministratorPassword
     }
     storageProfile: {
       imageReference: {
-        publisher: publisher
-        offer: offer
-        sku: OSVersion
+        publisher: marketplaceImagePublisher
+        offer: marketplaceImageOffer
+        sku: marketplaceImageSKU
         version: 'latest'
       }
       osDisk: {
         createOption: 'FromImage'
         deleteOption: 'Delete'
         managedDisk: {
+          diskEncryptionSet: {
+            id: diskEncryptionSetResourceId
+          }
           storageAccountType: 'StandardSSD_LRS'
         }
       }
-      dataDisks: [
-      ]
     }
     networkProfile: {
       networkInterfaces: [
         {
           id: nic.id
-          properties:{
+          properties: {
             deleteOption: 'Delete'
           }
         }
@@ -149,13 +123,17 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         enabled: false
       }
     }
-    securityProfile: ((securityType == 'TrustedLaunch') ? securityProfileJson : null)
+    securityProfile: {
+      encryptionAtHost: true
+      uefiSettings: {
+        secureBootEnabled: true
+        vTpmEnabled: true
+      }
+      securityType: 'TrustedLaunch'
+    }
   }
-  dependsOn: [
-    virtualNetwork
-  ]
 }
 
-output imageVm string = vm.name
-output imageId string = vm.id
-output imageRg string = split(vm.id, '/')[4]
+output Name string = virtualMachine.name
+output ResourceId string = virtualMachine.id
+output ResourceGroupName string = split(virtualMachine.id, '/')[4]

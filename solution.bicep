@@ -1,13 +1,22 @@
 targetScope = 'subscription'
 
+param automationAccountName string
 param containerName string
+param customizations array = []
+param diskEncryptionSetResourceId string
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
+@secure()
+param domainJoinPassword string = ''
+param domainJoinUserPrincipalName string = ''
+param domainName string = ''
+param enableBuildAutomation bool
 param excludeFromLatest bool
 param galleryName string
-param galleryResourceGroup string
-param guidValue string = newGuid()
-param imageName string
-param imageVmRg string
+param galleryResourceGroupName string
+param hybridUseBenefit bool
+param imageDefinitionNamePrefix string
+param imageMajorVersion int
+param imageMinorVersion int
 param installAccess bool
 param installExcel bool
 param installOneDriveForBusiness bool
@@ -21,96 +30,127 @@ param installTeams bool
 param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
+param keyVaultName string
+@secure()
+param localAdministratorPassword string
+param localAdministratorUsername string
 param location string = deployment().location
-param managementVmRg string
-param miName string
-param miResourceGroup string
-param offer string
-param OsVersion string
-param publisher string
+param logAnalyticsWorkspaceResourceId string = ''
+param marketplaceImageOffer string = ''
+param marketplaceImagePublisher string = ''
+param marketplaceImageSKU string = ''
+param msrdcwebrtcsvcInstaller string
+param officeInstaller string
+param oUPath string
 param replicaCount int
-param saResourceGroup string
-param sku string
+param resourceGroupName string
+param securityPrincipalObjectIds array
+@allowed([
+  'AzureComputeGallery'
+  'AzureMarketplace'
+])
+param sourceImageType string
 param storageAccountName string
+param storageAccountResourceGroupName string
 param subnetName string
+param tags object
+param teamsInstaller string
 @allowed([
   'Commercial'
   'DepartmentOfDefense'
   'GovernmentCommunityCloud'
   'GovernmentCommunityCloudHigh'
 ])
-param TenantType string
-param virtualNetworkName string
-param virtualNetworkResourceGroup string
-param vmSize string
-param customizations array = []
-param vDotInstaller string
-param officeInstaller string
-param teamsInstaller string
-param msrdcwebrtcsvcInstaller string
+param tenantType string
+param userAssignedIdentityName string
+param userAssignedIdentityResourceGroupName string
 param vcRedistInstaller string
-param imageMajorVersion int
-param imageMinorVersion int
+param vDOTInstaller string
+param virtualMachineSize string
+param virtualNetworkName string
+param virtualNetworkResourceGroupName string
 
-var imageSuffix = take(deploymentNameSuffix,9)
-var cloud = environment().name
-var adminPw = '${toUpper(uniqueString(subscription().id))}-${guidValue}'
-var adminUsername = 'xadmin'
+var hybridWorkerVirtualMachineName = take('vmhw-${uniqueString(deploymentNameSuffix)}', 15)
+var imageDefinitionName = '${imageDefinitionNamePrefix}-${marketplaceImageSKU}'
+var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
+var managementVirtualMachineName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
 var subscriptionId = subscription().subscriptionId
-var securityType = 'TrustedLaunch'
-var imageVmName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
-var managementVmName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
-var autoImageVersion ='${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
-
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
-  scope: resourceGroup(subscriptionId, saResourceGroup)
-  name: storageAccountName
+var timeZones = {
+  australiacentral: 'AUS Eastern Standard Time'
+  australiacentral2: 'AUS Eastern Standard Time'
+  australiaeast: 'AUS Eastern Standard Time'
+  australiasoutheast: 'AUS Eastern Standard Time'
+  brazilsouth: 'E. South America Standard Time'
+  brazilsoutheast: 'E. South America Standard Time'
+  canadacentral: 'Eastern Standard Time'
+  canadaeast: 'Eastern Standard Time'
+  centralindia: 'India Standard Time'
+  centralus: 'Central Standard Time'
+  chinaeast: 'China Standard Time'
+  chinaeast2: 'China Standard Time'
+  chinanorth: 'China Standard Time'
+  chinanorth2: 'China Standard Time'
+  eastasia: 'China Standard Time'
+  eastus: 'Eastern Standard Time'
+  eastus2: 'Eastern Standard Time'
+  francecentral: 'Central Europe Standard Time'
+  francesouth: 'Central Europe Standard Time'
+  germanynorth: 'Central Europe Standard Time'
+  germanywestcentral: 'Central Europe Standard Time'
+  japaneast: 'Tokyo Standard Time'
+  japanwest: 'Tokyo Standard Time'
+  jioindiacentral: 'India Standard Time'
+  jioindiawest: 'India Standard Time'
+  koreacentral: 'Korea Standard Time'
+  koreasouth: 'Korea Standard Time'
+  northcentralus: 'Central Standard Time'
+  northeurope: 'GMT Standard Time'
+  norwayeast: 'Central Europe Standard Time'
+  norwaywest: 'Central Europe Standard Time'
+  southafricanorth: 'South Africa Standard Time'
+  southafricawest: 'South Africa Standard Time'
+  southcentralus: 'Central Standard Time'
+  southeastasia: 'Singapore Standard Time'
+  southindia: 'India Standard Time'
+  swedencentral: 'Central Europe Standard Time'
+  switzerlandnorth: 'Central Europe Standard Time'
+  switzerlandwest: 'Central Europe Standard Time'
+  uaecentral: 'Arabian Standard Time'
+  uaenorth: 'Arabian Standard Time'
+  uksouth: 'GMT Standard Time'
+  ukwest: 'GMT Standard Time'
+  usdodcentral: 'Central Standard Time'
+  usdodeast: 'Eastern Standard Time'
+  usgovarizona: 'Mountain Standard Time'
+  usgovtexas: 'Central Standard Time'
+  usgovvirginia: 'Eastern Standard Time'
+  westcentralus: 'Mountain Standard Time'
+  westeurope: 'Central Europe Standard Time'
+  westindia: 'India Standard Time'
+  westus: 'Pacific Standard Time'
+  westus2: 'Pacific Standard Time'
+  westus3: 'Mountain Standard Time'
 }
 
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(subscriptionId, miResourceGroup)
-  name: miName
-}
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
-  scope: resourceGroup(subscriptionId, virtualNetworkResourceGroup)
-  name: virtualNetworkName
-}
-
-resource gallery 'Microsoft.Compute/galleries@2022-03-03' existing = {
-  scope: resourceGroup(subscriptionId, galleryResourceGroup)
-  name: galleryName
-}
-
-module imageVm 'modules/generalizedVM.bicep' = {
-  name: 'image-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, imageVmRg)
+module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomation) {
+  name: 'build-automation-${deploymentNameSuffix}'
   params: {
-    location: location
-    adminPassword: adminPw
-    adminUsername: adminUsername
-    miName: managedIdentity.name
-    miResourceGroup: miResourceGroup
-    OSVersion: OsVersion
-    securityType: securityType
-    subnetName: subnetName
-    virtualNetworkName: virtualNetwork.name
-    virtualResourceGroup: split(virtualNetwork.id, '/')[4]
-    vmName: imageVmName
-    vmSize: vmSize
-    offer: offer
-    publisher: publisher
-  }
-}
-
-module customize 'modules/image.bicep' = {
-  name: 'custom-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, imageVmRg)
-  params: {
-    location: location
+    automationAccountName: automationAccountName
     containerName: containerName
     customizations: customizations
-    installAccess:  installAccess
+    deploymentNameSuffix: deploymentNameSuffix
+    diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    domainJoinPassword: domainJoinPassword
+    domainJoinUserPrincipalName: domainJoinUserPrincipalName
+    domainName: domainName
+    galleryName: galleryName
+    galleryResourceGroupName: galleryResourceGroupName
+    hybridUseBenefit: hybridUseBenefit
+    hybridWorkerVirtualMachineName: hybridWorkerVirtualMachineName
+    imageDefinitionName: imageDefinitionName
+    imageMajorVersion: imageMajorVersion
+    imageMinorVersion: imageMinorVersion
+    installAccess: installAccess
     installExcel: installExcel
     installOneDriveForBusiness: installOneDriveForBusiness
     installOneNote: installOneNote
@@ -123,150 +163,95 @@ module customize 'modules/image.bicep' = {
     installVirtualDesktopOptimizationTool: installVirtualDesktopOptimizationTool
     installVisio: installVisio
     installWord: installWord
-    storageAccountName: storageAccount.name
-    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
-    TenantType: TenantType
-    userAssignedIdentityObjectId: managedIdentity.properties.principalId
-    vmName: imageVmName
-    vDotInstaller: vDotInstaller
-    officeInstaller: officeInstaller
+    keyVaultName: keyVaultName
+    localAdministratorPassword: localAdministratorPassword
+    localAdministratorUsername: localAdministratorUsername
+    location: location
+    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
+    marketplaceImageOffer: marketplaceImageOffer
+    marketplaceImagePublisher: marketplaceImagePublisher
+    marketplaceImageSKU: marketplaceImageSKU
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
-    teamsInstaller: teamsInstaller
-    vcRedistInstaller: vcRedistInstaller
-  }
-  dependsOn: [
-    imageVm
-  ]
-}
-
-module managementVm 'modules/managementVM.bicep' = {
-  name: 'management-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, managementVmRg)
-  params: {
-    location: location
-    adminPassword: adminPw
-    adminUsername: adminUsername
-    containerName: containerName
-    miName: managedIdentity.name
-    miResourceGroup: miResourceGroup
-    securityType: securityType
-    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
-    subnetName: subnetName
-    virtualNetworkName: virtualNetwork.name
-    virtualNetworkResourceGroup: split(virtualNetwork.id, '/')[4]
-    vmName: managementVmName
-    vmSize: vmSize
-  }
-  dependsOn: [
-    customize
-    imageVm
-    managedIdentity
-    gallery
-  ]
-}
-
-module restart 'modules/restartVM.bicep' = {
-  name: 'restart-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, managementVmRg)
-  params: {
-    location: location
-    imageVmName: imageVm.outputs.imageVm
-    imageVmRg: imageVm.outputs.imageRg
-    miName: managedIdentity.name
-    miResourceGroup: miResourceGroup
-    cloud: cloud
-    vmName: managementVmName
-  }
-  dependsOn: [
-    customize
-    imageVm
-    managementVm
-  ]
-}
-
-module sysprep 'modules/sysprep.bicep' = {
-  name: 'sysprep-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, managementVmRg)
-  params: {
-    location: location
-    vmName: imageVm.outputs.imageVm
-    containerName: containerName
-    storageAccountName: storageAccountName
-    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
-    userAssignedIdentityObjectId: managedIdentity.properties.principalId
-  }
-  dependsOn: [
-    customize
-    imageVm
-    restart
-    managementVm
-  ]
-}
-
-module generalizeVm 'modules/runGeneralization.bicep' = {
-  name: 'generalize-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, managementVmRg)
-  params: {
-    location: location
-    imageVmName: imageVm.outputs.imageVm
-    imageVmRg: imageVm.outputs.imageRg
-    miName: managedIdentity.name
-    miResourceGroup: miResourceGroup
-    vmName: managementVmName
-    cloud: cloud
-  }
-  dependsOn: [
-    customize
-    imageVm
-    managementVm
-    restart
-    sysprep
-  ]
-}
-
-module image 'modules/gallery.bicep' = {
-  name: 'gallery-image-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, galleryResourceGroup)
-  params: {
-    location: location
-    excludeFromLatest: excludeFromLatest
-    galleryName: gallery.name
-    imageName: imageName
-    imageVersionNumber: autoImageVersion
-    imageVmId: imageVm.outputs.imageId
-    offer: offer
-    publisher: publisher
+    officeInstaller: officeInstaller
+    oUPath: oUPath
     replicaCount: replicaCount
-    sku: sku
+    resourceGroupName: resourceGroupName
+    securityPrincipalObjectIds: securityPrincipalObjectIds
+    sourceImageType: sourceImageType
+    storageAccountName: storageAccountName
+    storageAccountResourceGroupName: storageAccountResourceGroupName
+    subnetName: subnetName
+    subscriptionId: subscriptionId
+    tags: tags
+    teamsInstaller: teamsInstaller
+    tenantType: tenantType
+    timeZone: timeZones[location]
+    userAssignedIdentityName: userAssignedIdentityName
+    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    vcRedistInstaller: vcRedistInstaller
+    vDOTInstaller: vDOTInstaller
+    virtualMachineName: hybridWorkerVirtualMachineName
+    virtualMachineSize: virtualMachineSize
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
   }
-  dependsOn: [
-    managementVm
-    customize
-    generalizeVm
-    restart
-    sysprep
-  ]
 }
 
-module remove 'modules/removeVM.bicep' = {
-  name: 'remove-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, managementVmRg)
+module imageBuild 'modules/imageBuild.bicep' = {
+  name: 'image-build-${deploymentNameSuffix}'
   params: {
+    containerName: containerName
+    customizations: customizations
+    deploymentNameSuffix: deploymentNameSuffix
+    diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    enableBuildAutomation: enableBuildAutomation
+    excludeFromLatest: excludeFromLatest
+    galleryName: galleryName
+    galleryResourceGroupName: galleryResourceGroupName
+    hybridUseBenefit: hybridUseBenefit
+    imageDefinitionName: imageDefinitionName
+    imageMajorVersion: imageMajorVersion
+    imageMinorVersion: imageMinorVersion
+    imageVirtualMachineName: imageVirtualMachineName
+    installAccess: installAccess
+    installExcel: installExcel
+    installOneDriveForBusiness: installOneDriveForBusiness
+    installOneNote: installOneNote
+    installOutlook: installOutlook
+    installPowerPoint: installPowerPoint
+    installProject: installProject
+    installPublisher: installPublisher
+    installSkypeForBusiness: installSkypeForBusiness
+    installTeams: installTeams
+    installVirtualDesktopOptimizationTool: installVirtualDesktopOptimizationTool
+    installVisio: installVisio
+    installWord: installWord
+    keyVaultName: keyVaultName
+    localAdministratorPassword: localAdministratorPassword
+    localAdministratorUsername: localAdministratorUsername
     location: location
-    imageVmName: imageVm.outputs.imageVm
-    imageVmRg: imageVm.outputs.imageRg
-    miName: managedIdentity.name
-    miResourceGroup: miResourceGroup
-    cloud: cloud
-    vmName: managementVmName
+    managementVirtualMachineName: managementVirtualMachineName
+    marketplaceImageOffer: marketplaceImageOffer
+    marketplaceImagePublisher: marketplaceImagePublisher
+    marketplaceImageSKU: marketplaceImageSKU
+    msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
+    officeInstaller: officeInstaller
+    replicaCount: replicaCount
+    resourceGroupName: resourceGroupName
+    sourceImageType: sourceImageType
+    storageAccountName: storageAccountName
+    storageAccountResourceGroupName: storageAccountResourceGroupName
+    subnetName: subnetName
+    subscriptionId: subscriptionId
+    tags: tags
+    teamsInstaller: teamsInstaller
+    tenantType: tenantType
+    userAssignedIdentityName: userAssignedIdentityName
+    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    vcRedistInstaller: vcRedistInstaller
+    vDOTInstaller: vDOTInstaller
+    virtualMachineSize: virtualMachineSize
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
   }
-  dependsOn: [
-    customize
-    imageVm
-    image
-    gallery
-    generalizeVm
-    managementVm
-    sysprep
-  ]
 }

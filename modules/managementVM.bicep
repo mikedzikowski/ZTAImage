@@ -1,39 +1,20 @@
-@description('Username for the Virtual Machine.')
-param adminUsername string
-
-@description('Password for the Virtual Machine.')
-@secure()
-param adminPassword string
-
-@description('Size of the virtual machine.')
-param vmSize string
-
-@description('Location for all resources.')
-param location string = resourceGroup().location
-
-@description('Name of the virtual machine.')
-param vmName string
-
-@description('Security Type of the Virtual Machine.')
-@allowed([
-  'Standard'
-  'TrustedLaunch'
-])
-param securityType string
-param miName string
-
-@description('Name of the virtual machine.')
-param miResourceGroup string
-
-@description('Name of the virtual machine.')
-param virtualNetworkResourceGroup string
-param virtualNetworkName string
-
-param subnetName string
-
 param containerName string
-
+param diskEncryptionSetResourceId string
+param hybridUseBenefit bool
+@secure()
+param localAdministratorPassword string
+@secure()
+param localAdministratorUsername string
+param location string
+param userAssignedIdentityName string
+param userAssignedIdentityResourceGroupName string
 param storageEndpoint string
+param subnetName string
+param tags object
+param virtualNetworkName string
+param virtualNetworkResourceGroup string
+param virtualMachineName string
+param virtualMachineSize string
 
 var installers = [
   {
@@ -44,29 +25,20 @@ var installers = [
   }
 ]
 
-var nicName = '${vmName}-nic'
-var networkSecurityGroupName = 'nsg-image-vm'
-var securityProfileJson = {
-  uefiSettings: {
-    secureBootEnabled: true
-    vTpmEnabled: true
-  }
-  securityType: securityType
-}
-
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroup)
   name: virtualNetworkName
 }
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(miResourceGroup)
-  name: miName
+  scope: resourceGroup(userAssignedIdentityResourceGroupName)
+  name: userAssignedIdentityName
 }
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
-  name: networkSecurityGroupName
+  name: 'nsg-image-vm'
   location: location
+  tags: tags
   properties: {
     securityRules: [
       {
@@ -86,9 +58,10 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-0
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
-  name: take('${vmName}-nic-${uniqueString(vmName)}', 15)
+resource networkInterface 'Microsoft.Network/networkInterfaces@2022-05-01' = {
+  name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
   location: location
+  tags: tags
   properties: {
     ipConfigurations: [
       {
@@ -107,9 +80,10 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
   ]
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
- name: vmName
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
+  name: virtualMachineName
   location: location
+  tags: tags
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
@@ -118,12 +92,12 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   }
   properties: {
     hardwareProfile: {
-      vmSize: vmSize
+      vmSize: virtualMachineSize
     }
     osProfile: {
-      computerName: vmName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
+      computerName: virtualMachineName
+      adminUsername: localAdministratorUsername
+      adminPassword: localAdministratorPassword
     }
     storageProfile: {
       imageReference: {
@@ -136,17 +110,19 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         createOption: 'FromImage'
         deleteOption: 'Delete'
         managedDisk: {
-          storageAccountType: 'StandardSSD_LRS'
+          diskEncryptionSet: {
+            id: diskEncryptionSetResourceId
+          }
+          storageAccountType: 'Premium_LRS'
         }
       }
-      dataDisks: [
-      ]
+      dataDisks: []
     }
     networkProfile: {
       networkInterfaces: [
         {
-          id: nic.id
-          properties:{
+          id: networkInterface.id
+          properties: {
             deleteOption: 'Delete'
           }
         }
@@ -157,17 +133,26 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         enabled: false
       }
     }
-    securityProfile: ((securityType == 'TrustedLaunch') ? securityProfileJson : null)
+    securityProfile: {
+      encryptionAtHost: true
+      uefiSettings: {
+        secureBootEnabled: true
+        vTpmEnabled: true
+      }
+      securityType: 'TrustedLaunch'
+    }
+    licenseType: hybridUseBenefit ? 'Window_Server' : null
   }
   dependsOn: [
     virtualNetwork
   ]
 }
 
-resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [ for installer in installers: if(installer.enabled) {
+resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [for installer in installers: if (installer.enabled) {
   name: 'app${installer.name}'
   location: location
-  parent: vm
+  tags: tags
+  parent: virtualMachine
   properties: {
     parameters: [
       {
@@ -217,6 +202,4 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [ 
       '''
     }
   }
-  dependsOn: [
-  ]
 }]

@@ -1,33 +1,23 @@
-
-@description('Location for all resources.')
-param location string = resourceGroup().location
-
-@description('Name of the virtual machine.')
-param vmName string
-
-param miName string
-
-@description('Name of the virtual machine.')
-param miResourceGroup string
-
 param cloud string
-
-param imageVmName string
-param imageVmRg string
-
+param imageVirtualMachineName string
+param resourceGroupName string
+param location string = resourceGroup().location
+param userAssignedIdentityName string
+param userAssignedIdentityResourceGroupName string
+param virtualMachineName string
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(miResourceGroup)
-  name: miName
+  scope: resourceGroup(userAssignedIdentityResourceGroupName)
+  name: userAssignedIdentityName
 }
 
 resource imageVm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
-  scope: resourceGroup(imageVmRg)
-  name: imageVmName
+  scope: resourceGroup(resourceGroupName)
+  name: imageVirtualMachineName
 }
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
-  name: vmName
+  name: virtualMachineName
 }
 
 resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {

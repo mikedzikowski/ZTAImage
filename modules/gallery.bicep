@@ -1,27 +1,27 @@
 targetScope = 'resourceGroup'
-param offer string
-param publisher string
-param sku string
+
+param allowDeletionOfReplicatedLocations bool = true
 param excludeFromLatest bool
+param galleryName string
+param hyperVGeneration string = 'V2'
+param imageDefinitionName string
+param imageVersionNumber string
+param imageVirtualMachineResourceId string
+param location string = resourceGroup().location
+param marketplaceImageOffer string
+param marketplaceImagePublisher string
 param replicaCount int
 param replicationMode string = 'Full'
 param storageAccountType string = 'Standard_LRS'
-param hyperVGeneration string = 'V2'
-param galleryName string
-param location string = resourceGroup().location
-param imageName string
-param imageVersionNumber string
-param imageVmId string
-param allowDeletionOfReplicatedLocations bool = true
 
 resource gallery 'Microsoft.Compute/galleries@2022-03-03' existing = {
   name: galleryName
 }
 
 resource image 'Microsoft.Compute/galleries/images@2022-03-03' = {
-  name: '${imageName}-${sku}'
-  location: location
   parent: gallery
+  name: imageDefinitionName
+  location: location
   properties: {
     architecture: 'x64'
     features: [
@@ -40,9 +40,9 @@ resource image 'Microsoft.Compute/galleries/images@2022-03-03' = {
     ]
     hyperVGeneration: hyperVGeneration
     identifier: {
-      offer: offer
-      publisher: publisher
-      sku: '${sku}-${imageName}'
+      offer: marketplaceImageOffer
+      publisher: marketplaceImagePublisher
+      sku: imageDefinitionName
     }
     osState: 'Generalized'
     osType: 'Windows'
@@ -73,8 +73,11 @@ resource imageVersion 'Microsoft.Compute/galleries/images/versions@2022-03-03' =
     }
     storageProfile: {
       source: {
-        id: imageVmId
+        id: imageVirtualMachineResourceId
       }
     }
   }
 }
+
+output galleryName string = gallery.name
+output imageDefinitionName string = image.name
