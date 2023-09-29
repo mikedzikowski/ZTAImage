@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "10004335665907086585"
+      "templateHash": "7454110076005593314"
     }
   },
   "parameters": {
@@ -123,6 +123,9 @@
     "resourceGroupName": {
       "type": "string"
     },
+    "sharedGalleryImageResourceId": {
+      "type": "string"
+    },
     "sourceImageType": {
       "type": "string"
     },
@@ -204,6 +207,12 @@
           "marketplaceImageSKU": {
             "value": "[parameters('marketplaceImageSKU')]"
           },
+          "sharedGalleryImageResourceId": {
+            "value": "[parameters('sharedGalleryImageResourceId')]"
+          },
+          "sourceImageType": {
+            "value": "[parameters('sourceImageType')]"
+          },
           "subnetName": {
             "value": "[parameters('subnetName')]"
           },
@@ -236,7 +245,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "3868434678079461490"
+              "templateHash": "11342307709801818283"
             }
           },
           "parameters": {
@@ -259,6 +268,12 @@
               "type": "string"
             },
             "marketplaceImageSKU": {
+              "type": "string"
+            },
+            "sharedGalleryImageResourceId": {
+              "type": "string"
+            },
+            "sourceImageType": {
               "type": "string"
             },
             "subnetName": {
@@ -285,6 +300,9 @@
             "virtualNetworkResourceGroupName": {
               "type": "string"
             }
+          },
+          "variables": {
+            "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('sharedGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
           },
           "resources": [
             {
@@ -353,12 +371,7 @@
                   "adminPassword": "[parameters('localAdministratorPassword')]"
                 },
                 "storageProfile": {
-                  "imageReference": {
-                    "publisher": "[parameters('marketplaceImagePublisher')]",
-                    "offer": "[parameters('marketplaceImageOffer')]",
-                    "sku": "[parameters('marketplaceImageSKU')]",
-                    "version": "latest"
-                  },
+                  "imageReference": "[variables('imageReference')]",
                   "osDisk": {
                     "createOption": "FromImage",
                     "deleteOption": "Delete",
