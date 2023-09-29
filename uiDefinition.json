@@ -998,6 +998,18 @@
                             }
                         },
                         {
+                            "name": "keyVault",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Key vault",
+                            "toolTip": "Input the name for the key vault.",
+                            "visible": "[steps('automation').enable]",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^(?!.*-{2}.*)([a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9])$",
+                                "validationMessage": "The value must be 3 - 24 characters in length. The value must contain alphanumerics and hyphens, start with a letter, and end with an alphanumeric."
+                            }
+                        },
+                        {
                             "name": "groups",
                             "type": "Microsoft.Common.EditableGrid",
                             "ariaLabel": "Enter the security groups to access the key vault secrects for deployments. The principals will not have access to view the secrets but only to pull them from the key vault during deployment.",
@@ -1025,18 +1037,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "keyVault",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Key vault",
-                            "toolTip": "Input the name for the key vault.",
-                            "visible": "[steps('automation').enable]",
-                            "constraints": {
-                                "required": true,
-                                "regex": "^(?!.*-{2}.*)([a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9])$",
-                                "validationMessage": "The value must be 3 - 24 characters in length. The value must contain alphanumerics and hyphens, start with a letter, and end with an alphanumeric."
                             }
                         },
                         {
@@ -1182,7 +1182,7 @@
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
                 "resourceGroupName": "[steps('basics').resourceGroup]",
-                "securityPrincipalObjectIds": "[map(steps('automation').groups, item => item.objectId)]",
+                "securityPrincipalObjectIds": "[if(steps('automation').enable, map(steps('automation').groups, item => item.objectId), parse('[]'))]",
                 "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountName": "[steps('storage').storageSelector.name]",
