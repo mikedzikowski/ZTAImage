@@ -54,7 +54,7 @@ param sourceImageType string
 param storageAccountName string
 param storageAccountResourceGroupName string
 param subnetName string
-param tags object
+param tags object = {}
 param teamsInstaller string
 @allowed([
   'Commercial'
