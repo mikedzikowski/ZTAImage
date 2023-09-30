@@ -133,10 +133,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-03-01' = {
           patchMode: 'AutomaticByOS'
           assessmentMode: 'ImageDefault'
         }
-        enableVMAgentPlatformUpdates: false
       }
-      allowExtensionOperations: true
-      requireGuestProvisionSignal: true
     }
     securityProfile: {
       encryptionAtHost: true
@@ -201,7 +198,7 @@ resource schedule 'Microsoft.Automation/automationAccounts/schedules@2022-08-08'
   properties: {
     frequency: 'Day'
     interval: 1
-    startTime: dateTimeAdd(time, 'PT15M')
+    startTime: dateTimeAdd(time, 'P1D')
     timeZone: timeZone
   }
 }
