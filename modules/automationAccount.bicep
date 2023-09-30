@@ -156,7 +156,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-03-01' = {
         }
       ]
     }
-    licenseType: hybridUseBenefit ? 'Window_Server' : null
+    licenseType: hybridUseBenefit ? 'Windows_Server' : null
   }
 }
 
@@ -189,7 +189,7 @@ resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2019-06-01' =
     logProgress: false
     logVerbose: false
     publishContentLink: {
-      uri: ''
+      uri: 'https://${storageAccountName}.blob.${environment().suffixes.storage}/${containerName}/New-AzureZeroTrustImageBuild.ps1'
       version: '1.0.0.0'
     }
   }
@@ -300,9 +300,6 @@ resource diagnostics 'Microsoft.Insights/diagnosticsettings@2017-05-01-preview' 
 resource hybridRunbookWorkerGroup 'Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups@2022-08-08' = {
   parent: automationAccount
   name: 'Zero Trust Image Build Automation'
-  properties: {
-    credential: {}
-  }
 }
 
 resource hybridRunbookWorker 'Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups/hybridRunbookWorkers@2022-08-08' = {
