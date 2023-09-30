@@ -141,7 +141,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       }
       securityType: 'TrustedLaunch'
     }
-    licenseType: hybridUseBenefit ? 'Window_Server' : null
+    licenseType: hybridUseBenefit ? 'Windows_Server' : null
   }
   dependsOn: [
     virtualNetwork
