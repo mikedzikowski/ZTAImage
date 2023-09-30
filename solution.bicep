@@ -206,7 +206,6 @@ module imageBuild 'modules/imageBuild.bicep' = {
     customizations: customizations
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
-    enableBuildAutomation: enableBuildAutomation
     excludeFromLatest: excludeFromLatest
     galleryName: galleryName
     galleryResourceGroupName: galleryResourceGroupName
