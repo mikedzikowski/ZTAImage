@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "2835371462916736854"
+      "templateHash": "2438063030759065380"
     }
   },
   "parameters": {
@@ -469,7 +469,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "9423049455112484653"
+              "templateHash": "18296106840984161614"
             }
           },
           "parameters": {
@@ -2906,7 +2906,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.21.1.54444",
-                      "templateHash": "905992344403262557"
+                      "templateHash": "8295530902463673009"
                     }
                   },
                   "parameters": {
@@ -3167,11 +3167,8 @@
                             "patchSettings": {
                               "patchMode": "AutomaticByOS",
                               "assessmentMode": "ImageDefault"
-                            },
-                            "enableVMAgentPlatformUpdates": false
-                          },
-                          "allowExtensionOperations": true,
-                          "requireGuestProvisionSignal": true
+                            }
+                          }
                         },
                         "securityProfile": {
                           "encryptionAtHost": true,
@@ -3243,7 +3240,7 @@
                       "properties": {
                         "frequency": "Day",
                         "interval": 1,
-                        "startTime": "[dateTimeAdd(parameters('time'), 'PT15M')]",
+                        "startTime": "[dateTimeAdd(parameters('time'), 'P1D')]",
                         "timeZone": "[parameters('timeZone')]"
                       },
                       "dependsOn": [
