@@ -380,7 +380,7 @@
                             "label": "Virtual Machine Size",
                             "toolTip": "",
                             "recommendedSizes": [
-                                "Standard_D4_v4"
+                                "Standard_D4s_v4"
                             ],
                             "constraints": {},
                             "options": {
