@@ -251,6 +251,7 @@ try
 			oUPath = $OUPath
 			replicaCount = [int]$ReplicaCount
 			resourceGroupName = $ResourceGroupName
+			runbookExecution = $true
 			sharedGalleryImageResourceId = $SharedGalleryImageResourceId
 			sourceImageType = $SourceImageType
 			storageAccountName = $StorageAccountName

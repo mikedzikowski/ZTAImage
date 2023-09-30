@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "7454110076005593314"
+      "templateHash": "3712398824835789078"
     }
   },
   "parameters": {
@@ -20,9 +20,6 @@
     },
     "deploymentNameSuffix": {
       "type": "string"
-    },
-    "enableBuildAutomation": {
-      "type": "bool"
     },
     "excludeFromLatest": {
       "type": "bool"
@@ -123,6 +120,10 @@
     "resourceGroupName": {
       "type": "string"
     },
+    "runbookExecution": {
+      "type": "bool",
+      "defaultValue": false
+    },
     "sharedGalleryImageResourceId": {
       "type": "string"
     },
@@ -193,8 +194,8 @@
           "diskEncryptionSetResourceId": {
             "value": "[parameters('diskEncryptionSetResourceId')]"
           },
-          "localAdministratorPassword": "[if(parameters('enableBuildAutomation'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
-          "localAdministratorUsername": "[if(parameters('enableBuildAutomation'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
+          "localAdministratorPassword": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
+          "localAdministratorUsername": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
           "location": {
             "value": "[parameters('location')]"
           },
@@ -888,8 +889,8 @@
           "hybridUseBenefit": {
             "value": "[parameters('hybridUseBenefit')]"
           },
-          "localAdministratorPassword": "[if(parameters('enableBuildAutomation'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
-          "localAdministratorUsername": "[if(parameters('enableBuildAutomation'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
+          "localAdministratorPassword": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
+          "localAdministratorUsername": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
           "location": {
             "value": "[parameters('location')]"
           },
@@ -928,7 +929,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "2175869603072156146"
+              "templateHash": "14944397724537673296"
             }
           },
           "parameters": {
@@ -1096,7 +1097,7 @@
                   },
                   "securityType": "TrustedLaunch"
                 },
-                "licenseType": "[if(parameters('hybridUseBenefit'), 'Window_Server', null())]"
+                "licenseType": "[if(parameters('hybridUseBenefit'), 'Windows_Server', null())]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"

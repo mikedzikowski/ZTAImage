@@ -4,7 +4,6 @@ param containerName string
 param customizations array
 param diskEncryptionSetResourceId string
 param deploymentNameSuffix string
-param enableBuildAutomation bool
 param excludeFromLatest bool
 param galleryName string
 param galleryResourceGroupName string
@@ -40,6 +39,7 @@ param msrdcwebrtcsvcInstaller string
 param officeInstaller string
 param replicaCount int
 param resourceGroupName string
+param runbookExecution bool = false
 param sharedGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
@@ -91,8 +91,8 @@ module generalizedVM 'generalizedVM.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
-    localAdministratorPassword: enableBuildAutomation ? keyVault.getSecret('LocalAdministratorPassword') : localAdministratorPassword
-    localAdministratorUsername: enableBuildAutomation ? keyVault.getSecret('LocalAdministratorUsername') : localAdministratorUsername
+    localAdministratorPassword: runbookExecution ? keyVault.getSecret('LocalAdministratorPassword') : localAdministratorPassword
+    localAdministratorUsername: runbookExecution ? keyVault.getSecret('LocalAdministratorUsername') : localAdministratorUsername
     location: location
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
@@ -154,8 +154,8 @@ module managementVm 'managementVM.bicep' = {
     containerName: containerName
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     hybridUseBenefit: hybridUseBenefit
-    localAdministratorPassword: enableBuildAutomation ? keyVault.getSecret('LocalAdministratorPassword') : localAdministratorPassword
-    localAdministratorUsername: enableBuildAutomation ? keyVault.getSecret('LocalAdministratorUsername') : localAdministratorUsername
+    localAdministratorPassword: runbookExecution ? keyVault.getSecret('LocalAdministratorPassword') : localAdministratorPassword
+    localAdministratorUsername: runbookExecution ? keyVault.getSecret('LocalAdministratorUsername') : localAdministratorUsername
     location: location
     storageEndpoint: storageAccount.properties.primaryEndpoints.blob
     subnetName: subnetName
