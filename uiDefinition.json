@@ -26,7 +26,7 @@
                             }
                         },
                         {
-                            "name": "ResourceGroupsApi",
+                            "name": "resourceGroupsApi",
                             "type": "Microsoft.Solutions.ArmApiControl",
                             "request": {
                                 "method": "GET",
@@ -43,7 +43,7 @@
                             "filterPlaceholder": "",
                             "defaultDescription": "",
                             "constraints": {
-                                "allowedValues": "[map(steps('info').resources.ResourceGroupsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                "allowedValues": "[map(steps('basics').resourceGroupsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
                                 "required": true
                             },
                             "infoMessages": [],
@@ -80,7 +80,7 @@
                             "name": "marketplace",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Marketplace",
-                            "visible": "[equals(steps('source').type, 'marketplace')]",
+                            "visible": "[equals(steps('source').type, 'AzureMarketplace')]",
                             "elements": [
                                 {
                                     "name": "publisher",
@@ -121,7 +121,7 @@
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
                                         "method": "GET",
-                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/MicrosoftWindowsDesktop/artifacttypes/vmimage/offers/', steps('info').image.offer, '/skus?api-version=2022-08-01')]"
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/MicrosoftWindowsDesktop/artifacttypes/vmimage/offers/', steps('source').marketplace.offer, '/skus?api-version=2022-08-01')]"
                                     }
                                 },
                                 {
@@ -131,7 +131,7 @@
                                     "defaultValue": "win11-22h2-avd",
                                     "toolTip": "Select the desired marketplace image SKU.",
                                     "constraints": {
-                                        "allowedValues": "[map(steps('info').image.skuApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "allowedValues": "[map(steps('source').marketplace.skuApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
                                         "required": true
                                     }
                                 }
@@ -141,7 +141,7 @@
                             "name": "gallery",
                             "type": "Microsoft.Common.Section",
                             "label": "Compute Gallery",
-                            "visible": "[equals(steps('source').type, 'gallery')]",
+                            "visible": "[equals(steps('source').type, 'AzureComputeGallery')]",
                             "elements": [
                                 {
                                     "name": "gallery",
@@ -223,24 +223,10 @@
                                 },
                                 {
                                     "name": "excludeFromLatest",
-                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "type": "Microsoft.Common.CheckBox",
                                     "label": "Exclude from latest",
-                                    "defaultValue": "false",
-                                    "toolTip": "Determines whether the image version will be the latest available version.",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "true",
-                                                "value": "true"
-                                            },
-                                            {
-                                                "label": "false",
-                                                "value": "false"
-                                            }
-                                        ],
-                                        "required": true
-                                    },
-                                    "visible": true
+                                    "defaultValue": true,
+                                    "toolTip": "Determines whether the image version will be the latest available version."
                                 },
                                 {
                                     "name": "majorVersion",
@@ -299,7 +285,7 @@
                             "type": "Microsoft.Solutions.ArmApiControl",
                             "request": {
                                 "method": "GET",
-                                "path": "[concat(steps('info').resources.storageSelector.id, '/blobServices/default/containers?api-version=2023-01-01')]"
+                                "path": "[concat(steps('storage').storageSelector.id, '/blobServices/default/containers?api-version=2023-01-01')]"
                             }
                         },
                         {
@@ -311,7 +297,7 @@
                             "toolTip": "Select an existing container.",
                             "constraints": {
                                 "required": true,
-                                "allowedValues": "[map(steps('info').resources.containerApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                                "allowedValues": "[map(steps('storage').containerApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
                             }
                         }
                     ]
@@ -355,7 +341,7 @@
                                     "toolTip": "Select an existing virtual network for image capture.",
                                     "constraints": {
                                         "required": true,
-                                        "allowedValues": "[map(filter(steps('info').network.virtualNetworksApi.value, (item) => equals(item.location, steps('basics').scope.location.name)), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
+                                        "allowedValues": "[map(filter(steps('virtualMachines').network.virtualNetworksApi.value, (item) => equals(item.location, steps('basics').scope.location.name)), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
                                     }
                                 },
                                 {
@@ -363,7 +349,7 @@
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
                                         "method": "GET",
-                                        "path": "[concat(steps('info').network.virtualNetwork, '/subnets?api-version=2022-05-01')]"
+                                        "path": "[concat(steps('virtualMachines').network.virtualNetwork, '/subnets?api-version=2022-05-01')]"
                                     }
                                 },
                                 {
@@ -375,7 +361,7 @@
                                     "toolTip": "Select an existing subnet for the image capture.",
                                     "constraints": {
                                         "required": true,
-                                        "allowedValues": "[map(steps('info').network.subnetsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                                        "allowedValues": "[map(steps('virtualMachines').network.subnetsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
                                     }
                                 }
                             ]
@@ -988,7 +974,7 @@
                         {
                             "name": "automationAccount",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Automation account",
+                            "label": "Automation account name",
                             "toolTip": "Input the name for the automation account.",
                             "visible": "[steps('automation').enable]",
                             "constraints": {
@@ -1000,7 +986,7 @@
                         {
                             "name": "keyVault",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Key vault",
+                            "label": "Key vault name",
                             "toolTip": "Input the name for the key vault.",
                             "visible": "[steps('automation').enable]",
                             "constraints": {
@@ -1075,38 +1061,30 @@
                                     }
                                 },
                                 {
-                                    "name": "domainJoinCredentials",
-                                    "type": "Microsoft.Common.Section",
-                                    "label": "Domain Join Credentials",
-                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
-                                    "elements": [
-                                        {
-                                            "name": "userPrincipalName",
-                                            "type": "Microsoft.Common.TextBox",
-                                            "label": "User Principal Name",
-                                            "toolTip": "Enter the user principal name with domain join privileges.",
-                                            "placeholder": "",
-                                            "constraints": {
-                                                "required": true,
-                                                "regex": "^[a-z0-9A-Z_.-]+@(?:[a-z0-9]+\\.)+[a-z]+$",
-                                                "validationMessage": "The value must be a valid user principal name."
-                                            }
-                                        },
-                                        {
-                                            "name": "password",
-                                            "type": "Microsoft.Common.PasswordBox",
-                                            "label": {
-                                                "password": "Password"
-                                            },
-                                            "toolTip": "Enter a password that is alphanumeric, contains at least 12 characters, 1 letter, 1 number and 1 special character.",
-                                            "constraints": {
-                                                "required": true
-                                            },
-                                            "options": {
-                                                "hideConfirmation": true
-                                            }
-                                        }
-                                    ]
+                                    "name": "domainJoinUserPrincipalName",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Domain join user principal name",
+                                    "toolTip": "Enter the user principal name with domain join privileges.",
+                                    "placeholder": "",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "^[a-z0-9A-Z_.-]+@(?:[a-z0-9]+\\.)+[a-z]+$",
+                                        "validationMessage": "The value must be a valid user principal name."
+                                    }
+                                },
+                                {
+                                    "name": "domainJoinPassword",
+                                    "type": "Microsoft.Common.PasswordBox",
+                                    "label": {
+                                        "password": "Password"
+                                    },
+                                    "toolTip": "Enter a password that is alphanumeric, contains at least 12 characters, 1 letter, 1 number and 1 special character.",
+                                    "constraints": {
+                                        "required": true
+                                    },
+                                    "options": {
+                                        "hideConfirmation": true
+                                    }
                                 }
                             ]
                         },
@@ -1145,9 +1123,9 @@
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "diskEncryptionSetResourceId": "[steps('virtualMachines').diskEncryptionSetSelector.id]",
-                "domainJoinPassword": "[if(steps('automation').enable, steps('automation').hybridWorker.domainJoinCredentials.password, '')]",
-                "domainJoinUserPrincipalName": "[if(steps('automation').enable, steps('automation').hybridWorker.domainJoinCredentials.userPrincipalName, '')]",
-                "domainName": "[if(steps('automation').enable, steps('automation').domainName, '')]",
+                "domainJoinPassword": "[steps('automation').hybridWorker.domainJoinPassword]",
+                "domainJoinUserPrincipalName": "[steps('automation').hybridWorker.domainJoinUserPrincipalName]",
+                "domainName": "[if(steps('automation').enable, steps('automation').hybridWorker.domainName, '')]",
                 "enableBuildAutomation": "[steps('automation').enable]",
                 "excludeFromLatest": "[steps('destination').imageVersion.excludeFromLatest]",
                 "galleryName": "[steps('destination').gallery.name]",
@@ -1179,10 +1157,10 @@
                 "marketplaceImageSKU": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.sku, '')]",
                 "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]",
                 "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
-                "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').ouPath, '')]",
+                "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
                 "resourceGroupName": "[steps('basics').resourceGroup]",
-                "securityPrincipalObjectIds": "[if(steps('automation').enable, map(steps('automation').groups, item => item.objectId), parse('[]'))]",
+                "securityPrincipalObjectIds": "[if(steps('automation').enable, map(steps('automation').groups, (item) => item.objectId), parse('[]'))]",
                 "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountName": "[steps('storage').storageSelector.name]",
