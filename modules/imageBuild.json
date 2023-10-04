@@ -5,32 +5,30 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "3712398824835789078"
+      "templateHash": "5197063383232499449"
     }
   },
   "parameters": {
+    "computeGalleryName": {
+      "type": "string"
+    },
     "containerName": {
       "type": "string"
     },
     "customizations": {
       "type": "array"
     },
+    "deploymentNameSuffix": {
+      "type": "string",
+      "defaultValue": "[utcNow('yyMMddHHs')]"
+    },
     "diskEncryptionSetResourceId": {
       "type": "string"
     },
-    "deploymentNameSuffix": {
-      "type": "string"
-    },
-    "excludeFromLatest": {
+    "enableBuildAutomation": {
       "type": "bool"
     },
-    "galleryName": {
-      "type": "string"
-    },
-    "galleryResourceGroupName": {
-      "type": "string"
-    },
-    "hybridUseBenefit": {
+    "excludeFromLatest": {
       "type": "bool"
     },
     "imageDefinitionName": {
@@ -85,34 +83,43 @@
       "type": "bool"
     },
     "keyVaultName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "localAdministratorPassword": {
-      "type": "securestring"
+      "type": "securestring",
+      "defaultValue": ""
     },
     "localAdministratorUsername": {
-      "type": "securestring"
+      "type": "securestring",
+      "defaultValue": ""
     },
     "location": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[deployment().location]"
     },
     "managementVirtualMachineName": {
       "type": "string"
     },
     "marketplaceImageOffer": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "marketplaceImagePublisher": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "marketplaceImageSKU": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "msrdcwebrtcsvcInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "officeInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "replicaCount": {
       "type": "int"
@@ -125,7 +132,8 @@
       "defaultValue": false
     },
     "sharedGalleryImageResourceId": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "sourceImageType": {
       "type": "string"
@@ -133,41 +141,38 @@
     "storageAccountName": {
       "type": "string"
     },
-    "storageAccountResourceGroupName": {
-      "type": "string"
-    },
-    "subnetName": {
+    "subnetResourceId": {
       "type": "string"
     },
     "subscriptionId": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]"
     },
     "tags": {
       "type": "object"
     },
     "teamsInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "tenantType": {
       "type": "string"
     },
-    "userAssignedIdentityName": {
+    "userAssignedIdentityClientId": {
       "type": "string"
     },
-    "userAssignedIdentityResourceGroupName": {
+    "userAssignedIdentityPrincipalId": {
+      "type": "string"
+    },
+    "userAssignedIdentityResourceId": {
       "type": "string"
     },
     "vcRedistInstaller": {
       "type": "string"
     },
     "vDOTInstaller": {
-      "type": "string"
-    },
-    "virtualNetworkName": {
-      "type": "string"
-    },
-    "virtualNetworkResourceGroupName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "virtualMachineSize": {
       "type": "string"
@@ -176,7 +181,8 @@
   "variables": {
     "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
     "cloud": "[environment().name]",
-    "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]"
+    "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
+    "storageEndpoint": "[environment().suffixes.storage]"
   },
   "resources": [
     {
@@ -214,29 +220,20 @@
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
           },
-          "subnetName": {
-            "value": "[parameters('subnetName')]"
+          "subnetResourceId": {
+            "value": "[parameters('subnetResourceId')]"
           },
           "tags": {
             "value": "[parameters('tags')]"
           },
-          "userAssignedIdentityName": {
-            "value": "[parameters('userAssignedIdentityName')]"
-          },
-          "userAssignedIdentityResourceGroupName": {
-            "value": "[parameters('userAssignedIdentityResourceGroupName')]"
+          "userAssignedIdentityResourceId": {
+            "value": "[parameters('userAssignedIdentityResourceId')]"
           },
           "virtualMachineName": {
             "value": "[parameters('imageVirtualMachineName')]"
           },
           "virtualMachineSize": {
             "value": "[parameters('virtualMachineSize')]"
-          },
-          "virtualNetworkName": {
-            "value": "[parameters('virtualNetworkName')]"
-          },
-          "virtualNetworkResourceGroupName": {
-            "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('virtualNetworkResourceGroupName')), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), '/')[4]]"
           }
         },
         "template": {
@@ -246,7 +243,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "11342307709801818283"
+              "templateHash": "16938797212053855775"
             }
           },
           "parameters": {
@@ -277,28 +274,19 @@
             "sourceImageType": {
               "type": "string"
             },
-            "subnetName": {
+            "subnetResourceId": {
               "type": "string"
             },
             "tags": {
               "type": "object"
             },
-            "userAssignedIdentityName": {
-              "type": "string"
-            },
-            "userAssignedIdentityResourceGroupName": {
+            "userAssignedIdentityResourceId": {
               "type": "string"
             },
             "virtualMachineName": {
               "type": "string"
             },
             "virtualMachineSize": {
-              "type": "string"
-            },
-            "virtualNetworkName": {
-              "type": "string"
-            },
-            "virtualNetworkResourceGroupName": {
               "type": "string"
             }
           },
@@ -307,35 +295,11 @@
           },
           "resources": [
             {
-              "type": "Microsoft.Network/networkSecurityGroups",
-              "apiVersion": "2022-05-01",
-              "name": "nsg-image-vm",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "properties": {
-                "securityRules": [
-                  {
-                    "name": "default-allow-3389",
-                    "properties": {
-                      "priority": 1000,
-                      "access": "Allow",
-                      "direction": "Inbound",
-                      "destinationPortRange": "3389",
-                      "protocol": "Tcp",
-                      "sourcePortRange": "*",
-                      "sourceAddressPrefix": "*",
-                      "destinationAddressPrefix": "*"
-                    }
-                  }
-                ]
-              }
-            },
-            {
               "type": "Microsoft.Network/networkInterfaces",
               "apiVersion": "2022-05-01",
               "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
               "properties": {
                 "ipConfigurations": [
                   {
@@ -343,7 +307,7 @@
                     "properties": {
                       "privateIPAllocationMethod": "Dynamic",
                       "subnet": {
-                        "id": "[format('{0}/subnets/{1}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('virtualNetworkResourceGroupName')), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), parameters('subnetName'))]"
+                        "id": "[parameters('subnetResourceId')]"
                       }
                     }
                   }
@@ -355,11 +319,11 @@
               "apiVersion": "2022-03-01",
               "name": "[parameters('virtualMachineName')]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "identity": {
                 "type": "UserAssigned",
                 "userAssignedIdentities": {
-                  "[format('{0}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')))]": {}
+                  "[format('{0}', parameters('userAssignedIdentityResourceId'))]": {}
                 }
               },
               "properties": {
@@ -414,17 +378,13 @@
             }
           ],
           "outputs": {
-            "Name": {
+            "name": {
               "type": "string",
               "value": "[parameters('virtualMachineName')]"
             },
-            "ResourceId": {
+            "resourceId": {
               "type": "string",
               "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
-            },
-            "ResourceGroupName": {
-              "type": "string",
-              "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
             }
           }
         }
@@ -433,7 +393,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('custom-vm-{0}', parameters('deploymentNameSuffix'))]",
+      "name": "[format('customizations-{0}', parameters('deploymentNameSuffix'))]",
       "subscriptionId": "[parameters('subscriptionId')]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -494,7 +454,7 @@
             "value": "[parameters('storageAccountName')]"
           },
           "storageEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('storageAccountResourceGroupName')), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2022-09-01').primaryEndpoints.blob]"
+            "value": "[variables('storageEndpoint')]"
           },
           "tags": {
             "value": "[parameters('tags')]"
@@ -503,10 +463,10 @@
             "value": "[parameters('tenantType')]"
           },
           "userAssignedIdentityObjectId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2023-01-31').principalId]"
+            "value": "[parameters('userAssignedIdentityPrincipalId')]"
           },
           "vmName": {
-            "value": "[parameters('imageVirtualMachineName')]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
           "vDotInstaller": {
             "value": "[parameters('vDOTInstaller')]"
@@ -531,7 +491,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "7965137127816765885"
+              "templateHash": "7991474350273122578"
             }
           },
           "parameters": {
@@ -643,7 +603,7 @@
               "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('vmName'), format('app-{0}', variables('installers')[copyIndex()].name))]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "treatFailureAsDeploymentFailure": true,
                 "parameters": [
@@ -687,7 +647,7 @@
               "apiVersion": "2022-11-01",
               "name": "[format('{0}/{1}', parameters('vmName'), 'office')]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "parameters": [
                   {
@@ -769,7 +729,7 @@
               "apiVersion": "2022-11-01",
               "name": "[format('{0}/{1}', parameters('vmName'), 'vdot')]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "parameters": [
                   {
@@ -810,7 +770,7 @@
               "apiVersion": "2022-11-01",
               "name": "[format('{0}/{1}', parameters('vmName'), 'teams')]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "parameters": [
                   {
@@ -871,291 +831,6 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('management-vm-{0}', parameters('deploymentNameSuffix'))]",
-      "subscriptionId": "[parameters('subscriptionId')]",
-      "resourceGroup": "[parameters('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "containerName": {
-            "value": "[parameters('containerName')]"
-          },
-          "diskEncryptionSetResourceId": {
-            "value": "[parameters('diskEncryptionSetResourceId')]"
-          },
-          "hybridUseBenefit": {
-            "value": "[parameters('hybridUseBenefit')]"
-          },
-          "localAdministratorPassword": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
-          "localAdministratorUsername": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
-          "location": {
-            "value": "[parameters('location')]"
-          },
-          "storageEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('storageAccountResourceGroupName')), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2022-09-01').primaryEndpoints.blob]"
-          },
-          "subnetName": {
-            "value": "[parameters('subnetName')]"
-          },
-          "tags": {
-            "value": "[parameters('tags')]"
-          },
-          "userAssignedIdentityName": {
-            "value": "[parameters('userAssignedIdentityName')]"
-          },
-          "userAssignedIdentityResourceGroupName": {
-            "value": "[parameters('userAssignedIdentityResourceGroupName')]"
-          },
-          "virtualMachineName": {
-            "value": "[parameters('managementVirtualMachineName')]"
-          },
-          "virtualMachineSize": {
-            "value": "[parameters('virtualMachineSize')]"
-          },
-          "virtualNetworkName": {
-            "value": "[parameters('virtualNetworkName')]"
-          },
-          "virtualNetworkResourceGroup": {
-            "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('virtualNetworkResourceGroupName')), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), '/')[4]]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "14944397724537673296"
-            }
-          },
-          "parameters": {
-            "containerName": {
-              "type": "string"
-            },
-            "diskEncryptionSetResourceId": {
-              "type": "string"
-            },
-            "hybridUseBenefit": {
-              "type": "bool"
-            },
-            "localAdministratorPassword": {
-              "type": "securestring"
-            },
-            "localAdministratorUsername": {
-              "type": "securestring"
-            },
-            "location": {
-              "type": "string"
-            },
-            "userAssignedIdentityName": {
-              "type": "string"
-            },
-            "userAssignedIdentityResourceGroupName": {
-              "type": "string"
-            },
-            "storageEndpoint": {
-              "type": "string"
-            },
-            "subnetName": {
-              "type": "string"
-            },
-            "tags": {
-              "type": "object"
-            },
-            "virtualNetworkName": {
-              "type": "string"
-            },
-            "virtualNetworkResourceGroup": {
-              "type": "string"
-            },
-            "virtualMachineName": {
-              "type": "string"
-            },
-            "virtualMachineSize": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "installers": [
-              {
-                "name": "AzModules",
-                "blobName": "Az-Cmdlets-10.2.0.37547-x64.msi",
-                "arguments": "/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart",
-                "enabled": true
-              }
-            ]
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Network/networkSecurityGroups",
-              "apiVersion": "2022-05-01",
-              "name": "nsg-image-vm",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "properties": {
-                "securityRules": [
-                  {
-                    "name": "default-allow-3389",
-                    "properties": {
-                      "priority": 1000,
-                      "access": "Allow",
-                      "direction": "Inbound",
-                      "destinationPortRange": "3389",
-                      "protocol": "Tcp",
-                      "sourcePortRange": "*",
-                      "sourceAddressPrefix": "*",
-                      "destinationAddressPrefix": "*"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Network/networkInterfaces",
-              "apiVersion": "2022-05-01",
-              "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "properties": {
-                "ipConfigurations": [
-                  {
-                    "name": "ipconfig1",
-                    "properties": {
-                      "privateIPAllocationMethod": "Dynamic",
-                      "subnet": {
-                        "id": "[format('{0}/subnets/{1}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('virtualNetworkResourceGroup')), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), parameters('subnetName'))]"
-                      }
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Compute/virtualMachines",
-              "apiVersion": "2022-03-01",
-              "name": "[parameters('virtualMachineName')]",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "identity": {
-                "type": "UserAssigned",
-                "userAssignedIdentities": {
-                  "[format('{0}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')))]": {}
-                }
-              },
-              "properties": {
-                "hardwareProfile": {
-                  "vmSize": "[parameters('virtualMachineSize')]"
-                },
-                "osProfile": {
-                  "computerName": "[parameters('virtualMachineName')]",
-                  "adminUsername": "[parameters('localAdministratorUsername')]",
-                  "adminPassword": "[parameters('localAdministratorPassword')]"
-                },
-                "storageProfile": {
-                  "imageReference": {
-                    "publisher": "MicrosoftWindowsServer",
-                    "offer": "WindowsServer",
-                    "sku": "2019-datacenter-core-g2",
-                    "version": "latest"
-                  },
-                  "osDisk": {
-                    "createOption": "FromImage",
-                    "deleteOption": "Delete",
-                    "managedDisk": {
-                      "diskEncryptionSet": {
-                        "id": "[parameters('diskEncryptionSetResourceId')]"
-                      },
-                      "storageAccountType": "Premium_LRS"
-                    }
-                  },
-                  "dataDisks": []
-                },
-                "networkProfile": {
-                  "networkInterfaces": [
-                    {
-                      "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
-                      "properties": {
-                        "deleteOption": "Delete"
-                      }
-                    }
-                  ]
-                },
-                "diagnosticsProfile": {
-                  "bootDiagnostics": {
-                    "enabled": false
-                  }
-                },
-                "securityProfile": {
-                  "encryptionAtHost": true,
-                  "uefiSettings": {
-                    "secureBootEnabled": true,
-                    "vTpmEnabled": true
-                  },
-                  "securityType": "TrustedLaunch"
-                },
-                "licenseType": "[if(parameters('hybridUseBenefit'), 'Windows_Server', null())]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
-              ]
-            },
-            {
-              "copy": {
-                "name": "modules",
-                "count": "[length(variables('installers'))]"
-              },
-              "condition": "[variables('installers')[copyIndex()].enabled]",
-              "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2022-11-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), format('app{0}', variables('installers')[copyIndex()].name))]",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "properties": {
-                "parameters": [
-                  {
-                    "name": "UserAssignedIdentityObjectId",
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2023-01-31').principalId]"
-                  },
-                  {
-                    "name": "ContainerName",
-                    "value": "[parameters('containerName')]"
-                  },
-                  {
-                    "name": "StorageEndpoint",
-                    "value": "[parameters('storageEndpoint')]"
-                  },
-                  {
-                    "name": "BlobName",
-                    "value": "[variables('installers')[copyIndex()].blobName]"
-                  },
-                  {
-                    "name": "Arguments",
-                    "value": "[variables('installers')[copyIndex()].arguments]"
-                  }
-                ],
-                "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile \"$env:windir\\temp\\$Blobname\"\r\n        Start-Sleep -Seconds 60\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
-              ]
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
       "name": "[format('restart-vm-{0}', parameters('deploymentNameSuffix'))]",
       "subscriptionId": "[parameters('subscriptionId')]",
       "resourceGroup": "[parameters('resourceGroupName')]",
@@ -1169,10 +844,10 @@
             "value": "[variables('cloud')]"
           },
           "imageVirtualMachineName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.Name.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
           "resourceGroupName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.ResourceGroupName.value]"
+            "value": "[parameters('resourceGroupName')]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -1180,11 +855,8 @@
           "tags": {
             "value": "[parameters('tags')]"
           },
-          "userAssignedIdentityName": {
-            "value": "[parameters('userAssignedIdentityName')]"
-          },
-          "userAssignedIdentityResourceGroupName": {
-            "value": "[parameters('userAssignedIdentityResourceGroupName')]"
+          "userAssignedIdentityClientId": {
+            "value": "[parameters('userAssignedIdentityClientId')]"
           },
           "virtualMachineName": {
             "value": "[parameters('managementVirtualMachineName')]"
@@ -1197,7 +869,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "5562374981564876716"
+              "templateHash": "365495532561278829"
             }
           },
           "parameters": {
@@ -1216,10 +888,7 @@
             "tags": {
               "type": "object"
             },
-            "userAssignedIdentityName": {
-              "type": "string"
-            },
-            "userAssignedIdentityResourceGroupName": {
+            "userAssignedIdentityClientId": {
               "type": "string"
             },
             "virtualMachineName": {
@@ -1232,14 +901,14 @@
               "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'restartVm')]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "treatFailureAsDeploymentFailure": false,
                 "asyncExecution": false,
                 "parameters": [
                   {
                     "name": "miId",
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2023-01-31').clientId]"
+                    "value": "[parameters('userAssignedIdentityClientId')]"
                   },
                   {
                     "name": "imageVmRg",
@@ -1263,9 +932,8 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('customizations-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     },
     {
@@ -1290,16 +958,16 @@
             "value": "[parameters('storageAccountName')]"
           },
           "storageEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('storageAccountResourceGroupName')), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2022-09-01').primaryEndpoints.blob]"
+            "value": "[variables('storageEndpoint')]"
           },
           "tags": {
             "value": "[parameters('tags')]"
           },
           "userAssignedIdentityObjectId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2023-01-31').principalId]"
+            "value": "[parameters('userAssignedIdentityPrincipalId')]"
           },
           "virtualMachineName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.Name.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           }
         },
         "template": {
@@ -1309,7 +977,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "9213852178572442531"
+              "templateHash": "13122088927862792607"
             }
           },
           "parameters": {
@@ -1341,7 +1009,7 @@
               "apiVersion": "2022-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'sysprep')]",
               "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "asyncExecution": false,
                 "parameters": [
@@ -1371,10 +1039,8 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     },
     {
@@ -1393,19 +1059,19 @@
             "value": "[variables('cloud')]"
           },
           "imageVirtualMachineName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.Name.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
           "resourceGroupName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.ResourceGroupName.value]"
+            "value": "[parameters('resourceGroupName')]"
           },
           "location": {
             "value": "[parameters('location')]"
           },
-          "userAssignedIdentityName": {
-            "value": "[parameters('userAssignedIdentityName')]"
+          "tags": {
+            "value": "[parameters('tags')]"
           },
-          "userAssignedIdentityResourceGroupName": {
-            "value": "[parameters('userAssignedIdentityResourceGroupName')]"
+          "userAssignedIdentityClientId": {
+            "value": "[parameters('userAssignedIdentityClientId')]"
           },
           "virtualMachineName": {
             "value": "[parameters('managementVirtualMachineName')]"
@@ -1418,7 +1084,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "7638710455549607300"
+              "templateHash": "4475212057674672300"
             }
           },
           "parameters": {
@@ -1435,10 +1101,10 @@
               "type": "string",
               "defaultValue": "[resourceGroup().location]"
             },
-            "userAssignedIdentityName": {
-              "type": "string"
+            "tags": {
+              "type": "object"
             },
-            "userAssignedIdentityResourceGroupName": {
+            "userAssignedIdentityClientId": {
               "type": "string"
             },
             "virtualMachineName": {
@@ -1451,13 +1117,14 @@
               "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'generalize')]",
               "location": "[parameters('location')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "treatFailureAsDeploymentFailure": false,
                 "asyncExecution": false,
                 "parameters": [
                   {
                     "name": "miId",
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2023-01-31').clientId]"
+                    "value": "[parameters('userAssignedIdentityClientId')]"
                   },
                   {
                     "name": "imageVmRg",
@@ -1489,30 +1156,27 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('gallery-image-{0}', parameters('deploymentNameSuffix'))]",
+      "name": "[format('image-version-{0}', parameters('deploymentNameSuffix'))]",
       "subscriptionId": "[parameters('subscriptionId')]",
-      "resourceGroup": "[parameters('galleryResourceGroupName')]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
         },
         "mode": "Incremental",
         "parameters": {
+          "computeGalleryName": {
+            "value": "[parameters('computeGalleryName')]"
+          },
           "excludeFromLatest": {
             "value": "[parameters('excludeFromLatest')]"
-          },
-          "galleryName": {
-            "value": "[parameters('galleryName')]"
           },
           "imageDefinitionName": {
             "value": "[parameters('imageDefinitionName')]"
@@ -1521,19 +1185,16 @@
             "value": "[variables('autoImageVersion')]"
           },
           "imageVirtualMachineResourceId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.ResourceId.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.resourceId.value]"
           },
           "location": {
             "value": "[parameters('location')]"
           },
-          "marketplaceImageOffer": {
-            "value": "[parameters('marketplaceImageOffer')]"
-          },
-          "marketplaceImagePublisher": {
-            "value": "[parameters('marketplaceImagePublisher')]"
-          },
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
           }
         },
         "template": {
@@ -1543,7 +1204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "905448038635729815"
+              "templateHash": "8584937636955464102"
             }
           },
           "parameters": {
@@ -1551,15 +1212,11 @@
               "type": "bool",
               "defaultValue": true
             },
-            "excludeFromLatest": {
-              "type": "bool"
-            },
-            "galleryName": {
+            "computeGalleryName": {
               "type": "string"
             },
-            "hyperVGeneration": {
-              "type": "string",
-              "defaultValue": "V2"
+            "excludeFromLatest": {
+              "type": "bool"
             },
             "imageDefinitionName": {
               "type": "string"
@@ -1571,76 +1228,34 @@
               "type": "string"
             },
             "location": {
-              "type": "string",
-              "defaultValue": "[resourceGroup().location]"
-            },
-            "marketplaceImageOffer": {
-              "type": "string"
-            },
-            "marketplaceImagePublisher": {
               "type": "string"
             },
             "replicaCount": {
               "type": "int"
             },
-            "replicationMode": {
-              "type": "string",
-              "defaultValue": "Full"
-            },
-            "storageAccountType": {
-              "type": "string",
-              "defaultValue": "Standard_LRS"
+            "tags": {
+              "type": "object"
             }
           },
           "resources": [
             {
-              "type": "Microsoft.Compute/galleries/images",
-              "apiVersion": "2022-03-03",
-              "name": "[format('{0}/{1}', parameters('galleryName'), parameters('imageDefinitionName'))]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "architecture": "x64",
-                "features": [
-                  {
-                    "name": "IsHibernateSupported",
-                    "value": "True"
-                  },
-                  {
-                    "name": "IsAcceleratedNetworkSupported",
-                    "value": "True"
-                  },
-                  {
-                    "name": "SecurityType",
-                    "value": "TrustedLaunch"
-                  }
-                ],
-                "hyperVGeneration": "[parameters('hyperVGeneration')]",
-                "identifier": {
-                  "offer": "[parameters('marketplaceImageOffer')]",
-                  "publisher": "[parameters('marketplaceImagePublisher')]",
-                  "sku": "[parameters('imageDefinitionName')]"
-                },
-                "osState": "Generalized",
-                "osType": "Windows"
-              }
-            },
-            {
               "type": "Microsoft.Compute/galleries/images/versions",
               "apiVersion": "2022-03-03",
-              "name": "[format('{0}/{1}/{2}', parameters('galleryName'), parameters('imageDefinitionName'), parameters('imageVersionNumber'))]",
+              "name": "[format('{0}/{1}/{2}', parameters('computeGalleryName'), parameters('imageDefinitionName'), parameters('imageVersionNumber'))]",
               "location": "[parameters('location')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
               "properties": {
                 "publishingProfile": {
                   "excludeFromLatest": "[parameters('excludeFromLatest')]",
                   "replicaCount": "[parameters('replicaCount')]",
-                  "replicationMode": "[parameters('replicationMode')]",
-                  "storageAccountType": "[parameters('storageAccountType')]",
+                  "replicationMode": "Full",
+                  "storageAccountType": "Standard_LRS",
                   "targetRegions": [
                     {
                       "excludeFromLatest": "[parameters('excludeFromLatest')]",
                       "name": "[parameters('location')]",
                       "regionalReplicaCount": "[parameters('replicaCount')]",
-                      "storageAccountType": "[parameters('storageAccountType')]"
+                      "storageAccountType": "Standard_LRS"
                     }
                   ]
                 },
@@ -1652,33 +1267,18 @@
                     "id": "[parameters('imageVirtualMachineResourceId')]"
                   }
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Compute/galleries/images', parameters('galleryName'), parameters('imageDefinitionName'))]"
-              ]
+              }
             }
-          ],
-          "outputs": {
-            "galleryName": {
-              "type": "string",
-              "value": "[parameters('galleryName')]"
-            },
-            "imageDefinitionName": {
-              "type": "string",
-              "value": "[parameters('imageDefinitionName')]"
-            }
-          }
+          ]
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     },
     {
+      "condition": "[not(parameters('enableBuildAutomation'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('remove-vm-{0}', parameters('deploymentNameSuffix'))]",
@@ -1694,19 +1294,19 @@
             "value": "[variables('cloud')]"
           },
           "imageVirtualMachineName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.Name.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
           "resourceGroupName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.ResourceGroupName.value]"
+            "value": "[parameters('resourceGroupName')]"
           },
           "location": {
             "value": "[parameters('location')]"
           },
-          "userAssignedIdentityName": {
-            "value": "[parameters('userAssignedIdentityName')]"
+          "tags": {
+            "value": "[parameters('tags')]"
           },
-          "userAssignedIdentityResourceGroupName": {
-            "value": "[parameters('userAssignedIdentityResourceGroupName')]"
+          "userAssignedIdentityClientId": {
+            "value": "[parameters('userAssignedIdentityClientId')]"
           },
           "virtualMachineName": {
             "value": "[parameters('managementVirtualMachineName')]"
@@ -1719,7 +1319,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "9803358863145867514"
+              "templateHash": "7840797126177088511"
             }
           },
           "parameters": {
@@ -1736,10 +1336,10 @@
               "type": "string",
               "defaultValue": "[resourceGroup().location]"
             },
-            "userAssignedIdentityName": {
-              "type": "string"
+            "tags": {
+              "type": "object"
             },
-            "userAssignedIdentityResourceGroupName": {
+            "userAssignedIdentityClientId": {
               "type": "string"
             },
             "virtualMachineName": {
@@ -1752,13 +1352,14 @@
               "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'removeVm')]",
               "location": "[parameters('location')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "treatFailureAsDeploymentFailure": false,
                 "asyncExecution": true,
                 "parameters": [
                   {
                     "name": "miId",
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('userAssignedIdentityResourceGroupName')), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2023-01-31').clientId]"
+                    "value": "[parameters('userAssignedIdentityClientId')]"
                   },
                   {
                     "name": "imageVmRg",
@@ -1790,12 +1391,8 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('galleryResourceGroupName')), 'Microsoft.Resources/deployments', format('gallery-image-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('custom-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     }
   ]

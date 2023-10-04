@@ -15,7 +15,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
 resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
   name: 'sysprep'
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
     asyncExecution: false

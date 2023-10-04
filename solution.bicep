@@ -1,18 +1,17 @@
 targetScope = 'subscription'
 
 param automationAccountName string
+param computeGalleryName string
 param containerName string
 param customizations array = []
-param diskEncryptionSetResourceId string
+param diskEncryptionSetResourceId string = ''
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 @secure()
 param domainJoinPassword string = ''
 param domainJoinUserPrincipalName string = ''
 param domainName string = ''
 param enableBuildAutomation bool
-param excludeFromLatest bool
-param galleryName string
-param galleryResourceGroupName string
+param excludeFromLatest bool = true
 param hybridUseBenefit bool
 param imageDefinitionNamePrefix string
 param imageMajorVersion int
@@ -39,21 +38,19 @@ param logAnalyticsWorkspaceResourceId string = ''
 param marketplaceImageOffer string = ''
 param marketplaceImagePublisher string = ''
 param marketplaceImageSKU string = ''
-param msrdcwebrtcsvcInstaller string
+param msrdcwebrtcsvcInstaller string = ''
 param officeInstaller string
 param oUPath string
 param replicaCount int
 param resourceGroupName string
-param securityPrincipalObjectIds array
-param sharedGalleryImageResourceId string
+param sharedGalleryImageResourceId string = ''
 @allowed([
   'AzureComputeGallery'
   'AzureMarketplace'
 ])
 param sourceImageType string
 param storageAccountName string
-param storageAccountResourceGroupName string
-param subnetName string
+param subnetResourceId string
 param tags object = {}
 param teamsInstaller string
 @allowed([
@@ -64,14 +61,10 @@ param teamsInstaller string
 ])
 param tenantType string
 param userAssignedIdentityName string
-param userAssignedIdentityResourceGroupName string
-param vcRedistInstaller string
-param vDOTInstaller string
+param vcRedistInstaller string = ''
+param vDOTInstaller string = ''
 param virtualMachineSize string
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string
 
-var hybridWorkerVirtualMachineName = take('vmhw-${uniqueString(deploymentNameSuffix)}', 15)
 var imageDefinitionName = '${imageDefinitionNamePrefix}-${marketplaceImageSKU}'
 var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
 var managementVirtualMachineName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
@@ -133,10 +126,34 @@ var timeZones = {
   westus3: 'Mountain Standard Time'
 }
 
+module baseline 'modules/baseline.bicep' = {
+  name: 'baseline-${deploymentNameSuffix}'
+  params: {
+    computeGalleryName: computeGalleryName
+    containerName: containerName
+    deploymentNameSuffix: deploymentNameSuffix
+    diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    hybridUseBenefit: hybridUseBenefit
+    imageDefinitionName: imageDefinitionName
+    localAdministratorPassword: localAdministratorPassword
+    localAdministratorUsername: localAdministratorUsername
+    location: location
+    managementVirtualMachineName: managementVirtualMachineName
+    marketplaceImageOffer: marketplaceImageOffer
+    marketplaceImagePublisher: marketplaceImagePublisher
+    resourceGroupName: resourceGroupName
+    subnetResourceId: subnetResourceId
+    subscriptionId: subscriptionId
+    tags: tags
+    userAssignedIdentityName: userAssignedIdentityName
+  }
+}
+
 module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomation) {
   name: 'build-automation-${deploymentNameSuffix}'
   params: {
     automationAccountName: automationAccountName
+    computeGalleryName: computeGalleryName
     containerName: containerName
     customizations: customizations
     deploymentNameSuffix: deploymentNameSuffix
@@ -144,13 +161,11 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     domainJoinPassword: domainJoinPassword
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName
-    galleryName: galleryName
-    galleryResourceGroupName: galleryResourceGroupName
-    hybridUseBenefit: hybridUseBenefit
-    hybridWorkerVirtualMachineName: hybridWorkerVirtualMachineName
+    enableBuildAutomation: enableBuildAutomation
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
+    imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
     installExcel: installExcel
     installOneDriveForBusiness: installOneDriveForBusiness
@@ -169,6 +184,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     localAdministratorUsername: localAdministratorUsername
     location: location
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
+    managementVirtualMachineName: managementVirtualMachineName
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     marketplaceImageSKU: marketplaceImageSKU
@@ -177,39 +193,35 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     oUPath: oUPath
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
-    securityPrincipalObjectIds: securityPrincipalObjectIds
     sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
-    storageAccountResourceGroupName: storageAccountResourceGroupName
-    subnetName: subnetName
+    subnetResourceId: subnetResourceId
     subscriptionId: subscriptionId
     tags: tags
     teamsInstaller: teamsInstaller
     tenantType: tenantType
     timeZone: timeZones[location]
-    userAssignedIdentityName: userAssignedIdentityName
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    userAssignedIdentityClientId: baseline.outputs.userAssignedIdentityClientId
+    userAssignedIdentityPrincipalId: baseline.outputs.userAssignedIdentityPrincipalId
+    userAssignedIdentityResourceId: baseline.outputs.userAssignedIdentityResourceId
     vcRedistInstaller: vcRedistInstaller
     vDOTInstaller: vDOTInstaller
-    virtualMachineName: hybridWorkerVirtualMachineName
+    virtualMachineName: managementVirtualMachineName
     virtualMachineSize: virtualMachineSize
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
   }
 }
 
 module imageBuild 'modules/imageBuild.bicep' = {
   name: 'image-build-${deploymentNameSuffix}'
   params: {
+    computeGalleryName: computeGalleryName
     containerName: containerName
     customizations: customizations
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    enableBuildAutomation: enableBuildAutomation
     excludeFromLatest: excludeFromLatest
-    galleryName: galleryName
-    galleryResourceGroupName: galleryResourceGroupName
-    hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
@@ -242,18 +254,16 @@ module imageBuild 'modules/imageBuild.bicep' = {
     sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
-    storageAccountResourceGroupName: storageAccountResourceGroupName
-    subnetName: subnetName
+    subnetResourceId: subnetResourceId
     subscriptionId: subscriptionId
     tags: tags
     teamsInstaller: teamsInstaller
     tenantType: tenantType
-    userAssignedIdentityName: userAssignedIdentityName
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    userAssignedIdentityClientId: baseline.outputs.userAssignedIdentityClientId
+    userAssignedIdentityPrincipalId: baseline.outputs.userAssignedIdentityPrincipalId
+    userAssignedIdentityResourceId: baseline.outputs.userAssignedIdentityResourceId
     vcRedistInstaller: vcRedistInstaller
     vDOTInstaller: vDOTInstaller
     virtualMachineSize: virtualMachineSize
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
   }
 }

@@ -1,7 +1,7 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
 	[Parameter(Mandatory)]
-	[string]$AutomationAccountName,
+	[string]$ComputeGalleryName,
 
 	[Parameter(Mandatory)]
 	[string]$ContainerName,
@@ -12,32 +12,20 @@ param(
 	[Parameter(Mandatory)]
 	[string]$DiskEncryptionSetResourceId,
 
-	[Parameter(Mandatory=$false)]
-	[string]$DomainName,
-
 	[Parameter(Mandatory)]
 	[string]$EnvironmentName,
 
 	[Parameter(Mandatory)]
-	[string]$GalleryName,
-
-	[Parameter(Mandatory)]
-	[string]$GalleryResourceGroupName,
-
-	[Parameter(Mandatory)]
-	[string]$HybridUseBenefit,
-
-	[Parameter(Mandatory)]
-	[string]$HybridWorkerVirtualMachineName,
-
-	[Parameter(Mandatory)]
-	[string]$ImageName,
+	[string]$ImageDefinitionName,
 
 	[Parameter(Mandatory)]
 	[string]$ImageMajorVersion,
 
 	[Parameter(Mandatory)]
 	[string]$ImageMinorVersion,
+
+	[Parameter(Mandatory)]
+	[string]$ImageVirtualMachineName,
 
 	[Parameter(Mandatory)]
 	[string]$InstallAccess,
@@ -79,28 +67,28 @@ param(
 	[string]$InstallWord,
 
 	[Parameter(Mandatory)]
+	[string]$KeyVaultName,
+
+	[Parameter(Mandatory)]
 	[string]$Location,
 
 	[Parameter(Mandatory)]
-	[string]$LogAnalyticsWorkspaceResourceId,
+	[string]$ManagementVirtualMachineName,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$MarketplaceImageOffer,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$MarketplaceImagePublisher,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$MarketplaceImageSKU,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$MsrdcwebrtcsvcInstaller,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$OfficeInstaller,
-
-	[Parameter(Mandatory)]
-	[string]$OUPath,
 
 	[Parameter(Mandatory)]
 	[string]$ReplicaCount,
@@ -108,17 +96,8 @@ param(
 	[Parameter(Mandatory)]
 	[string]$ResourceGroupName,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$SharedGalleryImageResourceId,
-
-    [Parameter(Mandatory=$false)]
-	[string]$SourceGalleryName,
-
-    [Parameter(Mandatory=$false)]
-	[string]$SourceGalleryResourceGroupName,
-
-    [Parameter(Mandatory=$false)]
-	[string]$SourceImageDefinitionName,
 
 	[Parameter(Mandatory)]
 	[string]$SourceImageType,
@@ -127,10 +106,7 @@ param(
 	[string]$StorageAccountName,
 
 	[Parameter(Mandatory)]
-	[string]$StorageAccountResourceGroupName,
-
-	[Parameter(Mandatory)]
-	[string]$SubnetName,
+	[string]$SubnetResourceId,
 
 	[Parameter(Mandatory)]
 	[string]$SubscriptionId,
@@ -138,7 +114,7 @@ param(
 	[Parameter(Mandatory)]
 	[string]$Tags,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$TeamsInstaller,
 
 	[Parameter(Mandatory)]
@@ -151,22 +127,19 @@ param(
 	[string]$TenantType,
 
 	[Parameter(Mandatory)]
-	[string]$UserAssignedIdentityName,
+	[string]$UserAssignedIdentityClientId,
 
 	[Parameter(Mandatory)]
-	[string]$UserAssignedIdentityResourceGroupName,
+	[string]$UserAssignedIdentityPrincipalId,
 
 	[Parameter(Mandatory)]
+	[string]$UserAssignedIdentityResourceId,
+
+	[Parameter(Mandatory=$false)]
 	[string]$VcRedistInstaller,
 
-	[Parameter(Mandatory)]
+	[Parameter(Mandatory=$false)]
 	[string]$VDOTInstaller,
-
-	[Parameter(Mandatory)]
-	[string]$VirtualNetworkName,
-
-	[Parameter(Mandatory)]
-	[string]$VirtualNetworkResourceGroupName,
 
 	[Parameter(Mandatory)]
 	[string]$VirtualMachineSize
@@ -176,23 +149,34 @@ $ErrorActionPreference = 'Stop'
 
 try 
 {
+	# Set Variables
+	if($SharedGalleryImageResourceId)
+	{
+		$SourceGalleryName = $SharedGalleryImageResourceId.Split('/')[8]
+		$SourceGalleryResourceGroupName = $SharedGalleryImageResourceId.Split('/')[4]
+		$SourceImageDefinitionName = $SharedGalleryImageResourceId.Split('/')[10]
+	}
+	$DestinationGalleryName = $GalleryName
+	$DestinationGalleryResourceGroupName = $GalleryResourceGroupName
+	$DestinationImageDefinitionName = $ImageDefinitionName
+
     # Import Modules
     Import-Module -Name 'Az.Accounts','Az.Compute','Az.Resources'
-    Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Imported the required modules."
+    Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Imported the required modules."
 
     # Connect to Azure using the System Assigned Identity
     Connect-AzAccount -Environment $EnvironmentName -Subscription $SubscriptionId -Tenant $TenantId -Identity | Out-Null
-    Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Connected to Azure."
+    Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Connected to Azure."
 
     $CurrentImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $DestinationGalleryResourceGroupName -GalleryName $DestinationGalleryName -GalleryImageDefinitionName $DestinationImageDefinitionName | Where-Object {$_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
-    Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Compute Gallery Image (Destination), Latest Version Date: $CurrentImageVersionDate."
+    Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Destination), Latest Version Date: $CurrentImageVersionDate."
 	
     switch($SourceImageType)
     {
         'AzureComputeGallery' {
             # Get the date of the latest image definition version
             $SourceImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $SourceGalleryResourceGroupName -GalleryName $SourceGalleryName -GalleryImageDefinitionName $SourceImageDefinitionName | Where-Object {$_.PublishingProfile.ExcludeFromLatest -eq $false -and $_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
-            Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Compute Gallery Image (Source), Latest Version Date: $SourceImageVersionDate."
+            Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Source), Latest Version Date: $SourceImageVersionDate."
         }
         'AzureMarketplace' {
             # Get the date of the latest marketplace image version
@@ -201,31 +185,24 @@ try
             $Month = $ImageVersionDateRaw.Substring(2,2)
             $Day = $ImageVersionDateRaw.Substring(4,2)
             $SourceImageVersionDate = Get-Date -Year $Year -Month $Month -Day $Day -Hour 00 -Minute 00 -Second 00
-            Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Marketplace Image (Source), Latest Version Date: $SourceImageVersionDate."
+            Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Marketplace Image (Source), Latest Version Date: $SourceImageVersionDate."
         }
     }
 
 	# If the latest source image was released after the last image build then trigger a new image build
 	if($CurrentImageVersionDate -gt $SourceImageVersionDate)
 	{   
-		Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Image build initiated with a new source image version."
+		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build initiated with a new source image version."
 		$TemplateParameters = @{
-            automationAccountName = $AutomationAccountName
+			computeGalleryName = $ComputeGalleryName
 			containerName = $ContainerName
 			customizations = $Customizations | ConvertFrom-Json
 			diskEncryptionSetResourceId = $DiskEncryptionSetResourceId
-			domainJoinPassword = $DomainJoinPassword
-			domainJoinUserPrincipalName = $DomainJoinUserPrincipalName
-			domainName = $DomainName
-			enableBuildAutomation = $false
 			excludeFromLatest = $true
-			galleryName = $GalleryName
-			galleryResourceGroupName = $GalleryResourceGroupName
-			hybridUseBenefit = if($HybridUseBenefit -eq 'true'){$true}else{$false}
-			hybridWorkerVirtualMachineName = $HybridWorkerVirtualMachineName
-			imageName = $ImageName
+			imageDefinitionName = $ImageDefinitionName
 			imageMajorVersion = if($ImageMajorVersion -eq 'true'){$true}else{$false}
 			imageMinorVersion = if($ImageMinorVersion -eq 'true'){$true}else{$false}
+			imageVirtualMachineName = $ImageVirtualMachineName
 			installAccess = if($InstallAccess -eq 'true'){$true}else{$false}
 			installExcel = if($InstallExcel -eq 'true'){$true}else{$false}
 			installOneDriveForBusiness = if($InstallOneDriveForBusiness -eq 'true'){$true}else{$false}
@@ -239,44 +216,41 @@ try
 			installVirtualDesktopOptimizationTool = if($InstallVirtualDesktopOptimizationTool -eq 'true'){$true}else{$false}
 			installVisio = if($InstallVisio -eq 'true'){$true}else{$false}
 			installWord = if($InstallWord -eq 'true'){$true}else{$false}
-			localAdministratorPassword = $LocalAdministratorPassword
-			localAdministratorUsername = $LocalAdministratorUsername
-			location = $Location
-			logAnalyticsWorkspaceResourceId = $LogAnalyticsWorkspaceResourceId
+			keyVaultName = $KeyVaultName
+			managementVirtualMachineName = $ManagementVirtualMachineName
 			marketplaceImageOffer = $MarketplaceImageOffer
 			marketplaceImagePublisher = $MarketplaceImagePublisher
 			marketplaceImageSKU = $MarketplaceImageSKU
 			msrdcwebrtcsvcInstaller = $MsrdcwebrtcsvcInstaller
 			officeInstaller = $OfficeInstaller
-			oUPath = $OUPath
 			replicaCount = [int]$ReplicaCount
 			resourceGroupName = $ResourceGroupName
 			runbookExecution = $true
 			sharedGalleryImageResourceId = $SharedGalleryImageResourceId
 			sourceImageType = $SourceImageType
 			storageAccountName = $StorageAccountName
-			storageAccountResourceGroupName = $StorageAccountResourceGroupName
-			subnetName = $SubnetName
+			subnetResourceId = $SubnetResourceId
 			tags = $Tags | ConvertFrom-Json
 			teamsInstaller = $TeamsInstaller
 			tenantType = $TenantType
-			userAssignedIdentityName = $UserAssignedIdentityName
-			userAssignedIdentityResourceGroupName = $UserAssignedIdentityResourceGroupName
+			userAssignedIdentityClientId = $UserAssignedIdentityClientId
+			userAssignedIdentityPrincipalId = $UserAssignedIdentityPrincipalId
+			userAssignedIdentityResourceId = $UserAssignedIdentityResourceId
 			vcRedistInstaller = $VcRedistInstaller
 			vDOTInstaller = $VDOTInstaller
-			virtualNetworkName = $VirtualNetworkName
-			virtualNetworkResourceGroupName = $VirtualNetworkResourceGroupName
 			virtualMachineSize = $VirtualMachineSize
         }
         New-AzDeployment -Location $Location -TemplateSpecId $TemplateSpecResourceId -TemplateParameterObject $TemplateParameters
-		Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery."
+		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery."
 	}
 	else 
 	{
-		Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Image build not required. The source image version is older than the latest destination image version."
+		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build not required. The source image version is older than the latest destination image version."
 	}
 }
-catch {
-	Write-Output "$DestinationImageDefinitionName | $DestinationImageDefinitionResourceGroupName | Image build failed. Review the deployment errors in the Azure Portal and correct the issue."
+catch 
+{
+	Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build failed. Review the deployment errors in the Azure Portal and correct the issue."
+	Write-Output $Error[0].Exception
 	throw
 }

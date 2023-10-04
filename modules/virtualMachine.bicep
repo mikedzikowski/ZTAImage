@@ -9,14 +9,11 @@ param marketplaceImagePublisher string
 param marketplaceImageSKU string
 param sharedGalleryImageResourceId string
 param sourceImageType string
-param subnetName string
+param subnetResourceId string
 param tags object
-param userAssignedIdentityName string
-param userAssignedIdentityResourceGroupName string
+param userAssignedIdentityResourceId string
 param virtualMachineName string
 param virtualMachineSize string
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string
 
 var imageReference = sourceImageType == 'AzureComputeGallery' ? {
   sharedGalleryImageId: sharedGalleryImageResourceId
@@ -27,43 +24,10 @@ var imageReference = sourceImageType == 'AzureComputeGallery' ? {
   version: 'latest'
 }
 
-resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
-  name: 'nsg-image-vm'
-  location: location
-  tags: tags
-  properties: {
-    securityRules: [
-      {
-        name: 'default-allow-3389'
-        properties: {
-          priority: 1000
-          access: 'Allow'
-          direction: 'Inbound'
-          destinationPortRange: '3389'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
-  }
-}
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
-  scope: resourceGroup(virtualNetworkResourceGroupName)
-  name: virtualNetworkName
-}
-
-resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(userAssignedIdentityResourceGroupName)
-  name: userAssignedIdentityName
-}
-
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
   name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Network/networkInterfaces') ? tags['Microsoft.Network/networkInterfaces'] : {}
   properties: {
     ipConfigurations: [
       {
@@ -71,25 +35,22 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: '${virtualNetwork.id}/subnets/${subnetName}'
+            id: subnetResourceId
           }
         }
       }
     ]
   }
-  dependsOn: [
-    virtualNetwork
-  ]
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   name: virtualMachineName
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${userAssignedIdentity.id}': {}
+      '${userAssignedIdentityResourceId}': {}
     }
   }
   properties: {
@@ -140,6 +101,5 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   }
 }
 
-output Name string = virtualMachine.name
-output ResourceId string = virtualMachine.id
-output ResourceGroupName string = split(virtualMachine.id, '/')[4]
+output name string = virtualMachine.name
+output resourceId string = virtualMachine.id

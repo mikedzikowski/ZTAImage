@@ -1,4 +1,5 @@
 param automationAccountName string
+param computeGalleryName string
 param containerName string
 param customizations array
 param diskEncryptionSetResourceId string
@@ -6,13 +7,11 @@ param diskEncryptionSetResourceId string
 param domainJoinPassword string
 param domainJoinUserPrincipalName string
 param domainName string
-param galleryName string
-param galleryResourceGroupName string
-param hybridUseBenefit bool
-param hybridWorkerVirtualMachineName string
+param enableBuildAutomation bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
+param imageVirtualMachineName string
 param installAccess bool
 param installExcel bool
 param installOneDriveForBusiness bool
@@ -26,13 +25,14 @@ param installTeams bool
 param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
+param keyVaultName string
 param jobScheduleName string = newGuid()
 @secure()
 param localAdministratorPassword string
 param localAdministratorUsername string
 param location string
 param logAnalyticsWorkspaceResourceId string
-param resourceGroupName string
+param managementVirtualMachineName string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param marketplaceImageSKU string
@@ -40,130 +40,37 @@ param msrdcwebrtcsvcInstaller string
 param officeInstaller string
 param oUPath string
 param replicaCount int
+param resourceGroupName string
 param sharedGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
-param storageAccountResourceGroupName string
-param subnetName string
+param subnetResourceId string
 param tags object
 param teamsInstaller string
 param templateSpecResourceId string
 param tenantType string
 param time string = utcNow()
 param timeZone string
-param userAssignedIdentityName string
-param userAssignedIdentityResourceGroupName string
+param userAssignedIdentityClientId string
+param userAssignedIdentityPrincipalId string
+param userAssignedIdentityResourceId string
 param vcRedistInstaller string
 param vDOTInstaller string
 param virtualMachineName string
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string
 param virtualMachineSize string
 
-var environmentName = environment().name
 var runbookName = 'Zero-Trust-Image-Build-Automation'
-var subnetResourceId = resourceId(virtualNetworkResourceGroupName, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
 var subscriptionId = subscription().subscriptionId
 var tenantId = subscription().tenantId
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
-  name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
-  location: location
-  tags: tags
-  properties: {
-    ipConfigurations: [
-      {
-        name: 'ipconfig'
-        type: 'Microsoft.Network/networkInterfaces/ipConfigurations'
-        properties: {
-          privateIPAllocationMethod: 'Dynamic'
-          subnet: {
-            id: subnetResourceId
-          }
-          primary: true
-          privateIPAddressVersion: 'IPv4'
-        }
-      }
-    ]
-    enableAcceleratedNetworking: true
-    enableIPForwarding: false
-  }
-}
-
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-03-01' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-07-01' existing = {
   name: virtualMachineName
-  location: location
-  tags: tags
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    hardwareProfile: {
-      vmSize: 'Standard_D2s_v3'
-    }
-    storageProfile: {
-      imageReference: {
-        publisher: 'MicrosoftWindowsServer'
-        offer: 'WindowsServer'
-        sku: '2019-datacenter-core-g2'
-        version: 'latest'
-      }
-      osDisk: {
-        caching: 'ReadWrite'
-        createOption: 'FromImage'
-        deleteOption: 'Delete'
-        managedDisk: {
-          diskEncryptionSet: {
-            id: diskEncryptionSetResourceId
-          }
-          storageAccountType: 'Premium_LRS'
-        }
-        osType: 'Windows'
-      }
-      diskControllerType: 'SCSI'
-    }
-    osProfile: {
-      computerName: virtualMachineName
-      adminUsername: localAdministratorUsername
-      adminPassword: localAdministratorPassword
-      windowsConfiguration: {
-        provisionVMAgent: true
-        enableAutomaticUpdates: true
-        patchSettings: {
-          patchMode: 'AutomaticByOS'
-          assessmentMode: 'ImageDefault'
-        }
-      }
-    }
-    securityProfile: {
-      encryptionAtHost: true
-      uefiSettings: {
-        secureBootEnabled: true
-        vTpmEnabled: true
-      }
-      securityType: 'TrustedLaunch'
-    }
-    networkProfile: {
-      networkInterfaces: [
-        {
-          id: networkInterface.id
-          properties: {
-            deleteOption: 'Delete'
-          }
-        }
-      ]
-    }
-    licenseType: hybridUseBenefit ? 'Windows_Server' : null
-  }
 }
 
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
   name: automationAccountName
   location: location
-  tags: tags
-  identity: {
-    type: 'SystemAssigned'
-  }
+  tags: contains(tags, 'Microsoft.Automation/automationAccounts') ? tags['Microsoft.Automation/automationAccounts'] : {}
   properties: {
     disableLocalAuth: false
     sku: {
@@ -180,7 +87,7 @@ resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2019-06-01' =
   parent: automationAccount
   name: runbookName
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Automation/automationAccounts') ? tags['Microsoft.Automation/automationAccounts'] : {}
   properties: {
     runbookType: 'PowerShell'
     logProgress: false
@@ -209,19 +116,16 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
   name: jobScheduleName
   properties: {
     parameters: {
-      automationAccountName: automationAccountName
+      computeGalleryName: computeGalleryName
       containerName: containerName
       customizations: string(customizations)
-      deploymentType: 'ImageBuild'
       diskEncryptionSetResourceId: diskEncryptionSetResourceId
-      environmentName: environmentName
-      galleryName: galleryName
-      galleryResourceGroup: galleryResourceGroupName
-      hybridUseBenefit: string(hybridUseBenefit)
-      hybridWorkerVirtualMachineName: hybridWorkerVirtualMachineName
+      enableBuildAutomation: string(enableBuildAutomation)
+      environmentName: environment().name
       imageDefinitionName: imageDefinitionName
       imageMajorVersion: string(imageMajorVersion)
       imageMinorVersion: string(imageMinorVersion)
+      imageVirtualMachineName: imageVirtualMachineName
       installAccess: string(installAccess)
       installExcel: string(installExcel)
       installOneDriveForBusiness: string(installOneDriveForBusiness)
@@ -235,10 +139,12 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
       installVirtualDesktopOptimizationTool: string(installVirtualDesktopOptimizationTool)
       installVisio: string(installVisio)
       installWord: string(installWord)
+      keyVaultName: keyVaultName
       localAdministratorPassword: localAdministratorPassword
       localAdministratorUsername: localAdministratorUsername
       location: location
       logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
+      managementVirtualMachineName: managementVirtualMachineName
       marketplaceImageOffer: marketplaceImageOffer
       marketplaceImagePublisher: marketplaceImagePublisher
       marketplaceImageSKU: marketplaceImageSKU
@@ -249,21 +155,18 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
       sharedGalleryImageResourceId: sharedGalleryImageResourceId
       sourceImageType: sourceImageType
       storageAccountName: storageAccountName
-      storageAccountResourceGroupName: storageAccountResourceGroupName
-      subnetName: subnetName
+      subnetResourceId: subnetResourceId
       subscriptionId: subscriptionId
       tags: string(tags)
       teamsInstaller: teamsInstaller
       templateSpecResourceId: templateSpecResourceId
       tenantId: tenantId
       tenantType: tenantType
-      userAssignedIdentityName: userAssignedIdentityName
-      userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+      userAssignedIdentityClient: userAssignedIdentityClientId
+      userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId
+      userAssignedIdentityResourceId: userAssignedIdentityResourceId
       vcRedistInstaller: vcRedistInstaller
       vDOTInstaller: vDOTInstaller
-      virtualMachineName: hybridWorkerVirtualMachineName
-      virtualNetworkName: virtualNetworkName
-      virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
       virtualMachineSize: virtualMachineSize
     }
     runbook: {
@@ -311,7 +214,7 @@ resource extension_HybridWorker 'Microsoft.Compute/virtualMachines/extensions@20
   parent: virtualMachine
   name: 'HybridWorkerForWindows'
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
     publisher: 'Microsoft.Azure.Automation.HybridWorker'
     type: 'HybridWorkerForWindows'
@@ -324,11 +227,11 @@ resource extension_HybridWorker 'Microsoft.Compute/virtualMachines/extensions@20
   }
 }
 
-resource extension_JsonADDomainExtension 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = if (!empty(domainJoinUserPrincipalName) && !empty(oUPath)) {
+resource extension_JsonADDomainExtension 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = if (!empty(domainJoinUserPrincipalName) && !empty(domainName) && !empty(oUPath)) {
   parent: virtualMachine
   name: 'JsonADDomainExtension'
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
     forceUpdateTag: time
     publisher: 'Microsoft.Compute'
@@ -350,3 +253,5 @@ resource extension_JsonADDomainExtension 'Microsoft.Compute/virtualMachines/exte
     extension_HybridWorker
   ]
 }
+
+output principalId string =  automationAccount.identity.principalId

@@ -2,14 +2,9 @@ param cloud string
 param imageVirtualMachineName string
 param resourceGroupName string
 param location string = resourceGroup().location
-param userAssignedIdentityName string
-param userAssignedIdentityResourceGroupName string
+param tags object
+param userAssignedIdentityClientId string
 param virtualMachineName string
-
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(userAssignedIdentityResourceGroupName)
-  name: userAssignedIdentityName
-}
 
 resource imageVm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   scope: resourceGroup(resourceGroupName)
@@ -23,6 +18,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
 resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
   name: 'generalize'
   location: location
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
     treatFailureAsDeploymentFailure: false
@@ -30,7 +26,7 @@ resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' =
     parameters: [
       {
         name: 'miId'
-        value: managedIdentity.properties.clientId
+        value: userAssignedIdentityClientId
       }
       {
         name: 'imageVmRg'

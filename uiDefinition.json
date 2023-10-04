@@ -183,16 +183,23 @@
                     "label": "Destination",
                     "elements": [
                         {
-                            "name": "gallery",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Compute gallery",
-                            "resourceType": "Microsoft.Compute/galleries",
-                            "options": {
-                                "filter": {
-                                    "subscription": "onBasics",
-                                    "location": "onBasics"
+                            "name": "computeGalleryName",
+                            "type": "Microsoft.Solutions.TextBox",
+                            "label": "Compute gallery name",
+                            "defaultValue": "",
+                            "placeholder": "Example: cg_avd",
+                            "toolTip": "Inpute the name for the Compute Gallery.",
+                            "multiLine": false,
+                            "constraints": {
+                              "required": true,
+                              "validations": [
+                                {
+                                  "regex": "^(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\.]{0,78}[a-zA-Z0-9])$",
+                                  "message": "The value must be between 1 - 80 characters. The value may only contain alphanumerics and periods. The value must start and end with an alphanumeric."
                                 }
-                            }
+                              ]
+                            },
+                            "visible": true
                         },
                         {
                             "name": "imageDefinitionNamePrefix",
@@ -307,16 +314,23 @@
                     "label": "Virtual Machines",
                     "elements": [
                         {
-                            "name": "managedIdentity",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Select user assigned identity",
-                            "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
-                            "options": {
-                                "filter": {
-                                    "subscription": "onBasics",
-                                    "location": "onBasics"
-                                }
-                            }
+                            "name": "userAssignedIdentityName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "User assigned identity name",
+                            "defaultValue": "",
+                            "toolTip": "Input the name for the User Assigned Identity.",
+                            "placeholder": "Example: uai-image",
+                            "multiLine": false,
+                            "constraints": {
+                                "required": true,
+                                "validations": [
+                                    {
+                                        "regex": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,127}$",
+                                        "message": " The value must be between 2 - 127 characters. The value may only contain alphanumerics, hyphens, and underscores. The value must start with an alphanumeric."
+                                    }
+                                ]
+                            },
+                            "visible": true
                         },
                         {
                             "name": "network",
@@ -996,36 +1010,6 @@
                             }
                         },
                         {
-                            "name": "groups",
-                            "type": "Microsoft.Common.EditableGrid",
-                            "ariaLabel": "Enter the security groups to access the key vault secrects for deployments. The principals will not have access to view the secrets but only to pull them from the key vault during deployment.",
-                            "label": "Security Groups",
-                            "constraints": {
-                                "width": "Full",
-                                "rows": {
-                                    "count": {
-                                        "min": 1,
-                                        "max": 100
-                                    }
-                                },
-                                "columns": [
-                                    {
-                                        "id": "objectId",
-                                        "header": "Object ID",
-                                        "width": "1fr",
-                                        "element": {
-                                            "type": "Microsoft.Common.TextBox",
-                                            "placeholder": "Security Group Object ID",
-                                            "constraints": {
-                                                "required": true,
-                                                "validations": []
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "hybridWorker",
                             "type": "Microsoft.Common.Section",
                             "label": "Hybrid Worker",
@@ -1114,12 +1098,30 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "tags",
+                    "label": "Tags",
+                    "elements": [
+                        {
+                            "name": "tags",
+                            "type": "Microsoft.Common.TagsByResource",
+                            "resources": [
+                                "Microsoft.Compute/galleries",
+                                "Microsoft.KeyVault/vaults",
+                                "Microsoft.Network/networkInterfaces",
+                                "Microsoft.ManagedIdentity/userAssignedIdentities",
+                                "Microsoft.Compute/virtualMachines"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         "outputs": {
             "parameters": {
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
+                "computeGalleryName": "[steps('definition').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "diskEncryptionSetResourceId": "[steps('virtualMachines').diskEncryptionSetSelector.id]",
@@ -1128,8 +1130,6 @@
                 "domainName": "[if(steps('automation').enable, steps('automation').hybridWorker.domainName, '')]",
                 "enableBuildAutomation": "[steps('automation').enable]",
                 "excludeFromLatest": "[steps('destination').imageVersion.excludeFromLatest]",
-                "galleryName": "[steps('destination').gallery.name]",
-                "galleryResourceGroupName": "[first(skip(split(steps('destination').gallery.id, '/'), 4))]",
                 "hybridUseBenefit": "[steps('virtualMachines').hybridUseBenefit]",
                 "imageDefinitionNamePrefix": "[steps('destination').imageDefinitionNamePrefix]",
                 "imageMajorVersion": "[steps('destination').imageVersion.majorVersion]",
@@ -1160,21 +1160,16 @@
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
                 "resourceGroupName": "[steps('basics').resourceGroup]",
-                "securityPrincipalObjectIds": "[if(steps('automation').enable, map(steps('automation').groups, (item) => item.objectId), parse('[]'))]",
                 "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountName": "[steps('storage').storageSelector.name]",
-                "storageAccountResourceGroupName": "[first(skip(split(steps('storage').storageSelector.id, '/'), 4))]",
-                "subnetName": "[first(skip(split(steps('virtualMachines').network.subnet, '/'), 10))]",
+                "subnetResourceId": "[steps('virtualMachines').network.subnet]",
                 "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
                 "tenantType": "[steps('customizations').tenantType]",
-                "userAssignedIdentityName": "[steps('virtualMachines').managedIdentity.name]",
-                "userAssignedIdentityResourceGroupName": "[first(skip(split(steps('virtualMachines').managedIdentity.id, '/'), 4))]",
+                "userAssignedIdentityName": "[steps('virtualMachines').userAssignedIdentityName]",
                 "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
                 "vDOTInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]",
-                "virtualMachineSize": "[steps('virtualMachines').vmSize]",
-                "virtualNetworkName": "[first(skip(split(steps('virtualMachines').network.virtualNetwork, '/'), 8))]",
-                "virtualNetworkResourceGroupName": "[first(skip(split(steps('virtualMachines').network.virtualNetwork, '/'), 4))]"
+                "virtualMachineSize": "[steps('virtualMachines').vmSize]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').scope.location.name]",

@@ -6,98 +6,61 @@ param localAdministratorPassword string
 @secure()
 param localAdministratorUsername string
 param location string
-param userAssignedIdentityName string
-param userAssignedIdentityResourceGroupName string
-param storageEndpoint string
-param subnetName string
+param subnetResourceId string
 param tags object
-param virtualNetworkName string
-param virtualNetworkResourceGroup string
+param userAssignedIdentityPrincipalId string
+param userAssignedIdentityResourceId string
 param virtualMachineName string
-param virtualMachineSize string
 
-var installers = [
-  {
-    name: 'AzModules'
-    blobName: 'Az-Cmdlets-10.2.0.37547-x64.msi'
-    arguments: '/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart'
-    enabled: true
-  }
-]
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
-  scope: resourceGroup(virtualNetworkResourceGroup)
-  name: virtualNetworkName
-}
-
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(userAssignedIdentityResourceGroupName)
-  name: userAssignedIdentityName
-}
-
-resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
-  name: 'nsg-image-vm'
-  location: location
-  tags: tags
-  properties: {
-    securityRules: [
-      {
-        name: 'default-allow-3389'
-        properties: {
-          priority: 1000
-          access: 'Allow'
-          direction: 'Inbound'
-          destinationPortRange: '3389'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
-  }
-}
-
-resource networkInterface 'Microsoft.Network/networkInterfaces@2022-05-01' = {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Network/networkInterfaces') ? tags['Microsoft.Network/networkInterfaces'] : {}
   properties: {
     ipConfigurations: [
       {
-        name: 'ipconfig1'
+        name: 'ipconfig'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: '${virtualNetwork.id}/subnets/${subnetName}'
+            id: subnetResourceId
           }
+          primary: true
+          privateIPAddressVersion: 'IPv4'
         }
       }
     ]
+    enableAcceleratedNetworking: true
+    enableIPForwarding: false
   }
-  dependsOn: [
-    virtualNetwork
-  ]
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   name: virtualMachineName
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${managedIdentity.id}': {}
+      '${userAssignedIdentityResourceId}': {}
     }
   }
   properties: {
     hardwareProfile: {
-      vmSize: virtualMachineSize
+      vmSize: 'Standard_D2s_v3'
     }
     osProfile: {
       computerName: virtualMachineName
       adminUsername: localAdministratorUsername
       adminPassword: localAdministratorPassword
+      windowsConfiguration: {
+        provisionVMAgent: true
+        enableAutomaticUpdates: true
+        patchSettings: {
+          patchMode: 'AutomaticByOS'
+          assessmentMode: 'ImageDefault'
+        }
+      }
     }
     storageProfile: {
       imageReference: {
@@ -107,6 +70,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         version: 'latest'
       }
       osDisk: {
+        caching: 'ReadWrite'
         createOption: 'FromImage'
         deleteOption: 'Delete'
         managedDisk: {
@@ -115,8 +79,8 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
           }
           storageAccountType: 'Premium_LRS'
         }
+        osType: 'Windows'
       }
-      dataDisks: []
     }
     networkProfile: {
       networkInterfaces: [
@@ -143,21 +107,18 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     }
     licenseType: hybridUseBenefit ? 'Windows_Server' : null
   }
-  dependsOn: [
-    virtualNetwork
-  ]
 }
 
-resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [for installer in installers: if (installer.enabled) {
-  name: 'app${installer.name}'
+resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
+  name: 'appAzModules'
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: virtualMachine
   properties: {
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
-        value: managedIdentity.properties.principalId
+        value: userAssignedIdentityPrincipalId
       }
       {
         name: 'ContainerName'
@@ -165,15 +126,15 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [f
       }
       {
         name: 'StorageEndpoint'
-        value: storageEndpoint
+        value: environment().suffixes.storage
       }
       {
         name: 'BlobName'
-        value: installer.blobName
+        value: 'Az-Cmdlets-10.2.0.37547-x64.msi'
       }
       {
         name: 'Arguments'
-        value: installer.arguments
+        value: '/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart'
       }
     ]
     source: {
@@ -189,7 +150,7 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [f
         $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
         $ContainerName = $ContainerName
         $BlobName = $BlobName
-        $StorageAccountUrl = $StorageEndpoint
+        $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile "$env:windir\temp\$Blobname"
@@ -202,4 +163,4 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = [f
       '''
     }
   }
-}]
+}

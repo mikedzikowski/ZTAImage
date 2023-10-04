@@ -1,13 +1,12 @@
 targetScope = 'subscription'
 
+param computeGalleryName string
 param containerName string
 param customizations array
+param deploymentNameSuffix string = utcNow('yyMMddHHs')
 param diskEncryptionSetResourceId string
-param deploymentNameSuffix string
+param enableBuildAutomation bool
 param excludeFromLatest bool
-param galleryName string
-param galleryResourceGroupName string
-param hybridUseBenefit bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -25,68 +24,47 @@ param installTeams bool
 param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
-param keyVaultName string
+param keyVaultName string = ''
 @secure()
-param localAdministratorPassword string
+param localAdministratorPassword string = ''
 @secure()
-param localAdministratorUsername string
-param location string
+param localAdministratorUsername string = ''
+param location string = deployment().location
 param managementVirtualMachineName string
-param marketplaceImageOffer string
-param marketplaceImagePublisher string
-param marketplaceImageSKU string
-param msrdcwebrtcsvcInstaller string
-param officeInstaller string
+param marketplaceImageOffer string = ''
+param marketplaceImagePublisher string = ''
+param marketplaceImageSKU string = ''
+param msrdcwebrtcsvcInstaller string = ''
+param officeInstaller string = ''
 param replicaCount int
 param resourceGroupName string
 param runbookExecution bool = false
-param sharedGalleryImageResourceId string
+param sharedGalleryImageResourceId string = ''
 param sourceImageType string
 param storageAccountName string
-param storageAccountResourceGroupName string
-param subnetName string
-param subscriptionId string
+param subnetResourceId string
+param subscriptionId string = subscription().subscriptionId
 param tags object
-param teamsInstaller string
+param teamsInstaller string = ''
 param tenantType string
-param userAssignedIdentityName string
-param userAssignedIdentityResourceGroupName string
+param userAssignedIdentityClientId string
+param userAssignedIdentityPrincipalId string
+param userAssignedIdentityResourceId string
 param vcRedistInstaller string
-param vDOTInstaller string
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string
+param vDOTInstaller string = ''
 param virtualMachineSize string
 
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
 var cloud = environment().name
 var imageSuffix = take(deploymentNameSuffix, 9)
+var storageEndpoint = environment().suffixes.storage
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (runbookExecution) {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   name: keyVaultName
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
-  scope: resourceGroup(subscriptionId, storageAccountResourceGroupName)
-  name: storageAccountName
-}
-
-resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  scope: resourceGroup(subscriptionId, userAssignedIdentityResourceGroupName)
-  name: userAssignedIdentityName
-}
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' existing = {
-  scope: resourceGroup(subscriptionId, virtualNetworkResourceGroupName)
-  name: virtualNetworkName
-}
-
-resource gallery 'Microsoft.Compute/galleries@2022-03-03' existing = {
-  scope: resourceGroup(subscriptionId, galleryResourceGroupName)
-  name: galleryName
-}
-
-module generalizedVM 'generalizedVM.bicep' = {
+module virtualMachine 'virtualMachine.bicep' = {
   name: 'image-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
@@ -99,19 +77,16 @@ module generalizedVM 'generalizedVM.bicep' = {
     marketplaceImageSKU: marketplaceImageSKU
     sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
-    subnetName: subnetName
+    subnetResourceId: subnetResourceId
     tags: tags
-    userAssignedIdentityName: userAssignedIdentity.name
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    userAssignedIdentityResourceId: userAssignedIdentityResourceId
     virtualMachineName: imageVirtualMachineName
     virtualMachineSize: virtualMachineSize
-    virtualNetworkName: virtualNetwork.name
-    virtualNetworkResourceGroupName: split(virtualNetwork.id, '/')[4]
   }
 }
 
-module imageCustomizations 'customizations.bicep' = {
-  name: 'custom-vm-${deploymentNameSuffix}'
+module addCustomizations 'customizations.bicep' = {
+  name: 'customizations-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     location: location
@@ -130,67 +105,34 @@ module imageCustomizations 'customizations.bicep' = {
     installVirtualDesktopOptimizationTool: installVirtualDesktopOptimizationTool
     installVisio: installVisio
     installWord: installWord
-    storageAccountName: storageAccount.name
-    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
+    storageAccountName: storageAccountName
+    storageEndpoint: storageEndpoint
     tags: tags
     tenantType: tenantType
-    userAssignedIdentityObjectId: userAssignedIdentity.properties.principalId
-    vmName: imageVirtualMachineName
+    userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
+    vmName: virtualMachine.outputs.name
     vDotInstaller: vDOTInstaller
     officeInstaller: officeInstaller
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
     teamsInstaller: teamsInstaller
     vcRedistInstaller: vcRedistInstaller
   }
-  dependsOn: [
-    generalizedVM
-  ]
 }
 
-module managementVm 'managementVM.bicep' = {
-  name: 'management-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
-  params: {
-    containerName: containerName
-    diskEncryptionSetResourceId: diskEncryptionSetResourceId
-    hybridUseBenefit: hybridUseBenefit
-    localAdministratorPassword: runbookExecution ? keyVault.getSecret('LocalAdministratorPassword') : localAdministratorPassword
-    localAdministratorUsername: runbookExecution ? keyVault.getSecret('LocalAdministratorUsername') : localAdministratorUsername
-    location: location
-    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
-    subnetName: subnetName
-    tags: tags
-    userAssignedIdentityName: userAssignedIdentity.name
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
-    virtualMachineName: managementVirtualMachineName
-    virtualMachineSize: virtualMachineSize
-    virtualNetworkName: virtualNetwork.name
-    virtualNetworkResourceGroup: split(virtualNetwork.id, '/')[4]
-  }
-  dependsOn: [
-    gallery
-    generalizedVM
-    imageCustomizations
-    userAssignedIdentity
-  ]
-}
-
-module restartVM 'restartVM.bicep' = {
+module restart 'restart.bicep' = {
   name: 'restart-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     cloud: cloud
-    imageVirtualMachineName: generalizedVM.outputs.Name
-    resourceGroupName: generalizedVM.outputs.ResourceGroupName
+    imageVirtualMachineName: virtualMachine.outputs.name
+    resourceGroupName: resourceGroupName
     location: location
     tags: tags
-    userAssignedIdentityName: userAssignedIdentity.name
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    userAssignedIdentityClientId: userAssignedIdentityClientId
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
-    imageCustomizations
-    managementVm
+    addCustomizations
   ]
 }
 
@@ -201,78 +143,64 @@ module sysprep 'sysprep.bicep' = {
     containerName: containerName
     location: location
     storageAccountName: storageAccountName
-    storageEndpoint: storageAccount.properties.primaryEndpoints.blob
+    storageEndpoint: storageEndpoint
     tags: tags
-    userAssignedIdentityObjectId: userAssignedIdentity.properties.principalId
-    virtualMachineName: generalizedVM.outputs.Name
+    userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
+    virtualMachineName: virtualMachine.outputs.name
   }
   dependsOn: [
-    imageCustomizations
-    managementVm
-    restartVM
+    restart
   ]
 }
 
-module generalizeVm 'runGeneralization.bicep' = {
+module generalize 'generalize.bicep' = {
   name: 'generalize-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     cloud: cloud
-    imageVirtualMachineName: generalizedVM.outputs.Name
-    resourceGroupName: generalizedVM.outputs.ResourceGroupName
+    imageVirtualMachineName: virtualMachine.outputs.name
+    resourceGroupName: resourceGroupName
     location: location
-    userAssignedIdentityName: userAssignedIdentity.name
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    tags: tags
+    userAssignedIdentityClientId: userAssignedIdentityClientId
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
-    imageCustomizations
-    managementVm
-    restartVM
     sysprep
   ]
 }
 
-module image 'gallery.bicep' = {
-  name: 'gallery-image-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, galleryResourceGroupName)
+module imageVersion 'imageVersion.bicep' = {
+  name: 'image-version-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
+    computeGalleryName: computeGalleryName
     excludeFromLatest: excludeFromLatest
-    galleryName: gallery.name
     imageDefinitionName: imageDefinitionName
     imageVersionNumber: autoImageVersion
-    imageVirtualMachineResourceId: generalizedVM.outputs.ResourceId
+    imageVirtualMachineResourceId: virtualMachine.outputs.resourceId
     location: location
-    marketplaceImageOffer: marketplaceImageOffer
-    marketplaceImagePublisher: marketplaceImagePublisher
     replicaCount: replicaCount
+    tags: tags
   }
   dependsOn: [
-    imageCustomizations
-    managementVm
-    restartVM
-    sysprep
+    generalize
   ]
 }
 
-module remove 'removeVM.bicep' = {
+module remove 'removeVM.bicep' = if (!enableBuildAutomation) {
   name: 'remove-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     cloud: cloud
-    imageVirtualMachineName: generalizedVM.outputs.Name
-    resourceGroupName: generalizedVM.outputs.ResourceGroupName
+    imageVirtualMachineName: virtualMachine.outputs.name
+    resourceGroupName: resourceGroupName
     location: location
-    userAssignedIdentityName: userAssignedIdentity.name
-    userAssignedIdentityResourceGroupName: userAssignedIdentityResourceGroupName
+    tags: tags
+    userAssignedIdentityClientId: userAssignedIdentityClientId
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
-    gallery
-    generalizeVm
-    image
-    imageCustomizations
-    managementVm
-    sysprep
+    generalize
   ]
 }

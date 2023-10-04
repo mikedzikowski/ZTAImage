@@ -9,7 +9,8 @@ param localAdministratorPassword string
 @secure()
 param localAdministratorUsername string
 param roleDefinitionResourceId string
-param securityPrincipalObjectIds array
+param tags object
+param userAssignedIdentityPrincipalId string
 
 var Secrets = [
   {
@@ -34,6 +35,7 @@ var Secrets = [
 resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: keyVaultName
   location: location
+  tags: contains(tags, 'Microsoft.KeyVault/vaults') ? tags['Microsoft.KeyVault/vaults'] : {}
   properties: {
     tenantId: subscription().tenantId
     sku: {
@@ -52,19 +54,20 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
 resource secrets 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for Secret in Secrets: {
   parent: keyVault
   name: Secret.name
+  tags: contains(tags, 'Microsoft.KeyVault/vaults') ? tags['Microsoft.KeyVault/vaults'] : {}
   properties: {
     value: Secret.value
   }
 }]
 
 // Gives the selected users rights to get key vault secrets in deployments
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = [for i in range(0, length(securityPrincipalObjectIds)): if (!empty(securityPrincipalObjectIds)) {
-  name: guid(securityPrincipalObjectIds[i], roleDefinitionResourceId, resourceGroup().id)
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(userAssignedIdentityPrincipalId, roleDefinitionResourceId, resourceGroup().id)
   scope: keyVault
   properties: {
     roleDefinitionId: roleDefinitionResourceId
-    principalId: securityPrincipalObjectIds[i]
+    principalId: userAssignedIdentityPrincipalId
   }
-}]
+}
 
 output resourceId string = keyVault.id
