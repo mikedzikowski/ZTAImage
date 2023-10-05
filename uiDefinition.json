@@ -1107,11 +1107,13 @@
                             "name": "tags",
                             "type": "Microsoft.Common.TagsByResource",
                             "resources": [
+                                "Microsoft.Automation/automationAccounts",
                                 "Microsoft.Compute/galleries",
+                                "Microsoft.Compute/virtualMachines",
                                 "Microsoft.KeyVault/vaults",
-                                "Microsoft.Network/networkInterfaces",
                                 "Microsoft.ManagedIdentity/userAssignedIdentities",
-                                "Microsoft.Compute/virtualMachines"
+                                "Microsoft.Network/networkInterfaces",
+                                "Microsoft.Resources/templateSpecs"
                             ]
                         }
                     ]
