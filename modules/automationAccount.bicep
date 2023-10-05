@@ -1,4 +1,5 @@
 param automationAccountName string
+param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryName string
 param containerName string
 param customizations array
@@ -59,6 +60,7 @@ param vDOTInstaller string
 param virtualMachineName string
 param virtualMachineSize string
 
+var privateEndpointName = 'pe-${automationAccountName}'
 var runbookName = 'Zero-Trust-Image-Build-Automation'
 var subscriptionId = subscription().subscriptionId
 var tenantId = subscription().tenantId
@@ -73,6 +75,7 @@ resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' 
   tags: contains(tags, 'Microsoft.Automation/automationAccounts') ? tags['Microsoft.Automation/automationAccounts'] : {}
   properties: {
     disableLocalAuth: false
+    publicNetworkAccess: false
     sku: {
       name: 'Basic'
     }
@@ -80,6 +83,44 @@ resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' 
       keySource: 'Microsoft.Automation'
       identity: {}
     }
+  }
+}
+
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
+  name: privateEndpointName
+  location: location
+  properties: {
+    privateLinkServiceConnections: [
+      {
+        name: privateEndpointName
+        id: resourceId('Microsoft.Network/privateEndpoints/privateLinkServiceConnections', privateEndpointName, privateEndpointName)
+        properties: {
+          privateLinkServiceId: automationAccount.id
+          groupIds: [
+            'DSCAndHybridWorker'
+          ]
+        }
+      }
+    ]
+    customNetworkInterfaceName: 'nic-${automationAccountName}'
+    subnet: {
+      id: subnetResourceId
+    }
+  }
+}
+
+resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-05-01' = {
+  parent: privateEndpoint
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'privatelink-azure-automation-net'
+        properties: {
+          privateDnsZoneId: automationAccountPrivateDnsZoneResourceId
+        }
+      }
+    ]
   }
 }
 

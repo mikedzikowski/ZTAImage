@@ -1,6 +1,7 @@
 targetScope = 'subscription'
 
 param automationAccountName string
+param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryName string
 param containerName string
 param customizations array = []
@@ -153,6 +154,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
   name: 'build-automation-${deploymentNameSuffix}'
   params: {
     automationAccountName: automationAccountName
+    automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
     computeGalleryName: computeGalleryName
     containerName: containerName
     customizations: customizations
