@@ -30,6 +30,7 @@ param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
 param keyVaultName string
+param keyVaultPrivateDnsZoneResourceId string
 @secure()
 param localAdministratorPassword string
 param localAdministratorUsername string
@@ -86,10 +87,12 @@ module keyVault 'keyVault.bicep' = {
     domainJoinPassword: domainJoinPassword
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     keyVaultName: keyVaultName
+    keyVaultPrivateDnsZoneResourceId: keyVaultPrivateDnsZoneResourceId
     localAdministratorPassword: localAdministratorPassword
     localAdministratorUsername: localAdministratorUsername
     location: location
     roleDefinitionResourceId: roleDefinition.id
+    subnetResourceId: subnetResourceId
     tags: tags
     userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId
   }

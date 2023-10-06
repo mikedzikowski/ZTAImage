@@ -31,6 +31,7 @@ param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
 param keyVaultName string
+param keyVaultPrivateDnsZoneResourceId string
 @secure()
 param localAdministratorPassword string
 param localAdministratorUsername string
@@ -184,6 +185,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     installVisio: installVisio
     installWord: installWord
     keyVaultName: keyVaultName
+    keyVaultPrivateDnsZoneResourceId: keyVaultPrivateDnsZoneResourceId
     localAdministratorPassword: localAdministratorPassword
     localAdministratorUsername: localAdministratorUsername
     location: location

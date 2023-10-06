@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "8443866523488901471"
+      "templateHash": "13033179354609637644"
     }
   },
   "parameters": {
@@ -104,6 +104,9 @@
       "type": "bool"
     },
     "keyVaultName": {
+      "type": "string"
+    },
+    "keyVaultPrivateDnsZoneResourceId": {
       "type": "string"
     },
     "localAdministratorPassword": {
@@ -1044,6 +1047,9 @@
           "keyVaultName": {
             "value": "[parameters('keyVaultName')]"
           },
+          "keyVaultPrivateDnsZoneResourceId": {
+            "value": "[parameters('keyVaultPrivateDnsZoneResourceId')]"
+          },
           "localAdministratorPassword": {
             "value": "[parameters('localAdministratorPassword')]"
           },
@@ -1139,7 +1145,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "6504146285921354410"
+              "templateHash": "8182997563705881279"
             }
           },
           "parameters": {
@@ -1228,6 +1234,9 @@
               "type": "bool"
             },
             "keyVaultName": {
+              "type": "string"
+            },
+            "keyVaultPrivateDnsZoneResourceId": {
               "type": "string"
             },
             "localAdministratorPassword": {
@@ -1359,6 +1368,9 @@
                   "keyVaultName": {
                     "value": "[parameters('keyVaultName')]"
                   },
+                  "keyVaultPrivateDnsZoneResourceId": {
+                    "value": "[parameters('keyVaultPrivateDnsZoneResourceId')]"
+                  },
                   "localAdministratorPassword": {
                     "value": "[parameters('localAdministratorPassword')]"
                   },
@@ -1370,6 +1382,9 @@
                   },
                   "roleDefinitionResourceId": {
                     "value": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', guid(subscription().id, 'KeyVaultDeployAction'))]"
+                  },
+                  "subnetResourceId": {
+                    "value": "[parameters('subnetResourceId')]"
                   },
                   "tags": {
                     "value": "[parameters('tags')]"
@@ -1385,7 +1400,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "11681583042855322365"
+                      "templateHash": "18076915852643137782"
                     }
                   },
                   "parameters": {
@@ -1396,6 +1411,9 @@
                       "type": "securestring"
                     },
                     "keyVaultName": {
+                      "type": "string"
+                    },
+                    "keyVaultPrivateDnsZoneResourceId": {
                       "type": "string"
                     },
                     "location": {
@@ -1410,6 +1428,9 @@
                     "roleDefinitionResourceId": {
                       "type": "string"
                     },
+                    "subnetResourceId": {
+                      "type": "string"
+                    },
                     "tags": {
                       "type": "object"
                     },
@@ -1418,6 +1439,7 @@
                     }
                   },
                   "variables": {
+                    "privateEndpointName": "[format('pe-{0}', parameters('keyVaultName'))]",
                     "Secrets": [
                       {
                         "name": "DomainJoinPassword",
@@ -1455,8 +1477,60 @@
                         "enabledForDiskEncryption": false,
                         "enableRbacAuthorization": true,
                         "enableSoftDelete": false,
-                        "publicNetworkAccess": "Enabled"
+                        "networkAcls": {
+                          "bypass": "AzureServices",
+                          "defaultAction": "Deny",
+                          "ipRules": [],
+                          "virtualNetworkRules": []
+                        },
+                        "publicNetworkAccess": "Disabled"
                       }
+                    },
+                    {
+                      "type": "Microsoft.Network/privateEndpoints",
+                      "apiVersion": "2023-05-01",
+                      "name": "[variables('privateEndpointName')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/privateEndpoints'), parameters('tags')['Microsoft.Network/privateEndpoints'], createObject())]",
+                      "properties": {
+                        "privateLinkServiceConnections": [
+                          {
+                            "name": "[variables('privateEndpointName')]",
+                            "id": "[resourceId('Microsoft.Network/privateEndpoints/privateLinkServiceConnections', variables('privateEndpointName'), variables('privateEndpointName'))]",
+                            "properties": {
+                              "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+                              "groupIds": [
+                                "DSCAndHybridWorker"
+                              ]
+                            }
+                          }
+                        ],
+                        "customNetworkInterfaceName": "[format('nic-{0}', parameters('keyVaultName'))]",
+                        "subnet": {
+                          "id": "[parameters('subnetResourceId')]"
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+                      "apiVersion": "2023-05-01",
+                      "name": "[format('{0}/{1}', variables('privateEndpointName'), 'default')]",
+                      "properties": {
+                        "privateDnsZoneConfigs": [
+                          {
+                            "name": "privatelink-azure-automation-net",
+                            "properties": {
+                              "privateDnsZoneId": "[parameters('keyVaultPrivateDnsZoneResourceId')]"
+                            }
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+                      ]
                     },
                     {
                       "copy": {

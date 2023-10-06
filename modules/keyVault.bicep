@@ -3,14 +3,18 @@ param domainJoinPassword string
 @secure()
 param domainJoinUserPrincipalName string
 param keyVaultName string
+param keyVaultPrivateDnsZoneResourceId string
 param location string
 @secure()
 param localAdministratorPassword string
 @secure()
 param localAdministratorUsername string
 param roleDefinitionResourceId string
+param subnetResourceId string
 param tags object
 param userAssignedIdentityPrincipalId string
+
+var privateEndpointName = 'pe-${keyVaultName}'
 
 var Secrets = [
   {
@@ -47,7 +51,52 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
     enabledForDiskEncryption: false
     enableRbacAuthorization: true
     enableSoftDelete: false
-    publicNetworkAccess: 'Enabled'
+    networkAcls: {
+      bypass: 'AzureServices'
+      defaultAction: 'Deny'
+      ipRules: []
+      virtualNetworkRules: []
+  }
+    publicNetworkAccess: 'Disabled'
+  }
+}
+
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
+  name: privateEndpointName
+  location: location
+  tags: contains(tags, 'Microsoft.Network/privateEndpoints') ? tags['Microsoft.Network/privateEndpoints'] : {}
+  properties: {
+    privateLinkServiceConnections: [
+      {
+        name: privateEndpointName
+        id: resourceId('Microsoft.Network/privateEndpoints/privateLinkServiceConnections', privateEndpointName, privateEndpointName)
+        properties: {
+          privateLinkServiceId: keyVault.id
+          groupIds: [
+            'DSCAndHybridWorker'
+          ]
+        }
+      }
+    ]
+    customNetworkInterfaceName: 'nic-${keyVaultName}'
+    subnet: {
+      id: subnetResourceId
+    }
+  }
+}
+
+resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-05-01' = {
+  parent: privateEndpoint
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'privatelink-azure-automation-net'
+        properties: {
+          privateDnsZoneId: keyVaultPrivateDnsZoneResourceId
+        }
+      }
+    ]
   }
 }
 
