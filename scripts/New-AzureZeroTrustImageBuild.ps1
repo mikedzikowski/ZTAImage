@@ -124,9 +124,6 @@ param(
 	[string]$TenantId,
 
 	[Parameter(Mandatory)]
-	[string]$TenantType,
-
-	[Parameter(Mandatory)]
 	[string]$UserAssignedIdentityClientId,
 
 	[Parameter(Mandatory)]
@@ -232,7 +229,6 @@ try
 			subnetResourceId = $SubnetResourceId
 			tags = $Tags | ConvertFrom-Json
 			teamsInstaller = $TeamsInstaller
-			tenantType = $TenantType
 			userAssignedIdentityClientId = $UserAssignedIdentityClientId
 			userAssignedIdentityPrincipalId = $UserAssignedIdentityPrincipalId
 			userAssignedIdentityResourceId = $UserAssignedIdentityResourceId
