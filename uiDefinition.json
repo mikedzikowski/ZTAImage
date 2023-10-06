@@ -998,6 +998,18 @@
                             }
                         },
                         {
+                            "name": "privateDnsZone",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Select private DNS zone for automation accounts",
+                            "resourceType": "Microsoft.Network/privateDnsZones",
+                            "options": {
+                              "filter": {
+                                "subscription": "onBasics",
+                                "location": "onBasics"
+                              }
+                            }
+                          },
+                        {
                             "name": "keyVault",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Key vault name",
@@ -1113,6 +1125,7 @@
                                 "Microsoft.KeyVault/vaults",
                                 "Microsoft.ManagedIdentity/userAssignedIdentities",
                                 "Microsoft.Network/networkInterfaces",
+                                "Microsoft.Network/privateEndpoints",
                                 "Microsoft.Resources/templateSpecs"
                             ]
                         }
@@ -1123,6 +1136,7 @@
         "outputs": {
             "parameters": {
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
+                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZone, '')]",
                 "computeGalleryName": "[steps('definition').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
