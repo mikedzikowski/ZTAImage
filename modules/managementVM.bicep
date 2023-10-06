@@ -148,12 +148,12 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     source: {
       script: '''
         param(
-          [string]$Arguments
+          [string]$Arguments,
           [string]$BlobName,
           [string]$ContainerName,
           [string]$StorageAccountName,
           [string]$StorageEndpoint,
-          [string]$UserAssignedIdentityObjectId,
+          [string]$UserAssignedIdentityObjectId
         )
         $ErrorActionPreference = "Stop"
         $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
