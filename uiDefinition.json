@@ -184,20 +184,20 @@
                     "elements": [
                         {
                             "name": "computeGalleryName",
-                            "type": "Microsoft.Solutions.TextBox",
+                            "type": "Microsoft.Common.TextBox",
                             "label": "Compute gallery name",
                             "defaultValue": "",
                             "placeholder": "Example: cg_avd",
                             "toolTip": "Inpute the name for the Compute Gallery.",
                             "multiLine": false,
                             "constraints": {
-                              "required": true,
-                              "validations": [
-                                {
-                                  "regex": "^(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\.]{0,78}[a-zA-Z0-9])$",
-                                  "message": "The value must be between 1 - 80 characters. The value may only contain alphanumerics and periods. The value must start and end with an alphanumeric."
-                                }
-                              ]
+                                "required": true,
+                                "validations": [
+                                    {
+                                        "regex": "^(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\._]{0,78}[a-zA-Z0-9])$",
+                                        "message": "The value must be between 1 - 80 characters. The value may only contain alphanumerics, periods, and underscores. The value must start and end with an alphanumeric."
+                                    }
+                                ]
                             },
                             "visible": true
                         },
@@ -1000,15 +1000,10 @@
                         {
                             "name": "privateDnsZone",
                             "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Select private DNS zone for automation accounts",
+                            "label": "Existing automation private DNS zone",
                             "resourceType": "Microsoft.Network/privateDnsZones",
-                            "options": {
-                              "filter": {
-                                "subscription": "onBasics",
-                                "location": "onBasics"
-                              }
-                            }
-                          },
+                            "options": {}
+                        },
                         {
                             "name": "keyVault",
                             "type": "Microsoft.Common.TextBox",
@@ -1136,8 +1131,8 @@
         "outputs": {
             "parameters": {
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
-                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZone, '')]",
-                "computeGalleryName": "[steps('definition').computeGalleryName]",
+                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZone.name, '')]",
+                "computeGalleryName": "[steps('destination').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "diskEncryptionSetResourceId": "[steps('virtualMachines').diskEncryptionSetSelector.id]",
@@ -1178,7 +1173,7 @@
                 "resourceGroupName": "[steps('basics').resourceGroup]",
                 "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "sourceImageType": "[steps('source').type]",
-                "storageAccountName": "[steps('storage').storageSelector.name]",
+                "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",
                 "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
                 "tenantType": "[steps('customizations').tenantType]",
