@@ -56,13 +56,6 @@ param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
 param teamsInstaller string
-@allowed([
-  'Commercial'
-  'DepartmentOfDefense'
-  'GovernmentCommunityCloud'
-  'GovernmentCommunityCloudHigh'
-])
-param tenantType string
 param userAssignedIdentityName string
 param vcRedistInstaller string = ''
 param vDOTInstaller string = ''
@@ -207,7 +200,6 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     subscriptionId: subscriptionId
     tags: tags
     teamsInstaller: teamsInstaller
-    tenantType: tenantType
     timeZone: timeZones[location]
     userAssignedIdentityClientId: baseline.outputs.userAssignedIdentityClientId
     userAssignedIdentityPrincipalId: baseline.outputs.userAssignedIdentityPrincipalId
@@ -265,7 +257,6 @@ module imageBuild 'modules/imageBuild.bicep' = {
     subscriptionId: subscriptionId
     tags: tags
     teamsInstaller: teamsInstaller
-    tenantType: tenantType
     userAssignedIdentityClientId: baseline.outputs.userAssignedIdentityClientId
     userAssignedIdentityPrincipalId: baseline.outputs.userAssignedIdentityPrincipalId
     userAssignedIdentityResourceId: baseline.outputs.userAssignedIdentityResourceId

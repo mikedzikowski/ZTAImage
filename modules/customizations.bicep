@@ -22,7 +22,6 @@ param storageAccountName string
 param storageEndpoint string
 param tags object
 param teamsInstaller string
-param tenantType string
 param userAssignedIdentityObjectId string
 param vcRedistInstaller string
 param vDotInstaller string
@@ -427,10 +426,6 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (
     asyncExecution: false
     parameters: [
       {
-        name: 'TenantType'
-        value: tenantType
-      }
-      {
         name: 'UserAssignedIdentityObjectId'
         value: userAssignedIdentityObjectId
       }
@@ -462,7 +457,6 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (
     source: {
       script: '''
       param(
-        [string]$TenantType,
         [string]$UserAssignedIdentityObjectId,
         [string]$StorageAccountName,
         [string]$ContainerName,
@@ -470,29 +464,8 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (
         [string]$BlobName,
         [string]$BlobName2,
         [string]$BlobName3
-        )
-      If($TenantType -eq "Commercial")
-      {
-        $TeamsUrl = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-      }
-      If($TenantType -eq "DepartmentOfDefense")
-      {
-        $TeamsUrl = "https://dod.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-      }
-      If($TenantType -eq "GovernmentCommunityCloud")
-      {
-        $TeamsUrl = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&ring=general_gcc&download=true"
-      }
-      If($TenantType -eq "GovernmentCommunityCloudHigh")
-      {
-        $TeamsUrl = "https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-      }
-      Write-Host $($TeamsUrl)
-      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-      $StorageAccountName = $StorageAccountName
-      $ContainerName = $ContainerName
-      $BlobName = $BlobName
-      $StorageAccountUrl = $StorageEndpoint
+      )
+      $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
       $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
       $vcRedistFile = "$env:windir\temp\vc_redist.x64.exe"
@@ -534,5 +507,3 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (
     office
   ]
 }
-
-output tenantType string = tenantType

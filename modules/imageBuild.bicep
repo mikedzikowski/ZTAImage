@@ -46,7 +46,6 @@ param subnetResourceId string
 param subscriptionId string = subscription().subscriptionId
 param tags object
 param teamsInstaller string = ''
-param tenantType string
 param userAssignedIdentityClientId string
 param userAssignedIdentityPrincipalId string
 param userAssignedIdentityResourceId string
@@ -108,7 +107,6 @@ module addCustomizations 'customizations.bicep' = {
     storageAccountName: storageAccountName
     storageEndpoint: storageEndpoint
     tags: tags
-    tenantType: tenantType
     userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
     vmName: virtualMachine.outputs.name
     vDotInstaller: vDOTInstaller

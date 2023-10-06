@@ -52,7 +52,6 @@ param subnetResourceId string
 param subscriptionId string
 param tags object
 param teamsInstaller string
-param tenantType string
 param timeZone string
 param userAssignedIdentityClientId string
 param userAssignedIdentityPrincipalId string
@@ -160,7 +159,6 @@ module automationAccount 'automationAccount.bicep' = {
     tags: tags
     teamsInstaller: teamsInstaller
     templateSpecResourceId: templateSpec.outputs.resourceId
-    tenantType: tenantType
     timeZone: timeZone
     userAssignedIdentityClientId: userAssignedIdentityClientId
     userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId

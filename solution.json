@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "18358306902904751638"
+      "templateHash": "8572670986248185876"
     }
   },
   "parameters": {
@@ -178,15 +178,6 @@
     },
     "teamsInstaller": {
       "type": "string"
-    },
-    "tenantType": {
-      "type": "string",
-      "allowedValues": [
-        "Commercial",
-        "DepartmentOfDefense",
-        "GovernmentCommunityCloud",
-        "GovernmentCommunityCloudHigh"
-      ]
     },
     "userAssignedIdentityName": {
       "type": "string"
@@ -1180,9 +1171,6 @@
           "teamsInstaller": {
             "value": "[parameters('teamsInstaller')]"
           },
-          "tenantType": {
-            "value": "[parameters('tenantType')]"
-          },
           "timeZone": {
             "value": "[variables('timeZones')[parameters('location')]]"
           },
@@ -1215,7 +1203,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17721346407980229037"
+              "templateHash": "12168991883788861533"
             }
           },
           "parameters": {
@@ -1367,9 +1355,6 @@
               "type": "object"
             },
             "teamsInstaller": {
-              "type": "string"
-            },
-            "tenantType": {
               "type": "string"
             },
             "timeZone": {
@@ -1674,7 +1659,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "965268354476347161"
+                      "templateHash": "226670092664433810"
                     }
                   },
                   "parameters": {
@@ -1696,7 +1681,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "14569983918376164186"
+                          "templateHash": "13924072864969716794"
                         }
                       },
                       "parameters": {
@@ -1845,9 +1830,6 @@
                         "teamsInstaller": {
                           "type": "string",
                           "defaultValue": ""
-                        },
-                        "tenantType": {
-                          "type": "string"
                         },
                         "userAssignedIdentityClientId": {
                           "type": "string"
@@ -2150,9 +2132,6 @@
                               "tags": {
                                 "value": "[[parameters('tags')]"
                               },
-                              "tenantType": {
-                                "value": "[[parameters('tenantType')]"
-                              },
                               "userAssignedIdentityObjectId": {
                                 "value": "[[parameters('userAssignedIdentityPrincipalId')]"
                               },
@@ -2182,7 +2161,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "12352976574115405851"
+                                  "templateHash": "7147149651643849303"
                                 }
                               },
                               "parameters": {
@@ -2250,9 +2229,6 @@
                                   "type": "object"
                                 },
                                 "teamsInstaller": {
-                                  "type": "string"
-                                },
-                                "tenantType": {
                                   "type": "string"
                                 },
                                 "userAssignedIdentityObjectId": {
@@ -2472,10 +2448,6 @@
                                     "asyncExecution": false,
                                     "parameters": [
                                       {
-                                        "name": "TenantType",
-                                        "value": "[[parameters('tenantType')]"
-                                      },
-                                      {
                                         "name": "UserAssignedIdentityObjectId",
                                         "value": "[[parameters('userAssignedIdentityObjectId')]"
                                       },
@@ -2505,7 +2477,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$TenantType,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n        )\r\n      If($TenantType -eq \"Commercial\")\r\n      {\r\n        $TeamsUrl = \"https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true\"\r\n      }\r\n      If($TenantType -eq \"DepartmentOfDefense\")\r\n      {\r\n        $TeamsUrl = \"https://dod.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true\"\r\n      }\r\n      If($TenantType -eq \"GovernmentCommunityCloud\")\r\n      {\r\n        $TeamsUrl = \"https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&ring=general_gcc&download=true\"\r\n      }\r\n      If($TenantType -eq \"GovernmentCommunityCloudHigh\")\r\n      {\r\n        $TeamsUrl = \"https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true\"\r\n      }\r\n      Write-Host $($TeamsUrl)\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = $BlobName\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
+                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n      )\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
                                     }
                                   },
                                   "dependsOn": [
@@ -2513,13 +2485,7 @@
                                     "[[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('vmName'), 'office')]"
                                   ]
                                 }
-                              ],
-                              "outputs": {
-                                "tenantType": {
-                                  "type": "string",
-                                  "value": "[[parameters('tenantType')]"
-                                }
-                              }
+                              ]
                             }
                           },
                           "dependsOn": [
@@ -3288,9 +3254,6 @@
                   "templateSpecResourceId": {
                     "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('template-spec-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.resourceId.value]"
                   },
-                  "tenantType": {
-                    "value": "[parameters('tenantType')]"
-                  },
                   "timeZone": {
                     "value": "[parameters('timeZone')]"
                   },
@@ -3323,7 +3286,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8254875599861050535"
+                      "templateHash": "5857828385099475626"
                     }
                   },
                   "parameters": {
@@ -3473,9 +3436,6 @@
                       "type": "string"
                     },
                     "templateSpecResourceId": {
-                      "type": "string"
-                    },
-                    "tenantType": {
                       "type": "string"
                     },
                     "time": {
@@ -3687,7 +3647,6 @@
                           "teamsInstaller": "[parameters('teamsInstaller')]",
                           "templateSpecResourceId": "[parameters('templateSpecResourceId')]",
                           "tenantId": "[variables('tenantId')]",
-                          "tenantType": "[parameters('tenantType')]",
                           "userAssignedIdentityClient": "[parameters('userAssignedIdentityClientId')]",
                           "userAssignedIdentityPrincipalId": "[parameters('userAssignedIdentityPrincipalId')]",
                           "userAssignedIdentityResourceId": "[parameters('userAssignedIdentityResourceId')]",
@@ -3963,9 +3922,6 @@
           "teamsInstaller": {
             "value": "[parameters('teamsInstaller')]"
           },
-          "tenantType": {
-            "value": "[parameters('tenantType')]"
-          },
           "userAssignedIdentityClientId": {
             "value": "[reference(subscriptionResourceId('Microsoft.Resources/deployments', format('baseline-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.userAssignedIdentityClientId.value]"
           },
@@ -3992,7 +3948,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14569983918376164186"
+              "templateHash": "13924072864969716794"
             }
           },
           "parameters": {
@@ -4141,9 +4097,6 @@
             "teamsInstaller": {
               "type": "string",
               "defaultValue": ""
-            },
-            "tenantType": {
-              "type": "string"
             },
             "userAssignedIdentityClientId": {
               "type": "string"
@@ -4446,9 +4399,6 @@
                   "tags": {
                     "value": "[parameters('tags')]"
                   },
-                  "tenantType": {
-                    "value": "[parameters('tenantType')]"
-                  },
                   "userAssignedIdentityObjectId": {
                     "value": "[parameters('userAssignedIdentityPrincipalId')]"
                   },
@@ -4478,7 +4428,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "12352976574115405851"
+                      "templateHash": "7147149651643849303"
                     }
                   },
                   "parameters": {
@@ -4546,9 +4496,6 @@
                       "type": "object"
                     },
                     "teamsInstaller": {
-                      "type": "string"
-                    },
-                    "tenantType": {
                       "type": "string"
                     },
                     "userAssignedIdentityObjectId": {
@@ -4768,10 +4715,6 @@
                         "asyncExecution": false,
                         "parameters": [
                           {
-                            "name": "TenantType",
-                            "value": "[parameters('tenantType')]"
-                          },
-                          {
                             "name": "UserAssignedIdentityObjectId",
                             "value": "[parameters('userAssignedIdentityObjectId')]"
                           },
@@ -4801,7 +4744,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$TenantType,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n        )\r\n      If($TenantType -eq \"Commercial\")\r\n      {\r\n        $TeamsUrl = \"https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true\"\r\n      }\r\n      If($TenantType -eq \"DepartmentOfDefense\")\r\n      {\r\n        $TeamsUrl = \"https://dod.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true\"\r\n      }\r\n      If($TenantType -eq \"GovernmentCommunityCloud\")\r\n      {\r\n        $TeamsUrl = \"https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&ring=general_gcc&download=true\"\r\n      }\r\n      If($TenantType -eq \"GovernmentCommunityCloudHigh\")\r\n      {\r\n        $TeamsUrl = \"https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true\"\r\n      }\r\n      Write-Host $($TeamsUrl)\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = $BlobName\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
+                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n      )\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
                         }
                       },
                       "dependsOn": [
@@ -4809,13 +4752,7 @@
                         "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('vmName'), 'office')]"
                       ]
                     }
-                  ],
-                  "outputs": {
-                    "tenantType": {
-                      "type": "string",
-                      "value": "[parameters('tenantType')]"
-                    }
-                  }
+                  ]
                 }
               },
               "dependsOn": [

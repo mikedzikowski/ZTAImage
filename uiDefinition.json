@@ -932,46 +932,6 @@
                                     }
                                 }
                             ]
-                        },
-                        {
-                            "name": "tenantType",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Tenant Type",
-                            "placeholder": "",
-                            "defaultValue": [],
-                            "toolTip": "Multiple values can be selected",
-                            "multiselect": false,
-                            "selectAll": true,
-                            "filter": true,
-                            "filterPlaceholder": "Filter items ...",
-                            "multiLine": false,
-                            "defaultDescription": "Select your Azure Tenant type",
-                            "constraints": {
-                                "allowedValues": [
-                                    {
-                                        "label": "Commercial",
-                                        "description": "Azure Commercial Tenant Type",
-                                        "value": "Commercial"
-                                    },
-                                    {
-                                        "label": "DepartmentOfDefense",
-                                        "description": "Azure DepartmentOfDefense Tenant Type",
-                                        "value": "DepartmentOfDefense"
-                                    },
-                                    {
-                                        "label": "GovernmentCommunityCloud",
-                                        "description": "Azure GovernmentCommunityCloud Tenant Type",
-                                        "value": "GovernmentCommunityCloud"
-                                    },
-                                    {
-                                        "label": "GovernmentCommunityCloudHigh",
-                                        "description": "Azure GovernmentCommunityCloudHigh Tenant Type",
-                                        "value": "GovernmentCommunityCloudHigh"
-                                    }
-                                ],
-                                "required": true
-                            },
-                            "visible": true
                         }
                     ]
                 },
@@ -1199,7 +1159,6 @@
                 "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",
                 "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
-                "tenantType": "[steps('customizations').tenantType]",
                 "userAssignedIdentityName": "[steps('virtualMachines').userAssignedIdentityName]",
                 "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
                 "vDOTInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]",

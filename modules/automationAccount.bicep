@@ -49,7 +49,6 @@ param subnetResourceId string
 param tags object
 param teamsInstaller string
 param templateSpecResourceId string
-param tenantType string
 param time string = utcNow()
 param timeZone string
 param userAssignedIdentityClientId string
@@ -515,7 +514,6 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
       teamsInstaller: teamsInstaller
       templateSpecResourceId: templateSpecResourceId
       tenantId: tenantId
-      tenantType: tenantType
       userAssignedIdentityClient: userAssignedIdentityClientId
       userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId
       userAssignedIdentityResourceId: userAssignedIdentityResourceId
