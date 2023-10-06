@@ -149,6 +149,7 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
           [string]$BlobName,
           [string]$Arguments
         )
+        $ErrorActionPreference = "Stop"
         $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
