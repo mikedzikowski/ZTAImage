@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "1893821336829972333"
+      "templateHash": "11345650461050022107"
     }
   },
   "parameters": {
@@ -340,7 +340,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "18289088388528631302"
+              "templateHash": "6487000146676187209"
             }
           },
           "parameters": {
@@ -633,7 +633,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "16651514839486323722"
+                      "templateHash": "9468421414022667016"
                     }
                   },
                   "parameters": {
@@ -806,7 +806,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile \"$env:windir\\temp\\$Blobname\"\r\n        Start-Sleep -Seconds 60\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
+                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Arguments\r\n        )\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile \"$env:windir\\temp\\$Blobname\"\r\n        Start-Sleep -Seconds 60\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait -Passthru\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
                         }
                       },
                       "dependsOn": [
