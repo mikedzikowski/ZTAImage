@@ -73,7 +73,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
         properties: {
           privateLinkServiceId: keyVault.id
           groupIds: [
-            'DSCAndHybridWorker'
+            'vault'
           ]
         }
       }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "7451058923765875430"
+      "templateHash": "11598119409320677232"
     }
   },
   "parameters": {
@@ -1147,7 +1147,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "15300653151154086750"
+              "templateHash": "10234357333499127566"
             }
           },
           "parameters": {
@@ -1402,7 +1402,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "16492990050720858442"
+                      "templateHash": "1238600401673501859"
                     }
                   },
                   "parameters": {
@@ -1502,7 +1502,7 @@
                             "properties": {
                               "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
                               "groupIds": [
-                                "DSCAndHybridWorker"
+                                "vault"
                               ]
                             }
                           }
