@@ -1138,7 +1138,7 @@
         "outputs": {
             "parameters": {
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
-                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.name, '')]",
+                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.id, '')]",
                 "computeGalleryName": "[steps('destination').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
@@ -1166,7 +1166,7 @@
                 "installVisio": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installVisio,'false')]",
                 "installWord": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installWord,'false')]",
                 "keyVaultName": "[if(steps('automation').enable, steps('automation').keyVault, '')]",
-                "keyVaultPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').keyVaultPrivateDnsZone.name, '')]",
+                "keyVaultPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').keyVaultPrivateDnsZone.id, '')]",
                 "localAdministratorPassword": "[steps('virtualMachines').localAdminCredentials.password]",
                 "localAdministratorUsername": "[steps('virtualMachines').localAdminCredentials.username]",
                 "location": "[steps('basics').scope.location.name]",
