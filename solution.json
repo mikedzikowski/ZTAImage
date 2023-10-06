@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "15622077764143868213"
+      "templateHash": "13443659037507028812"
     }
   },
   "parameters": {
@@ -340,7 +340,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14101771739882127071"
+              "templateHash": "8320151608194044469"
             }
           },
           "parameters": {
@@ -633,7 +633,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "13026178261899127069"
+                      "templateHash": "4996834062501953987"
                     }
                   },
                   "parameters": {
@@ -806,7 +806,7 @@
                           }
                         ],
                         "source": {
-                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = \"Stop\"\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile \"$env:windir\\temp\\$Blobname\"\r\n        Start-Sleep -Seconds 5\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait -Passthru\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
+                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = \"Stop\"\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        do\r\n        {\r\n            try\r\n            {\r\n                Write-Output \"Download Attempt $i\"\r\n                Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile \"$env:windir\\temp\\$Blobname\"\r\n            }\r\n            catch [System.Net.WebException]\r\n            {\r\n                Start-Sleep -Seconds 60\r\n                $i++\r\n                if($i -gt 10){throw}\r\n                continue\r\n            }\r\n            catch\r\n            {\r\n                $Output = $_ | select *\r\n                Write-Output $Output\r\n                throw\r\n            }\r\n        }\r\n        until(Test-Path -Path $env:windir\\temp\\$Blobname)\r\n        Start-Sleep -Seconds 5\r\n        Set-Location -Path $env:windir\\temp\r\n\r\n        # Install PowerSHell Modules\r\n        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait -Passthru\r\n        Get-InstalledModule | Where-Object {$_.name -like \"Az\"}\r\n      "
                         }
                       },
                       "dependsOn": [
