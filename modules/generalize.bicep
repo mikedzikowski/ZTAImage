@@ -15,13 +15,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: virtualMachineName
 }
 
-resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
+resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
   name: 'generalize'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
-    treatFailureAsDeploymentFailure: false
+    treatFailureAsDeploymentFailure: true
     asyncExecution: false
     parameters: [
       {

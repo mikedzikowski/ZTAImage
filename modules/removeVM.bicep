@@ -15,13 +15,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: virtualMachineName
 }
 
-resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
+resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
   name: 'removeVm'
   location: location
   parent: vm
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
-    treatFailureAsDeploymentFailure: false
+    treatFailureAsDeploymentFailure: true
     asyncExecution: true
     parameters: [
       {

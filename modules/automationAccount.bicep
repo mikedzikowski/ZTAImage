@@ -125,7 +125,7 @@ resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneG
   }
 }
 
-resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
+resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
   name: 'runbook'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}

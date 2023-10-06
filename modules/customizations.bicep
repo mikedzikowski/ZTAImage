@@ -46,13 +46,14 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
 }
 
 @batchSize(1)
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers: {
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = [for installer in installers: {
   name: 'app-${installer.name}'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
     treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
@@ -152,12 +153,14 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
   }
 }]
 
-resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
+resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
   name: 'office'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'InstallAccess'
@@ -314,12 +317,14 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
   ]
 }
 
-resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installVirtualDesktopOptimizationTool) {
+resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installVirtualDesktopOptimizationTool) {
   name: 'vdot'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
@@ -382,12 +387,14 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
   ]
 }
 
-// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installFsLogix) {
+// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installFsLogix) {
 //   name: 'fslogix'
 //   location: location
 //   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
 //   parent: vm
 //   properties: {
+//     treatFailureAsDeploymentFailure: true
+//     asyncExecution: false
 //     source: {
 //       script: '''
 //       $ErrorActionPreference = "Stop"
@@ -410,12 +417,14 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
 //   ]
 // }
 
-resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installTeams) {
+resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installTeams) {
   name: 'teams'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'TenantType'

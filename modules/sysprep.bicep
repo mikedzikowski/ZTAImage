@@ -12,12 +12,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
   name: virtualMachineName
 }
 
-resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
+resource sysprep 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
   name: 'sysprep'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: vm
   properties: {
+    treatFailureAsDeploymentFailure: true
     asyncExecution: false
     parameters: [
       {
