@@ -272,4 +272,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     vDOTInstaller: vDOTInstaller
     virtualMachineSize: virtualMachineSize
   }
+  dependsOn: [
+    buildAutomation
+  ]
 }
