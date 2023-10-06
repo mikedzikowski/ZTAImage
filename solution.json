@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "2512847457925251026"
+      "templateHash": "18358306902904751638"
     }
   },
   "parameters": {
@@ -340,7 +340,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "804297198889164778"
+              "templateHash": "15332678139387423741"
             }
           },
           "parameters": {
@@ -472,7 +472,7 @@
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('role-assignment-compute-{0}', parameters('deploymentNameSuffix'))]",
+              "name": "[format('role-assignment-automation-{0}', parameters('deploymentNameSuffix'))]",
               "subscriptionId": "[parameters('subscriptionId')]",
               "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {

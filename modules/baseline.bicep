@@ -31,7 +31,7 @@ module userAssignedIdentity 'userAssignedIdentity.bicep' = {
 }
 
 module roleAssignmentAutomation 'roleAssignmentAutomation.bicep' = {
-  name: 'role-assignment-compute-${deploymentNameSuffix}'
+  name: 'role-assignment-automation-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     principalId: userAssignedIdentity.outputs.principalId
