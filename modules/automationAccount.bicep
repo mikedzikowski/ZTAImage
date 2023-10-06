@@ -565,6 +565,9 @@ resource hybridRunbookWorker 'Microsoft.Automation/automationAccounts/hybridRunb
   properties: {
     vmResourceId: virtualMachine.id
   }
+  dependsOn: [
+    runCommand
+  ]
 }
 
 resource extension_HybridWorker 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
@@ -582,6 +585,9 @@ resource extension_HybridWorker 'Microsoft.Compute/virtualMachines/extensions@20
       AutomationAccountURL: automationAccount.properties.automationHybridServiceUrl
     }
   }
+  dependsOn: [
+    runCommand
+  ]
 }
 
 resource extension_JsonADDomainExtension 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = if (!empty(domainJoinUserPrincipalName) && !empty(domainName) && !empty(oUPath)) {
@@ -608,6 +614,7 @@ resource extension_JsonADDomainExtension 'Microsoft.Compute/virtualMachines/exte
   }
   dependsOn: [
     extension_HybridWorker
+    runCommand
   ]
 }
 

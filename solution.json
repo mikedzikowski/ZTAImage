@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "11345650461050022107"
+      "templateHash": "8739969179469181861"
     }
   },
   "parameters": {
@@ -1153,7 +1153,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4300041366041735511"
+              "templateHash": "11806605404592997913"
             }
           },
           "parameters": {
@@ -3261,7 +3261,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "9169614387841364574"
+                      "templateHash": "2683326636049104067"
                     }
                   },
                   "parameters": {
@@ -3687,7 +3687,8 @@
                         "vmResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups', parameters('automationAccountName'), 'Zero Trust Image Build Automation')]"
+                        "[resourceId('Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups', parameters('automationAccountName'), 'Zero Trust Image Build Automation')]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
                       ]
                     },
                     {
@@ -3707,7 +3708,8 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+                        "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
                       ]
                     },
                     {
@@ -3735,7 +3737,8 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('virtualMachineName'), 'HybridWorkerForWindows')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('virtualMachineName'), 'HybridWorkerForWindows')]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
                       ]
                     }
                   ],
