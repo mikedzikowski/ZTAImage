@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "13212261652597017132"
+      "templateHash": "12115442377819606011"
     }
   },
   "parameters": {
@@ -1023,7 +1023,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "6164012263068559894"
+              "templateHash": "6504146285921354410"
             }
           },
           "parameters": {
@@ -3054,7 +3054,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10480619461443617149"
+                      "templateHash": "9794910101530119611"
                     }
                   },
                   "parameters": {
@@ -3268,6 +3268,7 @@
                       "apiVersion": "2023-05-01",
                       "name": "[variables('privateEndpointName')]",
                       "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/privateEndpoints'), parameters('tags')['Microsoft.Network/privateEndpoints'], createObject())]",
                       "properties": {
                         "privateLinkServiceConnections": [
                           {
@@ -3313,7 +3314,7 @@
                       "apiVersion": "2023-03-01",
                       "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'runbook')]",
                       "location": "[parameters('location')]",
-                      "tags": "[parameters('tags')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
                       "properties": {
                         "treatFailureAsDeploymentFailure": true,
                         "asyncExecution": false,

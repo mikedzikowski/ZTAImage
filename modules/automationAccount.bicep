@@ -89,6 +89,7 @@ resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
   name: privateEndpointName
   location: location
+  tags: contains(tags, 'Microsoft.Network/privateEndpoints') ? tags['Microsoft.Network/privateEndpoints'] : {}
   properties: {
     privateLinkServiceConnections: [
       {
@@ -127,7 +128,7 @@ resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneG
 resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
   name: 'runbook'
   location: location
-  tags: tags
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   parent: virtualMachine
   properties: {
     treatFailureAsDeploymentFailure: true
