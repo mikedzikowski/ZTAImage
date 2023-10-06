@@ -14,6 +14,7 @@ param domainName string = ''
 param enableBuildAutomation bool
 param excludeFromLatest bool = true
 param hybridUseBenefit bool
+param hybridWorkerName string = ''
 param imageDefinitionNamePrefix string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -69,7 +70,7 @@ param virtualMachineSize string
 
 var imageDefinitionName = '${imageDefinitionNamePrefix}-${marketplaceImageSKU}'
 var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
-var managementVirtualMachineName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
+var managementVirtualMachineName = empty(hybridWorkerName) ? take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15) : hybridWorkerName
 var storageAccountName = split(storageAccountResourceId, '/')[8]
 var subscriptionId = subscription().subscriptionId
 var timeZones = {

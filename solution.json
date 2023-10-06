@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "883952290922735161"
+      "templateHash": "9358276308198251843"
     }
   },
   "parameters": {
@@ -54,6 +54,10 @@
     },
     "hybridUseBenefit": {
       "type": "bool"
+    },
+    "hybridWorkerName": {
+      "type": "string",
+      "defaultValue": ""
     },
     "imageDefinitionNamePrefix": {
       "type": "string"
@@ -202,7 +206,7 @@
   "variables": {
     "imageDefinitionName": "[format('{0}-{1}', parameters('imageDefinitionNamePrefix'), parameters('marketplaceImageSKU'))]",
     "imageVirtualMachineName": "[take(format('vmimg-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
-    "managementVirtualMachineName": "[take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
+    "managementVirtualMachineName": "[if(empty(parameters('hybridWorkerName')), take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15), parameters('hybridWorkerName'))]",
     "storageAccountName": "[split(parameters('storageAccountResourceId'), '/')[8]]",
     "subscriptionId": "[subscription().subscriptionId]",
     "timeZones": {

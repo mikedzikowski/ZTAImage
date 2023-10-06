@@ -187,7 +187,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Compute gallery name",
                             "defaultValue": "",
-                            "placeholder": "Example: cg_avd",
+                            "placeholder": "Example: cg_avd_d_eu",
                             "toolTip": "Inpute the name for the Compute Gallery.",
                             "multiLine": false,
                             "constraints": {
@@ -206,7 +206,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Image definition name prefix",
                             "defaultValue": "",
-                            "placeholder": "Example: developerImage"
+                            "placeholder": "Example: developer"
                         },
                         {
                             "name": "imageVersion",
@@ -319,7 +319,7 @@
                             "label": "User assigned identity name",
                             "defaultValue": "",
                             "toolTip": "Input the name for the User Assigned Identity.",
-                            "placeholder": "Example: uai-image",
+                            "placeholder": "Example: uai-image-d-eu",
                             "multiLine": false,
                             "constraints": {
                                 "required": true,
@@ -391,8 +391,8 @@
                         {
                             "name": "vmSize",
                             "type": "Microsoft.Compute.SizeSelector",
-                            "label": "Virtual Machine Size",
-                            "toolTip": "",
+                            "label": "Virtual machine size",
+                            "toolTip": "Select the virtual machine ",
                             "recommendedSizes": [
                                 "Standard_D4s_v4"
                             ],
@@ -414,6 +414,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Username",
                                     "defaultValue": "",
+                                    "placeholder": "Example: xadmin",
                                     "toolTip": "Input the username for the local administrator account.",
                                     "constraints": {
                                         "required": true,
@@ -446,7 +447,7 @@
                             "name": "hybridUseBenefit",
                             "type": "Microsoft.Common.CheckBox",
                             "label": "Enable hybrid use benefit",
-                            "defaultValue": true,
+                            "defaultValue": false,
                             "toolTip": "Enables the hybrid use benefit to reduce the cost of Azure virutal machines when the appropriate licensing and software assurance has been purchased."
                         },
                         {
@@ -991,6 +992,7 @@
                             "label": "Automation account name",
                             "toolTip": "Input the name for the automation account.",
                             "visible": "[steps('automation').enable]",
+                            "placeholder": "Example: aa-image-d-eu",
                             "constraints": {
                                 "required": true,
                                 "regex": "^[a-zA-Z][a-zA-Z0-9-]{4,48}[a-zA-Z0-9]$",
@@ -1010,6 +1012,7 @@
                             "label": "Key vault name",
                             "toolTip": "Input the name for the key vault.",
                             "visible": "[steps('automation').enable]",
+                            "placeholder": "Example: kv-image-d-eu",
                             "constraints": {
                                 "required": true,
                                 "regex": "^(?!.*-{2}.*)([a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9])$",
@@ -1029,6 +1032,17 @@
                             "label": "Hybrid Worker",
                             "visible": "[steps('automation').enable]",
                             "elements": [
+                                {
+                                    "name": "name",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "label": "Virtual machine name",
+                                    "toolTip": "Input a custom name for the virtual machine.",
+                                    "placeholder": "Example: vmhwimagedeu",
+                                    "constraints": {
+                                        "required": true
+                                    }
+                                },
                                 {
                                     "name": "domainJoin",
                                     "type": "Microsoft.Common.CheckBox",
@@ -1053,7 +1067,7 @@
                                     "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
                                     "label": "OU Path",
                                     "toolTip": "Input the distinguished name of the desired organization unit for the AVD session hosts.",
-                                    "placeholder": "Example: OU=pooled,OU=avd,DC=contoso,DC=com",
+                                    "placeholder": "Example: OU=imaging,OU=avd,DC=contoso,DC=com",
                                     "constraints": {
                                         "required": true
                                     }
@@ -1063,7 +1077,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Domain join user principal name",
                                     "toolTip": "Enter the user principal name with domain join privileges.",
-                                    "placeholder": "",
+                                    "placeholder": "Example: domainjoin@contoso.com",
                                     "constraints": {
                                         "required": true,
                                         "regex": "^[a-z0-9A-Z_.-]+@(?:[a-z0-9]+\\.)+[a-z]+$",
@@ -1149,6 +1163,7 @@
                 "enableBuildAutomation": "[steps('automation').enable]",
                 "excludeFromLatest": "[steps('destination').imageVersion.excludeFromLatest]",
                 "hybridUseBenefit": "[steps('virtualMachines').hybridUseBenefit]",
+                "hybridWorkerName": "[if(steps('automation').enable, steps('automation').hybridWorker.name, '')]",
                 "imageDefinitionNamePrefix": "[steps('destination').imageDefinitionNamePrefix]",
                 "imageMajorVersion": "[steps('destination').imageVersion.majorVersion]",
                 "imageMinorVersion": "[steps('destination').imageVersion.minorVersion]",
