@@ -1,6 +1,6 @@
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
-param computeGalleryName string
+param computeGalleryResourceId string
 param containerName string
 param customizations array
 param diskEncryptionSetResourceId string
@@ -59,6 +59,59 @@ param vDOTInstaller string
 param virtualMachineName string
 param virtualMachineSize string
 
+var parameters = {
+  computeGalleryName: computeGalleryResourceId
+  containerName: containerName
+  customizations: string(customizations)
+  diskEncryptionSetResourceId: diskEncryptionSetResourceId
+  enableBuildAutomation: string(enableBuildAutomation)
+  environmentName: environment().name
+  imageDefinitionName: imageDefinitionName
+  imageMajorVersion: string(imageMajorVersion)
+  imageMinorVersion: string(imageMinorVersion)
+  imageVirtualMachineName: imageVirtualMachineName
+  installAccess: string(installAccess)
+  installExcel: string(installExcel)
+  installOneDriveForBusiness: string(installOneDriveForBusiness)
+  installOneNote: string(installOneNote)
+  installOutlook: string(installOutlook)
+  installPowerPoint: string(installPowerPoint)
+  installProject: string(installProject)
+  installPublisher: string(installPublisher)
+  installSkypeForBusiness: string(installSkypeForBusiness)
+  installTeams: string(installTeams)
+  installVirtualDesktopOptimizationTool: string(installVirtualDesktopOptimizationTool)
+  installVisio: string(installVisio)
+  installWord: string(installWord)
+  keyVaultName: keyVaultName
+  localAdministratorPassword: localAdministratorPassword
+  localAdministratorUsername: localAdministratorUsername
+  location: location
+  logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
+  managementVirtualMachineName: managementVirtualMachineName
+  marketplaceImageOffer: marketplaceImageOffer
+  marketplaceImagePublisher: marketplaceImagePublisher
+  marketplaceImageSKU: marketplaceImageSKU
+  msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
+  officeInstaller: officeInstaller
+  replicaCount: string(replicaCount)
+  resourceGroupName: resourceGroupName
+  sharedGalleryImageResourceId: sharedGalleryImageResourceId
+  sourceImageType: sourceImageType
+  storageAccountName: storageAccountName
+  subnetResourceId: subnetResourceId
+  subscriptionId: subscriptionId
+  tags: string(tags)
+  teamsInstaller: teamsInstaller
+  templateSpecResourceId: templateSpecResourceId
+  tenantId: tenantId
+  userAssignedIdentityClient: userAssignedIdentityClientId
+  userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId
+  userAssignedIdentityResourceId: userAssignedIdentityResourceId
+  vcRedistInstaller: vcRedistInstaller
+  vDOTInstaller: vDOTInstaller
+  virtualMachineSize: virtualMachineSize
+}
 var privateEndpointName = 'pe-${automationAccountName}'
 var runbookName = 'Zero-Trust-Image-Build-Automation'
 var subscriptionId = subscription().subscriptionId
@@ -469,57 +522,7 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
   name: jobScheduleName
   properties: {
     parameters: {
-      computeGalleryName: computeGalleryName
-      containerName: containerName
-      customizations: string(customizations)
-      diskEncryptionSetResourceId: diskEncryptionSetResourceId
-      enableBuildAutomation: string(enableBuildAutomation)
-      environmentName: environment().name
-      imageDefinitionName: imageDefinitionName
-      imageMajorVersion: string(imageMajorVersion)
-      imageMinorVersion: string(imageMinorVersion)
-      imageVirtualMachineName: imageVirtualMachineName
-      installAccess: string(installAccess)
-      installExcel: string(installExcel)
-      installOneDriveForBusiness: string(installOneDriveForBusiness)
-      installOneNote: string(installOneNote)
-      installOutlook: string(installOutlook)
-      installPowerPoint: string(installPowerPoint)
-      installProject: string(installProject)
-      installPublisher: string(installPublisher)
-      installSkypeForBusiness: string(installSkypeForBusiness)
-      installTeams: string(installTeams)
-      installVirtualDesktopOptimizationTool: string(installVirtualDesktopOptimizationTool)
-      installVisio: string(installVisio)
-      installWord: string(installWord)
-      keyVaultName: keyVaultName
-      localAdministratorPassword: localAdministratorPassword
-      localAdministratorUsername: localAdministratorUsername
-      location: location
-      logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
-      managementVirtualMachineName: managementVirtualMachineName
-      marketplaceImageOffer: marketplaceImageOffer
-      marketplaceImagePublisher: marketplaceImagePublisher
-      marketplaceImageSKU: marketplaceImageSKU
-      msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
-      officeInstaller: officeInstaller
-      replicaCount: string(replicaCount)
-      resourceGroupName: resourceGroupName
-      sharedGalleryImageResourceId: sharedGalleryImageResourceId
-      sourceImageType: sourceImageType
-      storageAccountName: storageAccountName
-      subnetResourceId: subnetResourceId
-      subscriptionId: subscriptionId
-      tags: string(tags)
-      teamsInstaller: teamsInstaller
-      templateSpecResourceId: templateSpecResourceId
-      tenantId: tenantId
-      userAssignedIdentityClient: userAssignedIdentityClientId
-      userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId
-      userAssignedIdentityResourceId: userAssignedIdentityResourceId
-      vcRedistInstaller: vcRedistInstaller
-      vDOTInstaller: vDOTInstaller
-      virtualMachineSize: virtualMachineSize
+      parameters: string(parameters)
     }
     runbook: {
       name: runbookName

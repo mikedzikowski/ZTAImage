@@ -87,6 +87,7 @@ module computeGallery 'computeGallery.bicep' = {
   }
 }
 
+output computeGalleryResourceId string = computeGallery.outputs.computeGalleryResourceId
 output userAssignedIdentityClientId string = userAssignedIdentity.outputs.clientId
 output userAssignedIdentityPrincipalId string = userAssignedIdentity.outputs.principalId
 output userAssignedIdentityResourceId string = userAssignedIdentity.outputs.resourceId

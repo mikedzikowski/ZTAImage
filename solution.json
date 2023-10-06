@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "8572670986248185876"
+      "templateHash": "9013246373331830665"
     }
   },
   "parameters": {
@@ -331,7 +331,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "15332678139387423741"
+              "templateHash": "1971220057646601768"
             }
           },
           "parameters": {
@@ -911,7 +911,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4637187855805626494"
+                      "templateHash": "4273082835219700943"
                     }
                   },
                   "parameters": {
@@ -979,9 +979,9 @@
                     }
                   ],
                   "outputs": {
-                    "computeGalleryName": {
+                    "computeGalleryResourceId": {
                       "type": "string",
-                      "value": "[parameters('computeGalleryName')]"
+                      "value": "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
                     },
                     "imageDefinitionName": {
                       "type": "string",
@@ -993,6 +993,10 @@
             }
           ],
           "outputs": {
+            "computeGalleryResourceId": {
+              "type": "string",
+              "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('gallery-image-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.computeGalleryResourceId.value]"
+            },
             "userAssignedIdentityClientId": {
               "type": "string",
               "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.clientId.value]"
@@ -1027,8 +1031,8 @@
           "automationAccountPrivateDnsZoneResourceId": {
             "value": "[parameters('automationAccountPrivateDnsZoneResourceId')]"
           },
-          "computeGalleryName": {
-            "value": "[parameters('computeGalleryName')]"
+          "computeGalleryResourceId": {
+            "value": "[reference(subscriptionResourceId('Microsoft.Resources/deployments', format('baseline-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.computeGalleryResourceId.value]"
           },
           "containerName": {
             "value": "[parameters('containerName')]"
@@ -1203,7 +1207,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12168991883788861533"
+              "templateHash": "8844147542947886456"
             }
           },
           "parameters": {
@@ -1213,7 +1217,7 @@
             "automationAccountPrivateDnsZoneResourceId": {
               "type": "string"
             },
-            "computeGalleryName": {
+            "computeGalleryResourceId": {
               "type": "string"
             },
             "containerName": {
@@ -3116,8 +3120,8 @@
                   "automationAccountPrivateDnsZoneResourceId": {
                     "value": "[parameters('automationAccountPrivateDnsZoneResourceId')]"
                   },
-                  "computeGalleryName": {
-                    "value": "[parameters('computeGalleryName')]"
+                  "computeGalleryResourceId": {
+                    "value": "[parameters('computeGalleryResourceId')]"
                   },
                   "containerName": {
                     "value": "[parameters('containerName')]"
@@ -3286,7 +3290,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "5857828385099475626"
+                      "templateHash": "8854781324982281473"
                     }
                   },
                   "parameters": {
@@ -3296,7 +3300,7 @@
                     "automationAccountPrivateDnsZoneResourceId": {
                       "type": "string"
                     },
-                    "computeGalleryName": {
+                    "computeGalleryResourceId": {
                       "type": "string"
                     },
                     "containerName": {
@@ -3468,6 +3472,59 @@
                     }
                   },
                   "variables": {
+                    "parameters": {
+                      "computeGalleryName": "[parameters('computeGalleryResourceId')]",
+                      "containerName": "[parameters('containerName')]",
+                      "customizations": "[string(parameters('customizations'))]",
+                      "diskEncryptionSetResourceId": "[parameters('diskEncryptionSetResourceId')]",
+                      "enableBuildAutomation": "[string(parameters('enableBuildAutomation'))]",
+                      "environmentName": "[environment().name]",
+                      "imageDefinitionName": "[parameters('imageDefinitionName')]",
+                      "imageMajorVersion": "[string(parameters('imageMajorVersion'))]",
+                      "imageMinorVersion": "[string(parameters('imageMinorVersion'))]",
+                      "imageVirtualMachineName": "[parameters('imageVirtualMachineName')]",
+                      "installAccess": "[string(parameters('installAccess'))]",
+                      "installExcel": "[string(parameters('installExcel'))]",
+                      "installOneDriveForBusiness": "[string(parameters('installOneDriveForBusiness'))]",
+                      "installOneNote": "[string(parameters('installOneNote'))]",
+                      "installOutlook": "[string(parameters('installOutlook'))]",
+                      "installPowerPoint": "[string(parameters('installPowerPoint'))]",
+                      "installProject": "[string(parameters('installProject'))]",
+                      "installPublisher": "[string(parameters('installPublisher'))]",
+                      "installSkypeForBusiness": "[string(parameters('installSkypeForBusiness'))]",
+                      "installTeams": "[string(parameters('installTeams'))]",
+                      "installVirtualDesktopOptimizationTool": "[string(parameters('installVirtualDesktopOptimizationTool'))]",
+                      "installVisio": "[string(parameters('installVisio'))]",
+                      "installWord": "[string(parameters('installWord'))]",
+                      "keyVaultName": "[parameters('keyVaultName')]",
+                      "localAdministratorPassword": "[parameters('localAdministratorPassword')]",
+                      "localAdministratorUsername": "[parameters('localAdministratorUsername')]",
+                      "location": "[parameters('location')]",
+                      "logAnalyticsWorkspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+                      "managementVirtualMachineName": "[parameters('managementVirtualMachineName')]",
+                      "marketplaceImageOffer": "[parameters('marketplaceImageOffer')]",
+                      "marketplaceImagePublisher": "[parameters('marketplaceImagePublisher')]",
+                      "marketplaceImageSKU": "[parameters('marketplaceImageSKU')]",
+                      "msrdcwebrtcsvcInstaller": "[parameters('msrdcwebrtcsvcInstaller')]",
+                      "officeInstaller": "[parameters('officeInstaller')]",
+                      "replicaCount": "[string(parameters('replicaCount'))]",
+                      "resourceGroupName": "[parameters('resourceGroupName')]",
+                      "sharedGalleryImageResourceId": "[parameters('sharedGalleryImageResourceId')]",
+                      "sourceImageType": "[parameters('sourceImageType')]",
+                      "storageAccountName": "[parameters('storageAccountName')]",
+                      "subnetResourceId": "[parameters('subnetResourceId')]",
+                      "subscriptionId": "[variables('subscriptionId')]",
+                      "tags": "[string(parameters('tags'))]",
+                      "teamsInstaller": "[parameters('teamsInstaller')]",
+                      "templateSpecResourceId": "[parameters('templateSpecResourceId')]",
+                      "tenantId": "[variables('tenantId')]",
+                      "userAssignedIdentityClient": "[parameters('userAssignedIdentityClientId')]",
+                      "userAssignedIdentityPrincipalId": "[parameters('userAssignedIdentityPrincipalId')]",
+                      "userAssignedIdentityResourceId": "[parameters('userAssignedIdentityResourceId')]",
+                      "vcRedistInstaller": "[parameters('vcRedistInstaller')]",
+                      "vDOTInstaller": "[parameters('vDOTInstaller')]",
+                      "virtualMachineSize": "[parameters('virtualMachineSize')]"
+                    },
                     "privateEndpointName": "[format('pe-{0}', parameters('automationAccountName'))]",
                     "runbookName": "Zero-Trust-Image-Build-Automation",
                     "subscriptionId": "[subscription().subscriptionId]",
@@ -3602,57 +3659,7 @@
                       "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('jobScheduleName'))]",
                       "properties": {
                         "parameters": {
-                          "computeGalleryName": "[parameters('computeGalleryName')]",
-                          "containerName": "[parameters('containerName')]",
-                          "customizations": "[string(parameters('customizations'))]",
-                          "diskEncryptionSetResourceId": "[parameters('diskEncryptionSetResourceId')]",
-                          "enableBuildAutomation": "[string(parameters('enableBuildAutomation'))]",
-                          "environmentName": "[environment().name]",
-                          "imageDefinitionName": "[parameters('imageDefinitionName')]",
-                          "imageMajorVersion": "[string(parameters('imageMajorVersion'))]",
-                          "imageMinorVersion": "[string(parameters('imageMinorVersion'))]",
-                          "imageVirtualMachineName": "[parameters('imageVirtualMachineName')]",
-                          "installAccess": "[string(parameters('installAccess'))]",
-                          "installExcel": "[string(parameters('installExcel'))]",
-                          "installOneDriveForBusiness": "[string(parameters('installOneDriveForBusiness'))]",
-                          "installOneNote": "[string(parameters('installOneNote'))]",
-                          "installOutlook": "[string(parameters('installOutlook'))]",
-                          "installPowerPoint": "[string(parameters('installPowerPoint'))]",
-                          "installProject": "[string(parameters('installProject'))]",
-                          "installPublisher": "[string(parameters('installPublisher'))]",
-                          "installSkypeForBusiness": "[string(parameters('installSkypeForBusiness'))]",
-                          "installTeams": "[string(parameters('installTeams'))]",
-                          "installVirtualDesktopOptimizationTool": "[string(parameters('installVirtualDesktopOptimizationTool'))]",
-                          "installVisio": "[string(parameters('installVisio'))]",
-                          "installWord": "[string(parameters('installWord'))]",
-                          "keyVaultName": "[parameters('keyVaultName')]",
-                          "localAdministratorPassword": "[parameters('localAdministratorPassword')]",
-                          "localAdministratorUsername": "[parameters('localAdministratorUsername')]",
-                          "location": "[parameters('location')]",
-                          "logAnalyticsWorkspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
-                          "managementVirtualMachineName": "[parameters('managementVirtualMachineName')]",
-                          "marketplaceImageOffer": "[parameters('marketplaceImageOffer')]",
-                          "marketplaceImagePublisher": "[parameters('marketplaceImagePublisher')]",
-                          "marketplaceImageSKU": "[parameters('marketplaceImageSKU')]",
-                          "msrdcwebrtcsvcInstaller": "[parameters('msrdcwebrtcsvcInstaller')]",
-                          "officeInstaller": "[parameters('officeInstaller')]",
-                          "replicaCount": "[string(parameters('replicaCount'))]",
-                          "resourceGroupName": "[parameters('resourceGroupName')]",
-                          "sharedGalleryImageResourceId": "[parameters('sharedGalleryImageResourceId')]",
-                          "sourceImageType": "[parameters('sourceImageType')]",
-                          "storageAccountName": "[parameters('storageAccountName')]",
-                          "subnetResourceId": "[parameters('subnetResourceId')]",
-                          "subscriptionId": "[variables('subscriptionId')]",
-                          "tags": "[string(parameters('tags'))]",
-                          "teamsInstaller": "[parameters('teamsInstaller')]",
-                          "templateSpecResourceId": "[parameters('templateSpecResourceId')]",
-                          "tenantId": "[variables('tenantId')]",
-                          "userAssignedIdentityClient": "[parameters('userAssignedIdentityClientId')]",
-                          "userAssignedIdentityPrincipalId": "[parameters('userAssignedIdentityPrincipalId')]",
-                          "userAssignedIdentityResourceId": "[parameters('userAssignedIdentityResourceId')]",
-                          "vcRedistInstaller": "[parameters('vcRedistInstaller')]",
-                          "vDOTInstaller": "[parameters('vDOTInstaller')]",
-                          "virtualMachineSize": "[parameters('virtualMachineSize')]"
+                          "parameters": "[string(variables('parameters'))]"
                         },
                         "runbook": {
                           "name": "[variables('runbookName')]"

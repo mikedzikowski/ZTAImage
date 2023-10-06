@@ -2,7 +2,7 @@ targetScope = 'subscription'
 
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
-param computeGalleryName string
+param computeGalleryResourceId string
 param containerName string
 param customizations array
 param deploymentNameSuffix string
@@ -113,7 +113,7 @@ module automationAccount 'automationAccount.bicep' = {
   params: {
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
-    computeGalleryName: computeGalleryName
+    computeGalleryResourceId: computeGalleryResourceId
     containerName: containerName
     customizations: customizations
     diskEncryptionSetResourceId: diskEncryptionSetResourceId

@@ -1,174 +1,39 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
 	[Parameter(Mandatory)]
-	[string]$ComputeGalleryName,
-
-	[Parameter(Mandatory)]
-	[string]$ContainerName,
-	
-	[Parameter(Mandatory)]
-	[string]$Customizations,
-
-	[Parameter(Mandatory)]
-	[string]$DiskEncryptionSetResourceId,
-
-	[Parameter(Mandatory)]
-	[string]$EnvironmentName,
-
-	[Parameter(Mandatory)]
-	[string]$ImageDefinitionName,
-
-	[Parameter(Mandatory)]
-	[string]$ImageMajorVersion,
-
-	[Parameter(Mandatory)]
-	[string]$ImageMinorVersion,
-
-	[Parameter(Mandatory)]
-	[string]$ImageVirtualMachineName,
-
-	[Parameter(Mandatory)]
-	[string]$InstallAccess,
-
-	[Parameter(Mandatory)]
-	[string]$InstallExcel,
-
-	[Parameter(Mandatory)]
-	[string]$InstallOneDriveForBusiness,
-
-	[Parameter(Mandatory)]
-	[string]$InstallOneNote,
-
-	[Parameter(Mandatory)]
-	[string]$InstallOutlook,
-
-	[Parameter(Mandatory)]
-	[string]$InstallPowerPoint,
-
-	[Parameter(Mandatory)]
-	[string]$InstallProject,
-
-	[Parameter(Mandatory)]
-	[string]$InstallPublisher,
-
-	[Parameter(Mandatory)]
-	[string]$InstallSkypeForBusiness,
-
-	[Parameter(Mandatory)]
-	[string]$InstallTeams,
-
-	[Parameter(Mandatory)]
-	[string]$InstallVirtualDesktopOptimizationTool,
-
-	[Parameter(Mandatory)]
-	[string]$InstallVisio,
-
-	[Parameter(Mandatory)]
-	[string]$InstallWord,
-
-	[Parameter(Mandatory)]
-	[string]$KeyVaultName,
-
-	[Parameter(Mandatory)]
-	[string]$Location,
-
-	[Parameter(Mandatory)]
-	[string]$ManagementVirtualMachineName,
-
-	[Parameter(Mandatory=$false)]
-	[string]$MarketplaceImageOffer,
-
-	[Parameter(Mandatory=$false)]
-	[string]$MarketplaceImagePublisher,
-
-	[Parameter(Mandatory=$false)]
-	[string]$MarketplaceImageSKU,
-
-	[Parameter(Mandatory=$false)]
-	[string]$MsrdcwebrtcsvcInstaller,
-
-	[Parameter(Mandatory=$false)]
-	[string]$OfficeInstaller,
-
-	[Parameter(Mandatory)]
-	[string]$ReplicaCount,
-
-	[Parameter(Mandatory)]
-	[string]$ResourceGroupName,
-
-	[Parameter(Mandatory=$false)]
-	[string]$SharedGalleryImageResourceId,
-
-	[Parameter(Mandatory)]
-	[string]$SourceImageType,
-
-	[Parameter(Mandatory)]
-	[string]$StorageAccountName,
-
-	[Parameter(Mandatory)]
-	[string]$SubnetResourceId,
-
-	[Parameter(Mandatory)]
-	[string]$SubscriptionId,
-
-	[Parameter(Mandatory)]
-	[string]$Tags,
-
-	[Parameter(Mandatory=$false)]
-	[string]$TeamsInstaller,
-
-	[Parameter(Mandatory)]
-	[string]$TemplateSpecResourceId,
-
-	[Parameter(Mandatory)]
-	[string]$TenantId,
-
-	[Parameter(Mandatory)]
-	[string]$UserAssignedIdentityClientId,
-
-	[Parameter(Mandatory)]
-	[string]$UserAssignedIdentityPrincipalId,
-
-	[Parameter(Mandatory)]
-	[string]$UserAssignedIdentityResourceId,
-
-	[Parameter(Mandatory=$false)]
-	[string]$VcRedistInstaller,
-
-	[Parameter(Mandatory=$false)]
-	[string]$VDOTInstaller,
-
-	[Parameter(Mandatory)]
-	[string]$VirtualMachineSize
+	[string]$Parameters
 )
 
 $ErrorActionPreference = 'Stop'
 
 try 
 {
+	# Convert JSON string to PowerShell
+	$Values = $Parameters | ConvertFrom-Json
+
 	# Set Variables
 	if($SharedGalleryImageResourceId)
 	{
-		$SourceGalleryName = $SharedGalleryImageResourceId.Split('/')[8]
-		$SourceGalleryResourceGroupName = $SharedGalleryImageResourceId.Split('/')[4]
-		$SourceImageDefinitionName = $SharedGalleryImageResourceId.Split('/')[10]
+		$SourceGalleryName = $Values.sharedGalleryImageResourceId.Split('/')[8]
+		$SourceGalleryResourceGroupName = $Values.sharedGalleryImageResourceId.Split('/')[4]
+		$SourceImageDefinitionName = $Values.sharedGalleryImageResourceId.Split('/')[10]
 	}
-	$DestinationGalleryName = $GalleryName
-	$DestinationGalleryResourceGroupName = $GalleryResourceGroupName
-	$DestinationImageDefinitionName = $ImageDefinitionName
+	$DestinationGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
+	$DestinationGalleryResourceGroupName = $Values.computeGalleryResourceId.Split('/')[4]
+	$DestinationImageDefinitionName = $Values.imageDefinitionName
 
     # Import Modules
     Import-Module -Name 'Az.Accounts','Az.Compute','Az.Resources'
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Imported the required modules."
 
     # Connect to Azure using the System Assigned Identity
-    Connect-AzAccount -Environment $EnvironmentName -Subscription $SubscriptionId -Tenant $TenantId -Identity | Out-Null
+    Connect-AzAccount -Environment $Values.environmentName -Subscription $Values.subscriptionId -Tenant $Values.tenantId -Identity | Out-Null
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Connected to Azure."
 
     $CurrentImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $DestinationGalleryResourceGroupName -GalleryName $DestinationGalleryName -GalleryImageDefinitionName $DestinationImageDefinitionName | Where-Object {$_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Destination), Latest Version Date: $CurrentImageVersionDate."
 	
-    switch($SourceImageType)
+    switch($Values.sourceImageType)
     {
         'AzureComputeGallery' {
             # Get the date of the latest image definition version
@@ -177,7 +42,7 @@ try
         }
         'AzureMarketplace' {
             # Get the date of the latest marketplace image version
-            $ImageVersionDateRaw = (Get-AzVMImage -Location $Location -PublisherName $ImageBuild.Source.Publisher -Offer $ImageBuild.Source.Offer -Skus $ImageBuild.Source.Sku | Sort-Object -Property 'Version' -Descending | Select-Object -First 1).Version.Split('.')[-1]
+            $ImageVersionDateRaw = (Get-AzVMImage -Location $Values.location -PublisherName $Values.marketplaceImagePublisher -Offer $Values.marketplaceImageOffer -Skus $Values.marketplaceImageSku | Sort-Object -Property 'Version' -Descending | Select-Object -First 1).Version.Split('.')[-1]
             $Year = '20' + $ImageVersionDateRaw.Substring(0,2)
             $Month = $ImageVersionDateRaw.Substring(2,2)
             $Day = $ImageVersionDateRaw.Substring(4,2)
@@ -191,52 +56,52 @@ try
 	{   
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build initiated with a new source image version."
 		$TemplateParameters = @{
-			computeGalleryName = $ComputeGalleryName
-			containerName = $ContainerName
-			customizations = $Customizations | ConvertFrom-Json
-			diskEncryptionSetResourceId = $DiskEncryptionSetResourceId
+			computeGalleryName = $Values.computeGalleryName
+			containerName = $Values.containerName
+			customizations = $Values.customizations
+			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
 			excludeFromLatest = $true
-			imageDefinitionName = $ImageDefinitionName
-			imageMajorVersion = if($ImageMajorVersion -eq 'true'){$true}else{$false}
-			imageMinorVersion = if($ImageMinorVersion -eq 'true'){$true}else{$false}
-			imageVirtualMachineName = $ImageVirtualMachineName
-			installAccess = if($InstallAccess -eq 'true'){$true}else{$false}
-			installExcel = if($InstallExcel -eq 'true'){$true}else{$false}
-			installOneDriveForBusiness = if($InstallOneDriveForBusiness -eq 'true'){$true}else{$false}
-			installOneNote = if($InstallOneNote -eq 'true'){$true}else{$false}
-			installOutlook = if($InstallOutlook -eq 'true'){$true}else{$false}
-			installPowerPoint = if($InstallPowerPoint -eq 'true'){$true}else{$false}
-			installProject = if($InstallProject -eq 'true'){$true}else{$false}
-			installPublisher = if($InstallPublisher -eq 'true'){$true}else{$false}
-			installSkypeForBusiness = if($InstallSkypeForBusiness -eq 'true'){$true}else{$false}
-			installTeams = if($InstallTeams -eq 'true'){$true}else{$false}
-			installVirtualDesktopOptimizationTool = if($InstallVirtualDesktopOptimizationTool -eq 'true'){$true}else{$false}
-			installVisio = if($InstallVisio -eq 'true'){$true}else{$false}
-			installWord = if($InstallWord -eq 'true'){$true}else{$false}
-			keyVaultName = $KeyVaultName
-			managementVirtualMachineName = $ManagementVirtualMachineName
-			marketplaceImageOffer = $MarketplaceImageOffer
-			marketplaceImagePublisher = $MarketplaceImagePublisher
-			marketplaceImageSKU = $MarketplaceImageSKU
-			msrdcwebrtcsvcInstaller = $MsrdcwebrtcsvcInstaller
-			officeInstaller = $OfficeInstaller
-			replicaCount = [int]$ReplicaCount
-			resourceGroupName = $ResourceGroupName
+			imageDefinitionName = $Values.imageDefinitionName
+			imageMajorVersion = if($Values.imageMajorVersion -eq 'true'){$true}else{$false}
+			imageMinorVersion = if($Values.imageMinorVersion -eq 'true'){$true}else{$false}
+			imageVirtualMachineName = $Values.imageVirtualMachineName
+			installAccess = if($Values.installAccess -eq 'true'){$true}else{$false}
+			installExcel = if($Values.installExcel -eq 'true'){$true}else{$false}
+			installOneDriveForBusiness = if($Values.installOneDriveForBusiness -eq 'true'){$true}else{$false}
+			installOneNote = if($Values.installOneNote -eq 'true'){$true}else{$false}
+			installOutlook = if($Values.installOutlook -eq 'true'){$true}else{$false}
+			installPowerPoint = if($Values.installPowerPoint -eq 'true'){$true}else{$false}
+			installProject = if($Values.installProject -eq 'true'){$true}else{$false}
+			installPublisher = if($Values.installPublisher -eq 'true'){$true}else{$false}
+			installSkypeForBusiness = if($Values.installSkypeForBusiness -eq 'true'){$true}else{$false}
+			installTeams = if($Values.installTeams -eq 'true'){$true}else{$false}
+			installVirtualDesktopOptimizationTool = if($Values.installVirtualDesktopOptimizationTool -eq 'true'){$true}else{$false}
+			installVisio = if($Values.installVisio -eq 'true'){$true}else{$false}
+			installWord = if($Values.installWord -eq 'true'){$true}else{$false}
+			keyVaultName = $Values.keyVaultName
+			managementVirtualMachineName = $Values.managementVirtualMachineName
+			marketplaceImageOffer = $Values.marketplaceImageOffer
+			marketplaceImagePublisher = $Values.marketplaceImagePublisher
+			marketplaceImageSKU = $Values.marketplaceImageSKU
+			msrdcwebrtcsvcInstaller = $Values.msrdcwebrtcsvcInstaller
+			officeInstaller = $Values.officeInstaller
+			replicaCount = [int]$Values.replicaCount
+			resourceGroupName = $Values.resourceGroupName
 			runbookExecution = $true
-			sharedGalleryImageResourceId = $SharedGalleryImageResourceId
-			sourceImageType = $SourceImageType
-			storageAccountName = $StorageAccountName
-			subnetResourceId = $SubnetResourceId
-			tags = $Tags | ConvertFrom-Json
-			teamsInstaller = $TeamsInstaller
-			userAssignedIdentityClientId = $UserAssignedIdentityClientId
-			userAssignedIdentityPrincipalId = $UserAssignedIdentityPrincipalId
-			userAssignedIdentityResourceId = $UserAssignedIdentityResourceId
-			vcRedistInstaller = $VcRedistInstaller
-			vDOTInstaller = $VDOTInstaller
-			virtualMachineSize = $VirtualMachineSize
+			sharedGalleryImageResourceId = $Values.sharedGalleryImageResourceId
+			sourceImageType = $Values.sourceImageType
+			storageAccountName = $Values.storageAccountName
+			subnetResourceId = $Values.subnetResourceId
+			tags = $Values.tags
+			teamsInstaller = $Values.teamsInstaller
+			userAssignedIdentityClientId = $Values.userAssignedIdentityClientId
+			userAssignedIdentityPrincipalId = $Values.userAssignedIdentityPrincipalId
+			userAssignedIdentityResourceId = $Values.userAssignedIdentityResourceId
+			vcRedistInstaller = $Values.vcRedistInstaller
+			vDOTInstaller = $Values.vDOTInstaller
+			virtualMachineSize = $Values.virtualMachineSize
         }
-        New-AzDeployment -Location $Location -TemplateSpecId $TemplateSpecResourceId -TemplateParameterObject $TemplateParameters
+        New-AzDeployment -Location $Values.location -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery."
 	}
 	else 

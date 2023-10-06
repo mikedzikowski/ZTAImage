@@ -152,7 +152,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
   params: {
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
-    computeGalleryName: computeGalleryName
+    computeGalleryResourceId: baseline.outputs.computeGalleryResourceId
     containerName: containerName
     customizations: customizations
     deploymentNameSuffix: deploymentNameSuffix

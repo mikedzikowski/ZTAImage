@@ -43,5 +43,5 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
   }
 }
 
-output computeGalleryName string = computeGallery.name
+output computeGalleryResourceId string = computeGallery.id
 output imageDefinitionName string = imageDefinition.name
