@@ -57,6 +57,7 @@ module managementVM 'managementVM.bicep' = {
     localAdministratorPassword: localAdministratorPassword
     localAdministratorUsername: localAdministratorUsername
     location: location
+    storageAccountName: split(storageAccountResourceId, '/')[8]
     subnetResourceId: subnetResourceId
     tags: tags
     userAssignedIdentityPrincipalId: userAssignedIdentity.outputs.principalId 

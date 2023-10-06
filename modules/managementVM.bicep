@@ -6,6 +6,7 @@ param localAdministratorPassword string
 @secure()
 param localAdministratorUsername string
 param location string
+param storageAccountName string
 param subnetResourceId string
 param tags object
 param userAssignedIdentityPrincipalId string
@@ -119,35 +120,40 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     asyncExecution: false
     parameters: [
       {
-        name: 'UserAssignedIdentityObjectId'
-        value: userAssignedIdentityPrincipalId
+        name: 'Arguments'
+        value: '/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart'
       }
+      {
+        name: 'BlobName'
+        value: 'Az-Cmdlets-10.2.0.37547-x64.msi'
+      }
+
       {
         name: 'ContainerName'
         value: containerName
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
       }
       {
         name: 'StorageEndpoint'
         value: environment().suffixes.storage
       }
       {
-        name: 'BlobName'
-        value: 'Az-Cmdlets-10.2.0.37547-x64.msi'
-      }
-      {
-        name: 'Arguments'
-        value: '/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart'
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityPrincipalId
       }
     ]
     source: {
       script: '''
         param(
-          [string]$UserAssignedIdentityObjectId,
-          [string]$StorageAccountName,
-          [string]$ContainerName,
-          [string]$StorageEndpoint,
-          [string]$BlobName,
           [string]$Arguments
+          [string]$BlobName,
+          [string]$ContainerName,
+          [string]$StorageAccountName,
+          [string]$StorageEndpoint,
+          [string]$UserAssignedIdentityObjectId,
         )
         $ErrorActionPreference = "Stop"
         $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
