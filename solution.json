@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "12115442377819606011"
+      "templateHash": "8443866523488901471"
     }
   },
   "parameters": {
@@ -159,7 +159,7 @@
         "AzureMarketplace"
       ]
     },
-    "storageAccountName": {
+    "storageAccountResourceId": {
       "type": "string"
     },
     "subnetResourceId": {
@@ -200,6 +200,7 @@
     "imageDefinitionName": "[format('{0}-{1}', parameters('imageDefinitionNamePrefix'), parameters('marketplaceImageSKU'))]",
     "imageVirtualMachineName": "[take(format('vmimg-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
     "managementVirtualMachineName": "[take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
+    "storageAccountName": "[split(parameters('storageAccountResourceId'), '/')[8]]",
     "subscriptionId": "[subscription().subscriptionId]",
     "timeZones": {
       "australiacentral": "AUS Eastern Standard Time",
@@ -309,6 +310,9 @@
           "resourceGroupName": {
             "value": "[parameters('resourceGroupName')]"
           },
+          "storageAccountResourceId": {
+            "value": "[parameters('storageAccountResourceId')]"
+          },
           "subnetResourceId": {
             "value": "[parameters('subnetResourceId')]"
           },
@@ -329,7 +333,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16759591042858300400"
+              "templateHash": "1482408953065490908"
             }
           },
           "parameters": {
@@ -370,6 +374,9 @@
               "type": "string"
             },
             "resourceGroupName": {
+              "type": "string"
+            },
+            "storageAccountResourceId": {
               "type": "string"
             },
             "subnetResourceId": {
@@ -454,6 +461,115 @@
                   }
                 }
               }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('role-assignment-compute-{0}', parameters('deploymentNameSuffix'))]",
+              "subscriptionId": "[parameters('subscriptionId')]",
+              "resourceGroup": "[parameters('resourceGroupName')]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "principalId": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.principalId.value]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "10309319549594538272"
+                    }
+                  },
+                  "parameters": {
+                    "principalId": {
+                      "type": "string"
+                    }
+                  },
+                  "variables": {
+                    "roleDefinitionId": "9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), resourceGroup().name)]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                        "principalId": "[parameters('principalId')]"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('role-assignment-storage-{0}', parameters('deploymentNameSuffix'))]",
+              "subscriptionId": "[parameters('subscriptionId')]",
+              "resourceGroup": "[split(parameters('storageAccountResourceId'), '/')[4]]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "principalId": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.principalId.value]"
+                  },
+                  "storageAccountResourceId": {
+                    "value": "[parameters('storageAccountResourceId')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "11426417415714249042"
+                    }
+                  },
+                  "parameters": {
+                    "principalId": {
+                      "type": "string"
+                    },
+                    "storageAccountResourceId": {
+                      "type": "string"
+                    }
+                  },
+                  "variables": {
+                    "roleDefinitionId": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', split(parameters('storageAccountResourceId'), '/')[8])]",
+                      "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), parameters('storageAccountResourceId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                        "principalId": "[parameters('principalId')]"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
+              ]
             },
             {
               "type": "Microsoft.Resources/deployments",
@@ -974,7 +1090,7 @@
             "value": "[parameters('sourceImageType')]"
           },
           "storageAccountName": {
-            "value": "[parameters('storageAccountName')]"
+            "value": "[variables('storageAccountName')]"
           },
           "subnetResourceId": {
             "value": "[parameters('subnetResourceId')]"
@@ -3677,7 +3793,7 @@
             "value": "[parameters('sourceImageType')]"
           },
           "storageAccountName": {
-            "value": "[parameters('storageAccountName')]"
+            "value": "[variables('storageAccountName')]"
           },
           "subnetResourceId": {
             "value": "[parameters('subnetResourceId')]"

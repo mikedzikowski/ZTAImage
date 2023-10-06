@@ -14,6 +14,7 @@ param managementVirtualMachineName string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param resourceGroupName string
+param storageAccountResourceId string
 param subnetResourceId string
 param subscriptionId string
 param tags object
@@ -26,6 +27,23 @@ module userAssignedIdentity 'userAssignedIdentity.bicep' = {
     location: location
     name: userAssignedIdentityName
     tags: tags
+  }
+}
+
+module roleAssignmentCompute 'roleAssignmentCompute.bicep' = {
+  name: 'role-assignment-compute-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, resourceGroupName)
+  params: {
+    principalId: userAssignedIdentity.outputs.principalId
+  }
+}
+
+module roleAssignmentStorage 'roleAssignmentStorage.bicep' = {
+  name: 'role-assignment-storage-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, split(storageAccountResourceId, '/')[4])
+  params: {
+    principalId: userAssignedIdentity.outputs.principalId
+    storageAccountResourceId: storageAccountResourceId
   }
 }
 

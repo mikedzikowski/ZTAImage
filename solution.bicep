@@ -50,7 +50,7 @@ param sharedGalleryImageResourceId string = ''
   'AzureMarketplace'
 ])
 param sourceImageType string
-param storageAccountName string
+param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
 param teamsInstaller string
@@ -69,6 +69,7 @@ param virtualMachineSize string
 var imageDefinitionName = '${imageDefinitionNamePrefix}-${marketplaceImageSKU}'
 var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
 var managementVirtualMachineName = take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15)
+var storageAccountName = split(storageAccountResourceId, '/')[8]
 var subscriptionId = subscription().subscriptionId
 var timeZones = {
   australiacentral: 'AUS Eastern Standard Time'
@@ -143,6 +144,7 @@ module baseline 'modules/baseline.bicep' = {
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     resourceGroupName: resourceGroupName
+    storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
     subscriptionId: subscriptionId
     tags: tags
