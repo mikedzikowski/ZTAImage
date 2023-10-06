@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "13033179354609637644"
+      "templateHash": "7451058923765875430"
     }
   },
   "parameters": {
@@ -336,7 +336,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "1482408953065490908"
+              "templateHash": "15916137308740226619"
             }
           },
           "parameters": {
@@ -488,7 +488,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10309319549594538272"
+                      "templateHash": "12687940535192200264"
                     }
                   },
                   "parameters": {
@@ -506,7 +506,8 @@
                       "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), resourceGroup().name)]",
                       "properties": {
                         "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
-                        "principalId": "[parameters('principalId')]"
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal"
                       }
                     }
                   ]
@@ -542,7 +543,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "11426417415714249042"
+                      "templateHash": "12960746169763418225"
                     }
                   },
                   "parameters": {
@@ -564,7 +565,8 @@
                       "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), parameters('storageAccountResourceId'))]",
                       "properties": {
                         "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
-                        "principalId": "[parameters('principalId')]"
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal"
                       }
                     }
                   ]
@@ -1145,7 +1147,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "8182997563705881279"
+              "templateHash": "15300653151154086750"
             }
           },
           "parameters": {
@@ -1400,7 +1402,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "18076915852643137782"
+                      "templateHash": "16492990050720858442"
                     }
                   },
                   "parameters": {
@@ -1555,7 +1557,8 @@
                       "name": "[guid(parameters('userAssignedIdentityPrincipalId'), parameters('roleDefinitionResourceId'), resourceGroup().id)]",
                       "properties": {
                         "roleDefinitionId": "[parameters('roleDefinitionResourceId')]",
-                        "principalId": "[parameters('userAssignedIdentityPrincipalId')]"
+                        "principalId": "[parameters('userAssignedIdentityPrincipalId')]",
+                        "principalType": "ServicePrincipal"
                       },
                       "dependsOn": [
                         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
