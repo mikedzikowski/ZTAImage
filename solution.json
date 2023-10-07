@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9013246373331830665"
+      "templateHash": "16353366839055859756"
     }
   },
   "parameters": {
@@ -1207,7 +1207,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "8844147542947886456"
+              "templateHash": "7464100302907912136"
             }
           },
           "parameters": {
@@ -3290,7 +3290,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8854781324982281473"
+                      "templateHash": "7530626904020615413"
                     }
                   },
                   "parameters": {
@@ -3769,13 +3769,7 @@
                         "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
                       ]
                     }
-                  ],
-                  "outputs": {
-                    "principalId": {
-                      "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName')), '2022-08-08', 'full').identity.principalId]"
-                    }
-                  }
+                  ]
                 }
               },
               "dependsOn": [

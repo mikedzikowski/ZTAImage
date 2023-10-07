@@ -618,5 +618,3 @@ resource extension_JsonADDomainExtension 'Microsoft.Compute/virtualMachines/exte
     runCommand
   ]
 }
-
-output principalId string =  automationAccount.identity.principalId
