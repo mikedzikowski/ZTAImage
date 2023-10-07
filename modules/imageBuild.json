@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "13924072864969716794"
+      "templateHash": "2311073878110367864"
     }
   },
   "parameters": {
@@ -965,7 +965,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17788093121042787795"
+              "templateHash": "8521172920492522050"
             }
           },
           "parameters": {
@@ -1020,7 +1020,7 @@
                   }
                 ],
                 "source": {
-                  "script": "    param(\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint\r\n      )\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n      Start-Sleep -Seconds 60\r\n      Set-Location -Path $env:windir\\temp\r\n      .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
+                  "script": "    param(\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint\r\n    )\r\n    $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n    $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n    $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n    $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n    Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n    Start-Sleep -Seconds 60\r\n    Set-Location -Path $env:windir\\temp\r\n    .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
                 }
               }
             }
