@@ -173,6 +173,7 @@ module imageVersion 'imageVersion.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     computeGalleryName: computeGalleryName
+    diskEncryptionSetResourceId: diskEncryptionSetResourceId
     excludeFromLatest: excludeFromLatest
     imageDefinitionName: imageDefinitionName
     imageVersionNumber: autoImageVersion

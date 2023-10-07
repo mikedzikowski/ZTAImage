@@ -1,5 +1,6 @@
 param allowDeletionOfReplicatedLocations bool = true
 param computeGalleryName string
+param diskEncryptionSetResourceId string
 param excludeFromLatest bool
 param imageDefinitionName string
 param imageVersionNumber string
@@ -30,6 +31,11 @@ resource imageVersion 'Microsoft.Compute/galleries/images/versions@2022-03-03' =
       storageAccountType: 'Standard_LRS'
       targetRegions: [
         {
+          encryption: {
+            osDiskImage: {
+              diskEncryptionSetId: diskEncryptionSetResourceId
+            }
+          }
           excludeFromLatest: excludeFromLatest
           name: location
           regionalReplicaCount: replicaCount

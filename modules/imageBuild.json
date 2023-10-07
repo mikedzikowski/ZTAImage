@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "2311073878110367864"
+      "templateHash": "8042954595633479697"
     }
   },
   "parameters": {
@@ -1164,6 +1164,9 @@
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
+          "diskEncryptionSetResourceId": {
+            "value": "[parameters('diskEncryptionSetResourceId')]"
+          },
           "excludeFromLatest": {
             "value": "[parameters('excludeFromLatest')]"
           },
@@ -1193,7 +1196,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "6757585000229803337"
+              "templateHash": "14621254000840471460"
             }
           },
           "parameters": {
@@ -1202,6 +1205,9 @@
               "defaultValue": true
             },
             "computeGalleryName": {
+              "type": "string"
+            },
+            "diskEncryptionSetResourceId": {
               "type": "string"
             },
             "excludeFromLatest": {
@@ -1241,6 +1247,11 @@
                   "storageAccountType": "Standard_LRS",
                   "targetRegions": [
                     {
+                      "encryption": {
+                        "osDiskImage": {
+                          "diskEncryptionSetId": "[parameters('diskEncryptionSetResourceId')]"
+                        }
+                      },
                       "excludeFromLatest": "[parameters('excludeFromLatest')]",
                       "name": "[parameters('location')]",
                       "regionalReplicaCount": "[parameters('replicaCount')]",
