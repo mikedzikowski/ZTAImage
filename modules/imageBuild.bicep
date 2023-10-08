@@ -184,7 +184,7 @@ module imageVersion 'imageVersion.bicep' = {
   ]
 }
 
-module remove 'removeVM.bicep' = if (!enableBuildAutomation) {
+module remove 'removeVM.bicep' = {
   name: 'remove-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
