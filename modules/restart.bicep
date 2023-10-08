@@ -1,4 +1,3 @@
-param cloud string
 param imageVirtualMachineName string
 param resourceGroupName string
 param location string
@@ -25,50 +24,57 @@ resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = 
     asyncExecution: false
     parameters: [
       {
-        name: 'miId'
-        value: userAssignedIdentityClientId
+        name: 'Environment'
+        value: environment().name
       }
       {
-        name: 'imageVmRg'
+        name: 'ResourceGroupName'
         value: split(imageVm.id, '/')[4]
       }
       {
-        name: 'imageVmName'
-        value: imageVm.name
+        name: 'SubscriptionId'
+        value: subscription().subscriptionId
       }
       {
-        name: 'Environment'
-        value: cloud
+        name: 'TenantId'
+        value: tenant().tenantId
+      }
+      {
+        name: 'UserAssignedIdentityClientId'
+        value: userAssignedIdentityClientId
+      }
+      {
+        name: 'VirtualMachineName'
+        value: imageVm.name
       }
     ]
     source: {
       script: '''
-      param(
-        [string]$miId,
-        [string]$imageVmRg,
-        [string]$imageVmName,
-        [string]$Environment
+        param(
+          [string]$Environment,
+          [string]$ResourceGroupName,
+          [string]$SubscriptionId,
+          [string]$TenantId,
+          [string]$UserAssignedIdentityClientId,
+          [string]$VirtualMachineName,
         )
-        # Connect to Azure
-        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
-        # Restart VM
-        Restart-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg
-
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
+        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName
         $lastProvisioningState = ""
-        $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code
+        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code
         $condition = ($provisioningState -eq "PowerState/running")
         while (!$condition) {
           if ($lastProvisioningState -ne $provisioningState) {
-            write-host $imageVmName "under" $imageVmRg "is" $provisioningState "(waiting for state change)"
+            write-host $VirtualMachineName "under" $ResourceGroupName "is" $provisioningState "(waiting for state change)"
           }
           $lastProvisioningState = $provisioningState
-
           Start-Sleep -Seconds 5
-          $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code
-
+          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code
           $condition = ($provisioningState -eq "PowerState/running")
         }
-        write-host $imageVmName "under" $imageVmRg "is" $provisioningState
+        write-host $VirtualMachineName "under" $ResourceGroupName "is" $provisioningState
         start-sleep 30
       '''
     }

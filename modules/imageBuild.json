@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "7650171699971517262"
+      "templateHash": "7597081609546517387"
     }
   },
   "parameters": {
@@ -177,7 +177,6 @@
   },
   "variables": {
     "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
-    "cloud": "[environment().name]",
     "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
     "storageEndpoint": "[environment().suffixes.storage]"
   },
@@ -828,9 +827,6 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "cloud": {
-            "value": "[variables('cloud')]"
-          },
           "imageVirtualMachineName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
@@ -857,13 +853,10 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "8491284246098892379"
+              "templateHash": "7330423534124688367"
             }
           },
           "parameters": {
-            "cloud": {
-              "type": "string"
-            },
             "imageVirtualMachineName": {
               "type": "string"
             },
@@ -895,24 +888,32 @@
                 "asyncExecution": false,
                 "parameters": [
                   {
-                    "name": "miId",
-                    "value": "[parameters('userAssignedIdentityClientId')]"
+                    "name": "Environment",
+                    "value": "[environment().name]"
                   },
                   {
-                    "name": "imageVmRg",
+                    "name": "ResourceGroupName",
                     "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
                   },
                   {
-                    "name": "imageVmName",
-                    "value": "[parameters('imageVirtualMachineName')]"
+                    "name": "SubscriptionId",
+                    "value": "[subscription().subscriptionId]"
                   },
                   {
-                    "name": "Environment",
-                    "value": "[parameters('cloud')]"
+                    "name": "TenantId",
+                    "value": "[tenant().tenantId]"
+                  },
+                  {
+                    "name": "UserAssignedIdentityClientId",
+                    "value": "[parameters('userAssignedIdentityClientId')]"
+                  },
+                  {
+                    "name": "VirtualMachineName",
+                    "value": "[parameters('imageVirtualMachineName')]"
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Restart VM\r\n        Restart-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $imageVmName \"under\" $imageVmRg \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code\r\n\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $imageVmName \"under\" $imageVmRg \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
+                  "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName,\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
                 }
               }
             }
@@ -1044,9 +1045,6 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "cloud": {
-            "value": "[variables('cloud')]"
-          },
           "imageVirtualMachineName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
@@ -1073,13 +1071,10 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9906485799193681636"
+              "templateHash": "10556106359317874126"
             }
           },
           "parameters": {
-            "cloud": {
-              "type": "string"
-            },
             "imageVirtualMachineName": {
               "type": "string"
             },
@@ -1112,32 +1107,32 @@
                 "asyncExecution": false,
                 "parameters": [
                   {
-                    "name": "miId",
-                    "value": "[parameters('userAssignedIdentityClientId')]"
+                    "name": "Environment",
+                    "value": "[environment().name]"
                   },
                   {
-                    "name": "imageVmRg",
+                    "name": "ResourceGroupName",
                     "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
                   },
                   {
-                    "name": "imageVmName",
+                    "name": "SubscriptionId",
+                    "value": "[subscription().subscriptionId]"
+                  },
+                  {
+                    "name": "TenantId",
+                    "value": "[tenant().tenantId]"
+                  },
+                  {
+                    "name": "UserAssignedIdentityClientId",
+                    "value": "[parameters('userAssignedIdentityClientId')]"
+                  },
+                  {
+                    "name": "VirtualMachineName",
                     "value": "[parameters('imageVirtualMachineName')]"
-                  },
-                  {
-                    "name": "managementVmRg",
-                    "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
-                  },
-                  {
-                    "name": "managementVmName",
-                    "value": "[parameters('virtualMachineName')]"
-                  },
-                  {
-                    "name": "Environment",
-                    "value": "[parameters('cloud')]"
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        Start-Sleep 30\r\n        \r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized\r\n\r\n        Write-Host \"Generalized\" \r\n\r\n      "
+                  "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 30\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
                 }
               }
             }
@@ -1290,9 +1285,6 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "cloud": {
-            "value": "[variables('cloud')]"
-          },
           "enableBuildAutomation": {
             "value": "[parameters('enableBuildAutomation')]"
           },
@@ -1322,13 +1314,10 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "11445259052284701093"
+              "templateHash": "17193588918659866014"
             }
           },
           "parameters": {
-            "cloud": {
-              "type": "string"
-            },
             "enableBuildAutomation": {
               "type": "bool"
             },
@@ -1364,36 +1353,40 @@
                 "asyncExecution": true,
                 "parameters": [
                   {
-                    "name": "enableBuildAutomation",
-                    "value": "[parameters('enableBuildAutomation')]"
-                  },
-                  {
-                    "name": "miId",
-                    "value": "[parameters('userAssignedIdentityClientId')]"
-                  },
-                  {
-                    "name": "imageVmRg",
-                    "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
-                  },
-                  {
-                    "name": "imageVmName",
-                    "value": "[parameters('imageVirtualMachineName')]"
-                  },
-                  {
-                    "name": "managementVmRg",
-                    "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
-                  },
-                  {
-                    "name": "managementVmName",
-                    "value": "[parameters('virtualMachineName')]"
+                    "name": "EnableBuildAutomation",
+                    "value": "[string(parameters('enableBuildAutomation'))]"
                   },
                   {
                     "name": "Environment",
-                    "value": "[parameters('cloud')]"
+                    "value": "[environment().name]"
+                  },
+                  {
+                    "name": "ImageVmName",
+                    "value": "[parameters('imageVirtualMachineName')]"
+                  },
+                  {
+                    "name": "ManagementVmName",
+                    "value": "[parameters('virtualMachineName')]"
+                  },
+                  {
+                    "name": "ResourceGroupName",
+                    "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
+                  },
+                  {
+                    "name": "SubscriptionId",
+                    "value": "[subscription().subscriptionId]"
+                  },
+                  {
+                    "name": "TenantId",
+                    "value": "[tenant().tenantId]"
+                  },
+                  {
+                    "name": "UserAssignedIdentityClientId",
+                    "value": "[parameters('userAssignedIdentityClientId')]"
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]enableBuildAutomation,\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        if(!$enableBuildAutomation)\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n        }\r\n      "
+                  "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $ResourceGroupName -Force\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $ResourceGroupName -NoWait -Force -AsJob\r\n        }\r\n      "
                 }
               }
             }

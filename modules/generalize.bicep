@@ -1,4 +1,3 @@
-param cloud string
 param imageVirtualMachineName string
 param resourceGroupName string
 param location string = resourceGroup().location
@@ -25,50 +24,45 @@ resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
     asyncExecution: false
     parameters: [
       {
-        name: 'miId'
-        value: userAssignedIdentityClientId
+        name: 'Environment'
+        value: environment().name
       }
       {
-        name: 'imageVmRg'
+        name: 'ResourceGroupName'
         value: split(imageVm.id, '/')[4]
       }
       {
-        name: 'imageVmName'
+        name: 'SubscriptionId'
+        value: subscription().subscriptionId
+      }
+      {
+        name: 'TenantId'
+        value: tenant().tenantId
+      }
+      {
+        name: 'UserAssignedIdentityClientId'
+        value: userAssignedIdentityClientId
+      }
+      {
+        name: 'VirtualMachineName'
         value: imageVm.name
-      }
-      {
-        name: 'managementVmRg'
-        value: split(vm.id, '/')[4]
-      }
-      {
-        name: 'managementVmName'
-        value: vm.name
-      }
-      {
-        name: 'Environment'
-        value: cloud
       }
     ]
     source: {
       script: '''
-      param(
-        [string]$miId,
-        [string]$imageVmRg,
-        [string]$imageVmName,
-        [string]$managementVmRg,
-        [string]$managementVmName,
-        [string]$Environment
+        param(
+          [string]$Environment,
+          [string]$ResourceGroupName,
+          [string]$SubscriptionId,
+          [string]$TenantId,
+          [string]$UserAssignedIdentityClientId,
+          [string]$VirtualMachineName
         )
-        # Connect to Azure
-        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
-
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
         Start-Sleep 30
-        
-        # Generalize VM Using PowerShell
-        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized
-
-        Write-Host "Generalized" 
-
+        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized
       '''
     }
   }

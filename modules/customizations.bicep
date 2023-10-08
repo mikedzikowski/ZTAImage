@@ -85,20 +85,18 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01'
     ]
     source: {
       script: '''
-      param(
-        [string]$UserAssignedIdentityObjectId,
-        [string]$StorageAccountName,
-        [string]$ContainerName,
-        [string]$StorageEndpoint,
-        [string]$BlobName,
-        [string]$Installer,
-        [string]$Arguments
+        param(
+          [string]$UserAssignedIdentityObjectId,
+          [string]$StorageAccountName,
+          [string]$ContainerName,
+          [string]$StorageEndpoint,
+          [string]$BlobName,
+          [string]$Installer,
+          [string]$Arguments
         )
-        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-        $StorageAccountName = $StorageAccountName
-        $ContainerName = $ContainerName
-        $BlobName = $BlobName
-        $StorageAccountUrl = $StorageEndpoint
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         New-Item -Path $env:windir\temp -Name $Installer -ItemType "directory" -Force
@@ -229,28 +227,26 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if 
     source: {
       script: '''
       param(
-      [string]$InstallAccess,
-      [string]$InstallExcel,
-      [string]$InstallOneDriveForBusiness,
-      [string]$InstallOutlook,
-      [string]$InstallProject,
-      [string]$InstallPublisher,
-      [string]$InstallSkypeForBusiness,
-      [string]$InstallVisio,
-      [string]$InstallWord,
-      [string]$InstallOneNote,
-      [string]$InstallPowerPoint,
-      [string]$UserAssignedIdentityObjectId,
-      [string]$StorageAccountName,
-      [string]$ContainerName,
-      [string]$StorageEndpoint,
-      [string]$BlobName
+        [string]$InstallAccess,
+        [string]$InstallExcel,
+        [string]$InstallOneDriveForBusiness,
+        [string]$InstallOutlook,
+        [string]$InstallProject,
+        [string]$InstallPublisher,
+        [string]$InstallSkypeForBusiness,
+        [string]$InstallVisio,
+        [string]$InstallWord,
+        [string]$InstallOneNote,
+        [string]$InstallPowerPoint,
+        [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
+        [string]$ContainerName,
+        [string]$StorageEndpoint,
+        [string]$BlobName
       )
-      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-      $StorageAccountName = $StorageAccountName
-      $ContainerName = $ContainerName
-      $BlobName = $BlobName
-      $StorageAccountUrl = $StorageEndpoint
+      $ErrorActionPreference = 'Stop'
+      $WarningPreference = 'SilentlyContinue'
+      $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
       $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
       $sku = (Get-ComputerInfo).OsName
@@ -348,18 +344,16 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
     ]
     source: {
       script: '''
-      param(
-        [string]$UserAssignedIdentityObjectId,
-        [string]$StorageAccountName,
-        [string]$ContainerName,
-        [string]$StorageEndpoint,
-        [string]$BlobName
+        param(
+          [string]$UserAssignedIdentityObjectId,
+          [string]$StorageAccountName,
+          [string]$ContainerName,
+          [string]$StorageEndpoint,
+          [string]$BlobName
         )
-        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-        $StorageAccountName = $StorageAccountName
-        $ContainerName = $ContainerName
-        $BlobName = $BlobName
-        $StorageAccountUrl = $StorageEndpoint
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         $ZIP = "$env:windir\temp\VDOT.zip"
@@ -465,6 +459,8 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (
         [string]$BlobName2,
         [string]$BlobName3
       )
+      $ErrorActionPreference = 'Stop'
+      $WarningPreference = 'SilentlyContinue'
       $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
       $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token

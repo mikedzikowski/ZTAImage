@@ -1,4 +1,3 @@
-param cloud string
 param enableBuildAutomation bool
 param imageVirtualMachineName string
 param resourceGroupName string
@@ -26,55 +25,57 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     asyncExecution: true
     parameters: [
       {
-        name: 'enableBuildAutomation'
-        value: enableBuildAutomation
-      }
-      {
-        name: 'miId'
-        value: userAssignedIdentityClientId
-      }
-      {
-        name: 'imageVmRg'
-        value: split(imageVm.id, '/')[4]
-      }
-      {
-        name: 'imageVmName'
-        value: imageVm.name
-      }
-      {
-        name: 'managementVmRg'
-        value: split(vm.id, '/')[4]
-      }
-      {
-        name: 'managementVmName'
-        value: vm.name
+        name: 'EnableBuildAutomation'
+        value: string(enableBuildAutomation)
       }
       {
         name: 'Environment'
-        value: cloud
+        value: environment().name
+      }
+      {
+        name: 'ImageVmName'
+        value: imageVm.name
+      }
+      {
+        name: 'ManagementVmName'
+        value: vm.name
+      }
+      {
+        name: 'ResourceGroupName'
+        value: split(imageVm.id, '/')[4]
+      }
+      {
+        name: 'SubscriptionId'
+        value: subscription().subscriptionId
+      }
+      {
+        name: 'TenantId'
+        value: tenant().tenantId
+      }
+      {
+        name: 'UserAssignedIdentityClientId'
+        value: userAssignedIdentityClientId
       }
     ]
     source: {
       script: '''
-      param(
-        [string]enableBuildAutomation,
-        [string]$miId,
-        [string]$imageVmRg,
-        [string]$imageVmName,
-        [string]$managementVmRg,
-        [string]$managementVmName,
-        [string]$Environment
+        param(
+          [string]$EnableBuildAutomation,
+          [string]$Environment,
+          [string]$ImageVmName,
+          [string]$ManagementVmName,
+          [string]$ResourceGroupName,
+          [string]$SubscriptionId,
+          [string]$TenantId,
+          [string]$UserAssignedIdentityClientId
         )
-        # Connect to Azure
-        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine
-
-        # Remove Image VM and Management VM
-
-        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force
-
-        if(!$enableBuildAutomation)
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
+        Remove-AzVM -Name $imageVmName -ResourceGroupName $ResourceGroupName -Force
+        if($EnableBuildAutomation -eq 'false')
         {
-          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
+          Remove-AzVM -Name $managementVmName -ResourceGroupName $ResourceGroupName -NoWait -Force -AsJob
         }
       '''
     }

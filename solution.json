@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "1857490899617872312"
+      "templateHash": "7299614846499089037"
     }
   },
   "parameters": {
@@ -1207,7 +1207,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9576522564091884490"
+              "templateHash": "8953619088945141154"
             }
           },
           "parameters": {
@@ -1663,7 +1663,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "14942785215033539594"
+                      "templateHash": "14513720776212565474"
                     }
                   },
                   "parameters": {
@@ -1685,7 +1685,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "7650171699971517262"
+                          "templateHash": "7597081609546517387"
                         }
                       },
                       "parameters": {
@@ -1857,7 +1857,6 @@
                       },
                       "variables": {
                         "autoImageVersion": "[[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
-                        "cloud": "[[environment().name]",
                         "imageSuffix": "[[take(parameters('deploymentNameSuffix'), 9)]",
                         "storageEndpoint": "[[environment().suffixes.storage]"
                       },
@@ -2508,9 +2507,6 @@
                             },
                             "mode": "Incremental",
                             "parameters": {
-                              "cloud": {
-                                "value": "[[variables('cloud')]"
-                              },
                               "imageVirtualMachineName": {
                                 "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
@@ -2537,13 +2533,10 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "8491284246098892379"
+                                  "templateHash": "7330423534124688367"
                                 }
                               },
                               "parameters": {
-                                "cloud": {
-                                  "type": "string"
-                                },
                                 "imageVirtualMachineName": {
                                   "type": "string"
                                 },
@@ -2575,24 +2568,32 @@
                                     "asyncExecution": false,
                                     "parameters": [
                                       {
-                                        "name": "miId",
-                                        "value": "[[parameters('userAssignedIdentityClientId')]"
+                                        "name": "Environment",
+                                        "value": "[[environment().name]"
                                       },
                                       {
-                                        "name": "imageVmRg",
+                                        "name": "ResourceGroupName",
                                         "value": "[[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
                                       },
                                       {
-                                        "name": "imageVmName",
-                                        "value": "[[parameters('imageVirtualMachineName')]"
+                                        "name": "SubscriptionId",
+                                        "value": "[[subscription().subscriptionId]"
                                       },
                                       {
-                                        "name": "Environment",
-                                        "value": "[[parameters('cloud')]"
+                                        "name": "TenantId",
+                                        "value": "[[tenant().tenantId]"
+                                      },
+                                      {
+                                        "name": "UserAssignedIdentityClientId",
+                                        "value": "[[parameters('userAssignedIdentityClientId')]"
+                                      },
+                                      {
+                                        "name": "VirtualMachineName",
+                                        "value": "[[parameters('imageVirtualMachineName')]"
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Restart VM\r\n        Restart-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $imageVmName \"under\" $imageVmRg \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code\r\n\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $imageVmName \"under\" $imageVmRg \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
+                                      "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName,\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
                                     }
                                   }
                                 }
@@ -2724,9 +2725,6 @@
                             },
                             "mode": "Incremental",
                             "parameters": {
-                              "cloud": {
-                                "value": "[[variables('cloud')]"
-                              },
                               "imageVirtualMachineName": {
                                 "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
@@ -2753,13 +2751,10 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "9906485799193681636"
+                                  "templateHash": "10556106359317874126"
                                 }
                               },
                               "parameters": {
-                                "cloud": {
-                                  "type": "string"
-                                },
                                 "imageVirtualMachineName": {
                                   "type": "string"
                                 },
@@ -2792,32 +2787,32 @@
                                     "asyncExecution": false,
                                     "parameters": [
                                       {
-                                        "name": "miId",
-                                        "value": "[[parameters('userAssignedIdentityClientId')]"
+                                        "name": "Environment",
+                                        "value": "[[environment().name]"
                                       },
                                       {
-                                        "name": "imageVmRg",
+                                        "name": "ResourceGroupName",
                                         "value": "[[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
                                       },
                                       {
-                                        "name": "imageVmName",
+                                        "name": "SubscriptionId",
+                                        "value": "[[subscription().subscriptionId]"
+                                      },
+                                      {
+                                        "name": "TenantId",
+                                        "value": "[[tenant().tenantId]"
+                                      },
+                                      {
+                                        "name": "UserAssignedIdentityClientId",
+                                        "value": "[[parameters('userAssignedIdentityClientId')]"
+                                      },
+                                      {
+                                        "name": "VirtualMachineName",
                                         "value": "[[parameters('imageVirtualMachineName')]"
-                                      },
-                                      {
-                                        "name": "managementVmRg",
-                                        "value": "[[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
-                                      },
-                                      {
-                                        "name": "managementVmName",
-                                        "value": "[[parameters('virtualMachineName')]"
-                                      },
-                                      {
-                                        "name": "Environment",
-                                        "value": "[[parameters('cloud')]"
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        Start-Sleep 30\r\n        \r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized\r\n\r\n        Write-Host \"Generalized\" \r\n\r\n      "
+                                      "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 30\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
                                     }
                                   }
                                 }
@@ -2970,9 +2965,6 @@
                             },
                             "mode": "Incremental",
                             "parameters": {
-                              "cloud": {
-                                "value": "[[variables('cloud')]"
-                              },
                               "enableBuildAutomation": {
                                 "value": "[[parameters('enableBuildAutomation')]"
                               },
@@ -3002,13 +2994,10 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "11445259052284701093"
+                                  "templateHash": "17193588918659866014"
                                 }
                               },
                               "parameters": {
-                                "cloud": {
-                                  "type": "string"
-                                },
                                 "enableBuildAutomation": {
                                   "type": "bool"
                                 },
@@ -3044,36 +3033,40 @@
                                     "asyncExecution": true,
                                     "parameters": [
                                       {
-                                        "name": "enableBuildAutomation",
-                                        "value": "[[parameters('enableBuildAutomation')]"
-                                      },
-                                      {
-                                        "name": "miId",
-                                        "value": "[[parameters('userAssignedIdentityClientId')]"
-                                      },
-                                      {
-                                        "name": "imageVmRg",
-                                        "value": "[[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
-                                      },
-                                      {
-                                        "name": "imageVmName",
-                                        "value": "[[parameters('imageVirtualMachineName')]"
-                                      },
-                                      {
-                                        "name": "managementVmRg",
-                                        "value": "[[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
-                                      },
-                                      {
-                                        "name": "managementVmName",
-                                        "value": "[[parameters('virtualMachineName')]"
+                                        "name": "EnableBuildAutomation",
+                                        "value": "[[string(parameters('enableBuildAutomation'))]"
                                       },
                                       {
                                         "name": "Environment",
-                                        "value": "[[parameters('cloud')]"
+                                        "value": "[[environment().name]"
+                                      },
+                                      {
+                                        "name": "ImageVmName",
+                                        "value": "[[parameters('imageVirtualMachineName')]"
+                                      },
+                                      {
+                                        "name": "ManagementVmName",
+                                        "value": "[[parameters('virtualMachineName')]"
+                                      },
+                                      {
+                                        "name": "ResourceGroupName",
+                                        "value": "[[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
+                                      },
+                                      {
+                                        "name": "SubscriptionId",
+                                        "value": "[[subscription().subscriptionId]"
+                                      },
+                                      {
+                                        "name": "TenantId",
+                                        "value": "[[tenant().tenantId]"
+                                      },
+                                      {
+                                        "name": "UserAssignedIdentityClientId",
+                                        "value": "[[parameters('userAssignedIdentityClientId')]"
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]enableBuildAutomation,\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        if(!$enableBuildAutomation)\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n        }\r\n      "
+                                      "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $ResourceGroupName -Force\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $ResourceGroupName -NoWait -Force -AsJob\r\n        }\r\n      "
                                     }
                                   }
                                 }
@@ -3219,12 +3212,6 @@
                   "keyVaultName": {
                     "value": "[parameters('keyVaultName')]"
                   },
-                  "localAdministratorPassword": {
-                    "value": "[parameters('localAdministratorPassword')]"
-                  },
-                  "localAdministratorUsername": {
-                    "value": "[parameters('localAdministratorUsername')]"
-                  },
                   "location": {
                     "value": "[parameters('location')]"
                   },
@@ -3311,7 +3298,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10266037662052661743"
+                      "templateHash": "6634079303257338929"
                     }
                   },
                   "parameters": {
@@ -3402,12 +3389,6 @@
                     "jobScheduleName": {
                       "type": "string",
                       "defaultValue": "[newGuid()]"
-                    },
-                    "localAdministratorPassword": {
-                      "type": "securestring"
-                    },
-                    "localAdministratorUsername": {
-                      "type": "string"
                     },
                     "location": {
                       "type": "string"
@@ -3545,6 +3526,7 @@
                     },
                     "privateEndpointName": "[format('pe-{0}', parameters('automationAccountName'))]",
                     "runbookName": "Zero-Trust-Image-Build-Automation",
+                    "storageEndpoint": "[environment().suffixes.storage]",
                     "subscriptionId": "[subscription().subscriptionId]",
                     "tenantId": "[subscription().tenantId]"
                   },
@@ -3628,6 +3610,10 @@
                             "value": "[parameters('automationAccountName')]"
                           },
                           {
+                            "name": "ContainerName",
+                            "value": "[parameters('containerName')]"
+                          },
+                          {
                             "name": "Environment",
                             "value": "[environment().name]"
                           },
@@ -3638,6 +3624,14 @@
                           {
                             "name": "RunbookName",
                             "value": "[variables('runbookName')]"
+                          },
+                          {
+                            "name": "StorageAccountName",
+                            "value": "[parameters('storageAccountName')]"
+                          },
+                          {
+                            "name": "StorageEndpoint",
+                            "value": "[variables('storageEndpoint')]"
                           },
                           {
                             "name": "SubscriptionId",
@@ -3653,7 +3647,7 @@
                           }
                         ],
                         "source": {
-                          "script": "param (\r\n  [string]$AutomationAccountName,\r\n  [string]$Environment,\r\n  [string]$ResourceGroupName,\r\n  [string]$RunbookName,\r\n  [string]$SubscriptionId,\r\n  [string]$TenantId,\r\n  [string]$UserAssignedIdentityClientId\r\n)\r\n\r\n$ErrorActionPreference = 'Stop'\r\n$WarningPreference = 'SilentlyContinue'\r\n\r\ntry \r\n{\r\n  Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n\r\n$Script = @'\r\n  [CmdletBinding(SupportsShouldProcess)]\r\n  param(\r\n    [Parameter(Mandatory)]\r\n    [string]$ComputeGalleryName,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ContainerName,\r\n    \r\n    [Parameter(Mandatory)]\r\n    [string]$Customizations,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$DiskEncryptionSetResourceId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$EnvironmentName,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ImageDefinitionName,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ImageMajorVersion,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ImageMinorVersion,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ImageVirtualMachineName,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallAccess,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallExcel,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallOneDriveForBusiness,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallOneNote,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallOutlook,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallPowerPoint,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallProject,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallPublisher,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallSkypeForBusiness,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallTeams,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallVirtualDesktopOptimizationTool,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallVisio,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$InstallWord,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$KeyVaultName,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$Location,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ManagementVirtualMachineName,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$MarketplaceImageOffer,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$MarketplaceImagePublisher,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$MarketplaceImageSKU,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$MsrdcwebrtcsvcInstaller,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$OfficeInstaller,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ReplicaCount,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$ResourceGroupName,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$SharedGalleryImageResourceId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$SourceImageType,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$StorageAccountName,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$SubnetResourceId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$SubscriptionId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$Tags,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$TeamsInstaller,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$TemplateSpecResourceId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$TenantId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$TenantType,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$UserAssignedIdentityClientId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$UserAssignedIdentityPrincipalId,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$UserAssignedIdentityResourceId,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$VcRedistInstaller,\r\n\r\n    [Parameter(Mandatory=$false)]\r\n    [string]$VDOTInstaller,\r\n\r\n    [Parameter(Mandatory)]\r\n    [string]$VirtualMachineSize\r\n  )\r\n\r\n  $ErrorActionPreference = 'Stop'\r\n\r\n  try \r\n  {\r\n    # Set Variables\r\n    if($SharedGalleryImageResourceId)\r\n    {\r\n      $SourceGalleryName = $SharedGalleryImageResourceId.Split('/')[8]\r\n      $SourceGalleryResourceGroupName = $SharedGalleryImageResourceId.Split('/')[4]\r\n      $SourceImageDefinitionName = $SharedGalleryImageResourceId.Split('/')[10]\r\n    }\r\n    $DestinationGalleryName = $GalleryName\r\n    $DestinationGalleryResourceGroupName = $GalleryResourceGroupName\r\n    $DestinationImageDefinitionName = $ImageDefinitionName\r\n\r\n    # Import Modules\r\n    Import-Module -Name 'Az.Accounts','Az.Compute','Az.Resources'\r\n    Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Imported the required modules.\"\r\n\r\n    # Connect to Azure using the System Assigned Identity\r\n    Connect-AzAccount -Environment $EnvironmentName -Subscription $SubscriptionId -Tenant $TenantId -Identity | Out-Null\r\n    Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Connected to Azure.\"\r\n\r\n    $CurrentImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $DestinationGalleryResourceGroupName -GalleryName $DestinationGalleryName -GalleryImageDefinitionName $DestinationImageDefinitionName | Where-Object {$_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1\r\n    Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Destination), Latest Version Date: $CurrentImageVersionDate.\"\r\n\r\n    switch($SourceImageType)\r\n    {\r\n        'AzureComputeGallery' {\r\n            # Get the date of the latest image definition version\r\n            $SourceImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $SourceGalleryResourceGroupName -GalleryName $SourceGalleryName -GalleryImageDefinitionName $SourceImageDefinitionName | Where-Object {$_.PublishingProfile.ExcludeFromLatest -eq $false -and $_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1\r\n            Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Source), Latest Version Date: $SourceImageVersionDate.\"\r\n        }\r\n        'AzureMarketplace' {\r\n            # Get the date of the latest marketplace image version\r\n            $ImageVersionDateRaw = (Get-AzVMImage -Location $Location -PublisherName $ImageBuild.Source.Publisher -Offer $ImageBuild.Source.Offer -Skus $ImageBuild.Source.Sku | Sort-Object -Property 'Version' -Descending | Select-Object -First 1).Version.Split('.')[-1]\r\n            $Year = '20' + $ImageVersionDateRaw.Substring(0,2)\r\n            $Month = $ImageVersionDateRaw.Substring(2,2)\r\n            $Day = $ImageVersionDateRaw.Substring(4,2)\r\n            $SourceImageVersionDate = Get-Date -Year $Year -Month $Month -Day $Day -Hour 00 -Minute 00 -Second 00\r\n            Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Marketplace Image (Source), Latest Version Date: $SourceImageVersionDate.\"\r\n        }\r\n    }\r\n\r\n    # If the latest source image was released after the last image build then trigger a new image build\r\n    if($CurrentImageVersionDate -gt $SourceImageVersionDate)\r\n    {   \r\n      Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build initiated with a new source image version.\"\r\n      $TemplateParameters = @{\r\n        computeGalleryName = $ComputeGalleryName\r\n        containerName = $ContainerName\r\n        customizations = $Customizations | ConvertFrom-Json\r\n        diskEncryptionSetResourceId = $DiskEncryptionSetResourceId\r\n        excludeFromLatest = $true\r\n        imageDefinitionName = $ImageDefinitionName\r\n        imageMajorVersion = if($ImageMajorVersion -eq 'true'){$true}else{$false}\r\n        imageMinorVersion = if($ImageMinorVersion -eq 'true'){$true}else{$false}\r\n        imageVirtualMachineName = $ImageVirtualMachineName\r\n        installAccess = if($InstallAccess -eq 'true'){$true}else{$false}\r\n        installExcel = if($InstallExcel -eq 'true'){$true}else{$false}\r\n        installOneDriveForBusiness = if($InstallOneDriveForBusiness -eq 'true'){$true}else{$false}\r\n        installOneNote = if($InstallOneNote -eq 'true'){$true}else{$false}\r\n        installOutlook = if($InstallOutlook -eq 'true'){$true}else{$false}\r\n        installPowerPoint = if($InstallPowerPoint -eq 'true'){$true}else{$false}\r\n        installProject = if($InstallProject -eq 'true'){$true}else{$false}\r\n        installPublisher = if($InstallPublisher -eq 'true'){$true}else{$false}\r\n        installSkypeForBusiness = if($InstallSkypeForBusiness -eq 'true'){$true}else{$false}\r\n        installTeams = if($InstallTeams -eq 'true'){$true}else{$false}\r\n        installVirtualDesktopOptimizationTool = if($InstallVirtualDesktopOptimizationTool -eq 'true'){$true}else{$false}\r\n        installVisio = if($InstallVisio -eq 'true'){$true}else{$false}\r\n        installWord = if($InstallWord -eq 'true'){$true}else{$false}\r\n        keyVaultName = $KeyVaultName\r\n        managementVirtualMachineName = $ManagementVirtualMachineName\r\n        marketplaceImageOffer = $MarketplaceImageOffer\r\n        marketplaceImagePublisher = $MarketplaceImagePublisher\r\n        marketplaceImageSKU = $MarketplaceImageSKU\r\n        msrdcwebrtcsvcInstaller = $MsrdcwebrtcsvcInstaller\r\n        officeInstaller = $OfficeInstaller\r\n        replicaCount = [int]$ReplicaCount\r\n        resourceGroupName = $ResourceGroupName\r\n        runbookExecution = $true\r\n        sharedGalleryImageResourceId = $SharedGalleryImageResourceId\r\n        sourceImageType = $SourceImageType\r\n        storageAccountName = $StorageAccountName\r\n        subnetResourceId = $SubnetResourceId\r\n        tags = $Tags | ConvertFrom-Json\r\n        teamsInstaller = $TeamsInstaller\r\n        tenantType = $TenantType\r\n        userAssignedIdentityClientId = $UserAssignedIdentityClientId\r\n        userAssignedIdentityPrincipalId = $UserAssignedIdentityPrincipalId\r\n        userAssignedIdentityResourceId = $UserAssignedIdentityResourceId\r\n        vcRedistInstaller = $VcRedistInstaller\r\n        vDOTInstaller = $VDOTInstaller\r\n        virtualMachineSize = $VirtualMachineSize\r\n          }\r\n          New-AzDeployment -Location $Location -TemplateSpecId $TemplateSpecResourceId -TemplateParameterObject $TemplateParameters\r\n      Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery.\"\r\n    }\r\n    else \r\n    {\r\n      Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build not required. The source image version is older than the latest destination image version.\"\r\n    }\r\n  }\r\n  catch \r\n  {\r\n    Write-Output \"$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build failed. Review the deployment errors in the Azure Portal and correct the issue.\"\r\n    Write-Output $Error[0].Exception\r\n    throw\r\n  }\r\n'@\r\n            $Script | Out-File -FilePath '.\\New-AzureZeroTrustImageBuild.ps1'\r\n            Import-AzAutomationRunbook -Name $RunbookName -Path '.\\New-AzureZeroTrustImageBuild.ps1' -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null\r\n        }\r\n        catch \r\n        {\r\n            $_ | Select-Object *\r\n            throw\r\n        }\r\n      "
+                          "script": "        param (\r\n          [string]$AutomationAccountName,\r\n          [string]$ContainerName,\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$RunbookName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $BlobName = 'New-AzureZeroTrustImageBuild.ps1'\r\n        try \r\n        {\r\n          Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n          $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n          $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n          $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n          $ScriptFile = \"$env:windir\\temp\\$BlobName\"\r\n          Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ScriptFile\r\n          Import-AzAutomationRunbook -Name $RunbookName -Path $ScriptFile -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null\r\n        }\r\n        catch \r\n        {\r\n            $_ | Select-Object *\r\n            throw\r\n        }\r\n      "
                         }
                       }
                     },
@@ -3967,7 +3961,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "7650171699971517262"
+              "templateHash": "17490676365909553298"
             }
           },
           "parameters": {
@@ -4139,7 +4133,6 @@
           },
           "variables": {
             "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
-            "cloud": "[environment().name]",
             "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
             "storageEndpoint": "[environment().suffixes.storage]"
           },
@@ -4447,7 +4440,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "7147149651643849303"
+                      "templateHash": "4501331892005679873"
                     }
                   },
                   "parameters": {
@@ -4591,7 +4584,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$Installer,\r\n        [string]$Arguments\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname -Force -Recurse \r\n        }\r\n      "
+                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Installer,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname -Force -Recurse \r\n        }\r\n      "
                         }
                       }
                     },
@@ -4672,7 +4665,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n      [string]$InstallAccess,\r\n      [string]$InstallExcel,\r\n      [string]$InstallOneDriveForBusiness,\r\n      [string]$InstallOutlook,\r\n      [string]$InstallProject,\r\n      [string]$InstallPublisher,\r\n      [string]$InstallSkypeForBusiness,\r\n      [string]$InstallVisio,\r\n      [string]$InstallWord,\r\n      [string]$InstallOneNote,\r\n      [string]$InstallPowerPoint,\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint,\r\n      [string]$BlobName\r\n      )\r\n      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n      $StorageAccountName = $StorageAccountName\r\n      $ContainerName = $ContainerName\r\n      $BlobName = $BlobName\r\n      $StorageAccountUrl = $StorageEndpoint\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          $excludeAccess = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          $excludeExcel = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n          $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n        $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n    }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          $excludeOneNote = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          $excludeOutlook = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          $excludePowerPoint = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          $excludePublisher = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      $o365Settings = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          $o365SharedActivation = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      $o365Configfooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $ErrorActionPreference = \"Stop\"\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
+                          "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDriveForBusiness,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          $excludeAccess = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          $excludeExcel = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n          $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n        $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n    }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          $excludeOneNote = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          $excludeOutlook = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          $excludePowerPoint = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          $excludePublisher = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      $o365Settings = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          $o365SharedActivation = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      $o365Configfooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $ErrorActionPreference = \"Stop\"\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
                         }
                       },
                       "dependsOn": [
@@ -4712,7 +4705,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n        )\r\n        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId\r\n        $StorageAccountName = $StorageAccountName\r\n        $ContainerName = $ContainerName\r\n        $BlobName = $BlobName\r\n        $StorageAccountUrl = $StorageEndpoint\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $ZIP = \"$env:windir\\temp\\VDOT.zip\"\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        $ErrorActionPreference = \"Stop\"\r\n        Unblock-File -Path $ZIP\r\n        Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\" -Force\r\n        $Path = (Get-ChildItem -Path \"$env:windir\\temp\" -Recurse | Where-Object {$_.Name -eq \"Windows_VDOT.ps1\"}).FullName\r\n        $Script = Get-Content -Path $Path\r\n        $ScriptUpdate = $Script.Replace(\"Set-NetAdapterAdvancedProperty\",\"#Set-NetAdapterAdvancedProperty\")\r\n        $ScriptUpdate | Set-Content -Path $Path\r\n        & $Path -Optimizations @(\"AppxPackages\",\"Autologgers\",\"DefaultUserSettings\",\"LGPO\";\"NetworkOptimizations\",\"ScheduledTasks\",\"Services\",\"WindowsMediaPlayer\") -AdvancedOptimizations \"All\" -AcceptEULA\r\n        Write-Host \"Optimized the operating system using the Virtual Desktop Optimization Tool\"\r\n      "
+                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $ZIP = \"$env:windir\\temp\\VDOT.zip\"\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        $ErrorActionPreference = \"Stop\"\r\n        Unblock-File -Path $ZIP\r\n        Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\" -Force\r\n        $Path = (Get-ChildItem -Path \"$env:windir\\temp\" -Recurse | Where-Object {$_.Name -eq \"Windows_VDOT.ps1\"}).FullName\r\n        $Script = Get-Content -Path $Path\r\n        $ScriptUpdate = $Script.Replace(\"Set-NetAdapterAdvancedProperty\",\"#Set-NetAdapterAdvancedProperty\")\r\n        $ScriptUpdate | Set-Content -Path $Path\r\n        & $Path -Optimizations @(\"AppxPackages\",\"Autologgers\",\"DefaultUserSettings\",\"LGPO\";\"NetworkOptimizations\",\"ScheduledTasks\",\"Services\",\"WindowsMediaPlayer\") -AdvancedOptimizations \"All\" -AcceptEULA\r\n        Write-Host \"Optimized the operating system using the Virtual Desktop Optimization Tool\"\r\n      "
                         },
                         "timeoutInSeconds": 640
                       },
@@ -4763,7 +4756,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n      )\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
+                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
                         }
                       },
                       "dependsOn": [
@@ -4790,9 +4783,6 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "cloud": {
-                    "value": "[variables('cloud')]"
-                  },
                   "imageVirtualMachineName": {
                     "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
@@ -4819,13 +4809,10 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8491284246098892379"
+                      "templateHash": "7330423534124688367"
                     }
                   },
                   "parameters": {
-                    "cloud": {
-                      "type": "string"
-                    },
                     "imageVirtualMachineName": {
                       "type": "string"
                     },
@@ -4857,24 +4844,32 @@
                         "asyncExecution": false,
                         "parameters": [
                           {
-                            "name": "miId",
-                            "value": "[parameters('userAssignedIdentityClientId')]"
+                            "name": "Environment",
+                            "value": "[environment().name]"
                           },
                           {
-                            "name": "imageVmRg",
+                            "name": "ResourceGroupName",
                             "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
                           },
                           {
-                            "name": "imageVmName",
-                            "value": "[parameters('imageVirtualMachineName')]"
+                            "name": "SubscriptionId",
+                            "value": "[subscription().subscriptionId]"
                           },
                           {
-                            "name": "Environment",
-                            "value": "[parameters('cloud')]"
+                            "name": "TenantId",
+                            "value": "[tenant().tenantId]"
+                          },
+                          {
+                            "name": "UserAssignedIdentityClientId",
+                            "value": "[parameters('userAssignedIdentityClientId')]"
+                          },
+                          {
+                            "name": "VirtualMachineName",
+                            "value": "[parameters('imageVirtualMachineName')]"
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n        # Restart VM\r\n        Restart-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg\r\n\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $imageVmName \"under\" $imageVmRg \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $imageVmRg -name $imageVmName -Status).Statuses[1].Code\r\n\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $imageVmName \"under\" $imageVmRg \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
+                          "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName,\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
                         }
                       }
                     }
@@ -5006,9 +5001,6 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "cloud": {
-                    "value": "[variables('cloud')]"
-                  },
                   "imageVirtualMachineName": {
                     "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
@@ -5035,13 +5027,10 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "9906485799193681636"
+                      "templateHash": "10556106359317874126"
                     }
                   },
                   "parameters": {
-                    "cloud": {
-                      "type": "string"
-                    },
                     "imageVirtualMachineName": {
                       "type": "string"
                     },
@@ -5074,32 +5063,32 @@
                         "asyncExecution": false,
                         "parameters": [
                           {
-                            "name": "miId",
-                            "value": "[parameters('userAssignedIdentityClientId')]"
+                            "name": "Environment",
+                            "value": "[environment().name]"
                           },
                           {
-                            "name": "imageVmRg",
+                            "name": "ResourceGroupName",
                             "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
                           },
                           {
-                            "name": "imageVmName",
+                            "name": "SubscriptionId",
+                            "value": "[subscription().subscriptionId]"
+                          },
+                          {
+                            "name": "TenantId",
+                            "value": "[tenant().tenantId]"
+                          },
+                          {
+                            "name": "UserAssignedIdentityClientId",
+                            "value": "[parameters('userAssignedIdentityClientId')]"
+                          },
+                          {
+                            "name": "VirtualMachineName",
                             "value": "[parameters('imageVirtualMachineName')]"
-                          },
-                          {
-                            "name": "managementVmRg",
-                            "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
-                          },
-                          {
-                            "name": "managementVmName",
-                            "value": "[parameters('virtualMachineName')]"
-                          },
-                          {
-                            "name": "Environment",
-                            "value": "[parameters('cloud')]"
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        Start-Sleep 30\r\n        \r\n        # Generalize VM Using PowerShell\r\n        Set-AzVm -ResourceGroupName $imageVmRg -Name $imageVmName -Generalized\r\n\r\n        Write-Host \"Generalized\" \r\n\r\n      "
+                          "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 30\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
                         }
                       }
                     }
@@ -5252,9 +5241,6 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "cloud": {
-                    "value": "[variables('cloud')]"
-                  },
                   "enableBuildAutomation": {
                     "value": "[parameters('enableBuildAutomation')]"
                   },
@@ -5284,13 +5270,10 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "11445259052284701093"
+                      "templateHash": "17193588918659866014"
                     }
                   },
                   "parameters": {
-                    "cloud": {
-                      "type": "string"
-                    },
                     "enableBuildAutomation": {
                       "type": "bool"
                     },
@@ -5326,36 +5309,40 @@
                         "asyncExecution": true,
                         "parameters": [
                           {
-                            "name": "enableBuildAutomation",
-                            "value": "[parameters('enableBuildAutomation')]"
-                          },
-                          {
-                            "name": "miId",
-                            "value": "[parameters('userAssignedIdentityClientId')]"
-                          },
-                          {
-                            "name": "imageVmRg",
-                            "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
-                          },
-                          {
-                            "name": "imageVmName",
-                            "value": "[parameters('imageVirtualMachineName')]"
-                          },
-                          {
-                            "name": "managementVmRg",
-                            "value": "[split(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '/')[4]]"
-                          },
-                          {
-                            "name": "managementVmName",
-                            "value": "[parameters('virtualMachineName')]"
+                            "name": "EnableBuildAutomation",
+                            "value": "[string(parameters('enableBuildAutomation'))]"
                           },
                           {
                             "name": "Environment",
-                            "value": "[parameters('cloud')]"
+                            "value": "[environment().name]"
+                          },
+                          {
+                            "name": "ImageVmName",
+                            "value": "[parameters('imageVirtualMachineName')]"
+                          },
+                          {
+                            "name": "ManagementVmName",
+                            "value": "[parameters('virtualMachineName')]"
+                          },
+                          {
+                            "name": "ResourceGroupName",
+                            "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
+                          },
+                          {
+                            "name": "SubscriptionId",
+                            "value": "[subscription().subscriptionId]"
+                          },
+                          {
+                            "name": "TenantId",
+                            "value": "[tenant().tenantId]"
+                          },
+                          {
+                            "name": "UserAssignedIdentityClientId",
+                            "value": "[parameters('userAssignedIdentityClientId')]"
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]enableBuildAutomation,\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        if(!$enableBuildAutomation)\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n        }\r\n      "
+                          "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $ResourceGroupName -Force\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $ResourceGroupName -NoWait -Force -AsJob\r\n        }\r\n      "
                         }
                       }
                     }

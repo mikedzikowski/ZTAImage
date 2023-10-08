@@ -54,7 +54,6 @@ param vDOTInstaller string = ''
 param virtualMachineSize string
 
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
-var cloud = environment().name
 var imageSuffix = take(deploymentNameSuffix, 9)
 var storageEndpoint = environment().suffixes.storage
 
@@ -121,7 +120,6 @@ module restart 'restart.bicep' = {
   name: 'restart-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
-    cloud: cloud
     imageVirtualMachineName: virtualMachine.outputs.name
     resourceGroupName: resourceGroupName
     location: location
@@ -155,7 +153,6 @@ module generalize 'generalize.bicep' = {
   name: 'generalize-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
-    cloud: cloud
     imageVirtualMachineName: virtualMachine.outputs.name
     resourceGroupName: resourceGroupName
     location: location
@@ -191,7 +188,6 @@ module remove 'removeVM.bicep' = if (!enableBuildAutomation) {
   name: 'remove-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
-    cloud: cloud
     enableBuildAutomation: enableBuildAutomation
     imageVirtualMachineName: virtualMachine.outputs.name
     resourceGroupName: resourceGroupName

@@ -139,8 +139,6 @@ module automationAccount 'automationAccount.bicep' = {
     installVisio: installVisio
     installWord: installWord
     keyVaultName: keyVaultName
-    localAdministratorPassword: localAdministratorPassword
-    localAdministratorUsername: localAdministratorUsername
     location: location
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     managementVirtualMachineName: managementVirtualMachineName
