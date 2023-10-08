@@ -192,6 +192,7 @@ module remove 'removeVM.bicep' = if (!enableBuildAutomation) {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     cloud: cloud
+    enableBuildAutomation: enableBuildAutomation
     imageVirtualMachineName: virtualMachine.outputs.name
     resourceGroupName: resourceGroupName
     location: location

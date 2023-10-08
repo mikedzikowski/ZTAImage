@@ -1,4 +1,5 @@
 param cloud string
+param enableBuildAutomation bool
 param imageVirtualMachineName string
 param resourceGroupName string
 param location string = resourceGroup().location
@@ -24,6 +25,10 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     treatFailureAsDeploymentFailure: true
     asyncExecution: true
     parameters: [
+      {
+        name: 'enableBuildAutomation'
+        value: enableBuildAutomation
+      }
       {
         name: 'miId'
         value: userAssignedIdentityClientId
@@ -52,6 +57,7 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     source: {
       script: '''
       param(
+        [string]enableBuildAutomation,
         [string]$miId,
         [string]$imageVmRg,
         [string]$imageVmName,
@@ -66,7 +72,10 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
 
         Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force
 
-        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
+        if(!$enableBuildAutomation)
+        {
+          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob
+        }
       '''
     }
   }

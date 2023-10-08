@@ -60,7 +60,7 @@ param virtualMachineName string
 param virtualMachineSize string
 
 var parameters = {
-  computeGalleryName: computeGalleryResourceId
+  computeGalleryName: split(computeGalleryResourceId, '/')[8]
   containerName: containerName
   customizations: string(customizations)
   diskEncryptionSetResourceId: diskEncryptionSetResourceId
@@ -84,10 +84,7 @@ var parameters = {
   installVisio: string(installVisio)
   installWord: string(installWord)
   keyVaultName: keyVaultName
-  localAdministratorPassword: localAdministratorPassword
-  localAdministratorUsername: localAdministratorUsername
   location: location
-  logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
   managementVirtualMachineName: managementVirtualMachineName
   marketplaceImageOffer: marketplaceImageOffer
   marketplaceImagePublisher: marketplaceImagePublisher

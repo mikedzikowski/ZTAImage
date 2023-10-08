@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "14701913146133625209"
+      "templateHash": "1857490899617872312"
     }
   },
   "parameters": {
@@ -1207,7 +1207,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "18033104655690901602"
+              "templateHash": "9576522564091884490"
             }
           },
           "parameters": {
@@ -1663,7 +1663,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "13807034770281118084"
+                      "templateHash": "14942785215033539594"
                     }
                   },
                   "parameters": {
@@ -1685,7 +1685,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "8042954595633479697"
+                          "templateHash": "7650171699971517262"
                         }
                       },
                       "parameters": {
@@ -2973,6 +2973,9 @@
                               "cloud": {
                                 "value": "[[variables('cloud')]"
                               },
+                              "enableBuildAutomation": {
+                                "value": "[[parameters('enableBuildAutomation')]"
+                              },
                               "imageVirtualMachineName": {
                                 "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
@@ -2999,12 +3002,15 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "5638628329416902893"
+                                  "templateHash": "11445259052284701093"
                                 }
                               },
                               "parameters": {
                                 "cloud": {
                                   "type": "string"
+                                },
+                                "enableBuildAutomation": {
+                                  "type": "bool"
                                 },
                                 "imageVirtualMachineName": {
                                   "type": "string"
@@ -3038,6 +3044,10 @@
                                     "asyncExecution": true,
                                     "parameters": [
                                       {
+                                        "name": "enableBuildAutomation",
+                                        "value": "[[parameters('enableBuildAutomation')]"
+                                      },
+                                      {
                                         "name": "miId",
                                         "value": "[[parameters('userAssignedIdentityClientId')]"
                                       },
@@ -3063,7 +3073,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n      "
+                                      "script": "      param(\r\n        [string]enableBuildAutomation,\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        if(!$enableBuildAutomation)\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n        }\r\n      "
                                     }
                                   }
                                 }
@@ -3301,7 +3311,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "7530626904020615413"
+                      "templateHash": "10266037662052661743"
                     }
                   },
                   "parameters": {
@@ -3484,7 +3494,7 @@
                   },
                   "variables": {
                     "parameters": {
-                      "computeGalleryName": "[parameters('computeGalleryResourceId')]",
+                      "computeGalleryName": "[split(parameters('computeGalleryResourceId'), '/')[8]]",
                       "containerName": "[parameters('containerName')]",
                       "customizations": "[string(parameters('customizations'))]",
                       "diskEncryptionSetResourceId": "[parameters('diskEncryptionSetResourceId')]",
@@ -3508,10 +3518,7 @@
                       "installVisio": "[string(parameters('installVisio'))]",
                       "installWord": "[string(parameters('installWord'))]",
                       "keyVaultName": "[parameters('keyVaultName')]",
-                      "localAdministratorPassword": "[parameters('localAdministratorPassword')]",
-                      "localAdministratorUsername": "[parameters('localAdministratorUsername')]",
                       "location": "[parameters('location')]",
-                      "logAnalyticsWorkspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
                       "managementVirtualMachineName": "[parameters('managementVirtualMachineName')]",
                       "marketplaceImageOffer": "[parameters('marketplaceImageOffer')]",
                       "marketplaceImagePublisher": "[parameters('marketplaceImagePublisher')]",
@@ -3960,7 +3967,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "8042954595633479697"
+              "templateHash": "7650171699971517262"
             }
           },
           "parameters": {
@@ -5248,6 +5255,9 @@
                   "cloud": {
                     "value": "[variables('cloud')]"
                   },
+                  "enableBuildAutomation": {
+                    "value": "[parameters('enableBuildAutomation')]"
+                  },
                   "imageVirtualMachineName": {
                     "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
@@ -5274,12 +5284,15 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "5638628329416902893"
+                      "templateHash": "11445259052284701093"
                     }
                   },
                   "parameters": {
                     "cloud": {
                       "type": "string"
+                    },
+                    "enableBuildAutomation": {
+                      "type": "bool"
                     },
                     "imageVirtualMachineName": {
                       "type": "string"
@@ -5313,6 +5326,10 @@
                         "asyncExecution": true,
                         "parameters": [
                           {
+                            "name": "enableBuildAutomation",
+                            "value": "[parameters('enableBuildAutomation')]"
+                          },
+                          {
                             "name": "miId",
                             "value": "[parameters('userAssignedIdentityClientId')]"
                           },
@@ -5338,7 +5355,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n      "
+                          "script": "      param(\r\n        [string]enableBuildAutomation,\r\n        [string]$miId,\r\n        [string]$imageVmRg,\r\n        [string]$imageVmName,\r\n        [string]$managementVmRg,\r\n        [string]$managementVmName,\r\n        [string]$Environment\r\n        )\r\n        # Connect to Azure\r\n        Connect-AzAccount -Identity -AccountId $miId -Environment $Environment # Run on the virtual machine\r\n\r\n        # Remove Image VM and Management VM\r\n\r\n        Remove-AzVM -Name $imageVmName -ResourceGroupName $imageVmRg -ForceDeletion $true -Force\r\n\r\n        if(!$enableBuildAutomation)\r\n        {\r\n          Remove-AzVM -Name $managementVmName -ResourceGroupName $managementVmRg -NoWait -ForceDeletion $true -Force -AsJob\r\n        }\r\n      "
                         }
                       }
                     }

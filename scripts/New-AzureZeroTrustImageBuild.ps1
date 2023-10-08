@@ -60,6 +60,7 @@ try
 			containerName = $Values.containerName
 			customizations = $Values.customizations
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
+			enableBuildAutomation = $Values.enableBuildAutomation
 			excludeFromLatest = $true
 			imageDefinitionName = $Values.imageDefinitionName
 			imageMajorVersion = if($Values.imageMajorVersion -eq 'true'){$true}else{$false}
