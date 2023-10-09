@@ -237,7 +237,7 @@ resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
           [string]$StorageEndpoint,
           [string]$SubscriptionId,
           [string]$TenantId,
-          [string]$UserAssignedIdentityClientId
+          [string]$UserAssignedIdentityClientId,
           [string]$UserAssignedIdentityObjectId
         )
         $ErrorActionPreference = 'Stop'
