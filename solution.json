@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "16464164615528062273"
+      "templateHash": "15905385769406424480"
     }
   },
   "parameters": {
@@ -1204,7 +1204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12953730806531677623"
+              "templateHash": "6682658794295684280"
             }
           },
           "parameters": {
@@ -1657,7 +1657,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6779183858331912498"
+                      "templateHash": "15203375819450256890"
                     }
                   },
                   "parameters": {
@@ -1679,7 +1679,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "4272375762990215100"
+                          "templateHash": "15096744803400320833"
                         }
                       },
                       "parameters": {
@@ -2527,7 +2527,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "7330423534124688367"
+                                  "templateHash": "188386551090076471"
                                 }
                               },
                               "parameters": {
@@ -2587,7 +2587,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName,\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
+                                      "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
                                     }
                                   }
                                 }
@@ -2640,7 +2640,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "8521172920492522050"
+                                  "templateHash": "10423703998648590950"
                                 }
                               },
                               "parameters": {
@@ -2678,24 +2678,24 @@
                                     "asyncExecution": false,
                                     "parameters": [
                                       {
-                                        "name": "UserAssignedIdentityObjectId",
-                                        "value": "[[parameters('userAssignedIdentityObjectId')]"
+                                        "name": "ContainerName",
+                                        "value": "[[parameters('containerName')]"
                                       },
                                       {
                                         "name": "StorageAccountName",
                                         "value": "[[parameters('storageAccountName')]"
                                       },
                                       {
-                                        "name": "ContainerName",
-                                        "value": "[[parameters('containerName')]"
-                                      },
-                                      {
                                         "name": "StorageEndpoint",
                                         "value": "[[parameters('storageEndpoint')]"
+                                      },
+                                      {
+                                        "name": "UserAssignedIdentityObjectId",
+                                        "value": "[[parameters('userAssignedIdentityObjectId')]"
                                       }
                                     ],
                                     "source": {
-                                      "script": "    param(\r\n      [string]$UserAssignedIdentityObjectId,\r\n      [string]$StorageAccountName,\r\n      [string]$ContainerName,\r\n      [string]$StorageEndpoint\r\n    )\r\n    $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n    $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n    $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n    $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n    Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n    Start-Sleep -Seconds 60\r\n    Set-Location -Path $env:windir\\temp\r\n    .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
+                                      "script": "        param(\r\n          [string]$ContainerName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$UserAssignedIdentityObjectId\r\n        )\r\n        $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 60\r\n        Set-Location -Path $env:windir\\temp\r\n        .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
                                     }
                                   }
                                 }
@@ -3952,7 +3952,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17694348144853535419"
+              "templateHash": "15096744803400320833"
             }
           },
           "parameters": {
@@ -4800,7 +4800,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "7330423534124688367"
+                      "templateHash": "188386551090076471"
                     }
                   },
                   "parameters": {
@@ -4860,7 +4860,7 @@
                           }
                         ],
                         "source": {
-                          "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName,\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
+                          "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName\r\n        $lastProvisioningState = \"\"\r\n        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n        $condition = ($provisioningState -eq \"PowerState/running\")\r\n        while (!$condition) {\r\n          if ($lastProvisioningState -ne $provisioningState) {\r\n            write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState \"(waiting for state change)\"\r\n          }\r\n          $lastProvisioningState = $provisioningState\r\n          Start-Sleep -Seconds 5\r\n          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code\r\n          $condition = ($provisioningState -eq \"PowerState/running\")\r\n        }\r\n        write-host $VirtualMachineName \"under\" $ResourceGroupName \"is\" $provisioningState\r\n        start-sleep 30\r\n      "
                         }
                       }
                     }

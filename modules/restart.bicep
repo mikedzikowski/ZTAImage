@@ -56,7 +56,7 @@ resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = 
           [string]$SubscriptionId,
           [string]$TenantId,
           [string]$UserAssignedIdentityClientId,
-          [string]$VirtualMachineName,
+          [string]$VirtualMachineName
         )
         $ErrorActionPreference = 'Stop'
         $WarningPreference = 'SilentlyContinue'
