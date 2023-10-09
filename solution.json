@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "6635271981390173543"
+      "templateHash": "18005734799395042792"
     }
   },
   "parameters": {
@@ -1204,7 +1204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4997470775890941880"
+              "templateHash": "16855970549891010129"
             }
           },
           "parameters": {
@@ -3288,7 +3288,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "2801279397241649837"
+                      "templateHash": "2299400804523433992"
                     }
                   },
                   "parameters": {
@@ -3631,10 +3631,14 @@
                           {
                             "name": "UserAssignedIdentityClientId",
                             "value": "[parameters('userAssignedIdentityClientId')]"
+                          },
+                          {
+                            "name": "UserAssignedIdentityObjectId",
+                            "value": "[parameters('userAssignedIdentityPrincipalId')]"
                           }
                         ],
                         "source": {
-                          "script": "        param (\r\n          [string]$AutomationAccountName,\r\n          [string]$ContainerName,\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$RunbookName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $BlobName = 'New-AzureZeroTrustImageBuild.ps1'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $File = \"$env:windir\\temp\\$BlobName\"\r\n        do\r\n        {\r\n            try\r\n            {\r\n                Write-Output \"Download Attempt $i\"\r\n                Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $File\r\n            }\r\n            catch [System.Net.WebException]\r\n            {\r\n                Start-Sleep -Seconds 60\r\n                $i++\r\n                if($i -gt 10){throw}\r\n                continue\r\n            }\r\n            catch\r\n            {\r\n                $Output = $_ | select *\r\n                Write-Output $Output\r\n                throw\r\n            }\r\n        }\r\n        until(Test-Path -Path $File)\r\n        Import-AzAutomationRunbook -Name $RunbookName -Path $File -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null\r\n      "
+                          "script": "        param (\r\n          [string]$AutomationAccountName,\r\n          [string]$ContainerName,\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$RunbookName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n          [string]$UserAssignedIdentityObjectId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $BlobName = 'New-AzureZeroTrustImageBuild.ps1'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $File = \"$env:windir\\temp\\$BlobName\"\r\n        do\r\n        {\r\n            try\r\n            {\r\n                Write-Output \"Download Attempt $i\"\r\n                Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $File\r\n            }\r\n            catch [System.Net.WebException]\r\n            {\r\n                Start-Sleep -Seconds 60\r\n                $i++\r\n                if($i -gt 10){throw}\r\n                continue\r\n            }\r\n            catch\r\n            {\r\n                $Output = $_ | select *\r\n                Write-Output $Output\r\n                throw\r\n            }\r\n        }\r\n        until(Test-Path -Path $File)\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Import-AzAutomationRunbook -Name $RunbookName -Path $File -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null\r\n      "
                         }
                       }
                     },

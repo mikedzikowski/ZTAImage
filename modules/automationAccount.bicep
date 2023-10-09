@@ -220,6 +220,10 @@ resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
         name: 'UserAssignedIdentityClientId'
         value: userAssignedIdentityClientId
       }
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityPrincipalId
+      }
     ]
     source: {
       script: '''
@@ -234,11 +238,11 @@ resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
           [string]$SubscriptionId,
           [string]$TenantId,
           [string]$UserAssignedIdentityClientId
+          [string]$UserAssignedIdentityObjectId
         )
         $ErrorActionPreference = 'Stop'
         $WarningPreference = 'SilentlyContinue'
         $BlobName = 'New-AzureZeroTrustImageBuild.ps1'
-        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
         $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
@@ -265,6 +269,7 @@ resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
             }
         }
         until(Test-Path -Path $File)
+        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
         Import-AzAutomationRunbook -Name $RunbookName -Path $File -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null
       '''
     }
