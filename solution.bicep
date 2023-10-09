@@ -206,7 +206,6 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     userAssignedIdentityResourceId: baseline.outputs.userAssignedIdentityResourceId
     vcRedistInstaller: vcRedistInstaller
     vDOTInstaller: vDOTInstaller
-    virtualMachineName: managementVirtualMachineName
     virtualMachineSize: virtualMachineSize
   }
 }

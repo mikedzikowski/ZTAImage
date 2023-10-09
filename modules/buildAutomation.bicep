@@ -58,7 +58,6 @@ param userAssignedIdentityPrincipalId string
 param userAssignedIdentityResourceId string
 param vcRedistInstaller string
 param vDOTInstaller string
-param virtualMachineName string
 param virtualMachineSize string
 
 resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
@@ -163,7 +162,6 @@ module automationAccount 'automationAccount.bicep' = {
     userAssignedIdentityResourceId: userAssignedIdentityResourceId
     vcRedistInstaller: vcRedistInstaller
     vDOTInstaller: vDOTInstaller
-    virtualMachineName: virtualMachineName
     virtualMachineSize: virtualMachineSize
   }
 }

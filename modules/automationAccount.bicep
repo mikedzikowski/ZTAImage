@@ -53,7 +53,6 @@ param userAssignedIdentityPrincipalId string
 param userAssignedIdentityResourceId string
 param vcRedistInstaller string
 param vDOTInstaller string
-param virtualMachineName string
 param virtualMachineSize string
 
 var parameters = {
@@ -113,7 +112,7 @@ var subscriptionId = subscription().subscriptionId
 var tenantId = subscription().tenantId
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-07-01' existing = {
-  name: virtualMachineName
+  name: managementVirtualMachineName
 }
 
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
@@ -239,21 +238,34 @@ resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
         $ErrorActionPreference = 'Stop'
         $WarningPreference = 'SilentlyContinue'
         $BlobName = 'New-AzureZeroTrustImageBuild.ps1'
-        try 
+        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
+        $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
+        $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
+        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+        $File = "$env:windir\temp\$BlobName"
+        do
         {
-          Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
-          $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
-          $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
-          $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-          $ScriptFile = "$env:windir\temp\$BlobName"
-          Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ScriptFile
-          Import-AzAutomationRunbook -Name $RunbookName -Path $ScriptFile -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null
+            try
+            {
+                Write-Output "Download Attempt $i"
+                Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $File
+            }
+            catch [System.Net.WebException]
+            {
+                Start-Sleep -Seconds 60
+                $i++
+                if($i -gt 10){throw}
+                continue
+            }
+            catch
+            {
+                $Output = $_ | select *
+                Write-Output $Output
+                throw
+            }
         }
-        catch 
-        {
-            $_ | Select-Object *
-            throw
-        }
+        until(Test-Path -Path $File)
+        Import-AzAutomationRunbook -Name $RunbookName -Path $File -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null
       '''
     }
   }

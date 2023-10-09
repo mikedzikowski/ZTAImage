@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "2402184470047094828"
+      "templateHash": "6635271981390173543"
     }
   },
   "parameters": {
@@ -1193,9 +1193,6 @@
           "vDOTInstaller": {
             "value": "[parameters('vDOTInstaller')]"
           },
-          "virtualMachineName": {
-            "value": "[variables('managementVirtualMachineName')]"
-          },
           "virtualMachineSize": {
             "value": "[parameters('virtualMachineSize')]"
           }
@@ -1207,7 +1204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "15553154752022397449"
+              "templateHash": "4997470775890941880"
             }
           },
           "parameters": {
@@ -1377,9 +1374,6 @@
               "type": "string"
             },
             "vDOTInstaller": {
-              "type": "string"
-            },
-            "virtualMachineName": {
               "type": "string"
             },
             "virtualMachineSize": {
@@ -3283,9 +3277,6 @@
                   "vDOTInstaller": {
                     "value": "[parameters('vDOTInstaller')]"
                   },
-                  "virtualMachineName": {
-                    "value": "[parameters('virtualMachineName')]"
-                  },
                   "virtualMachineSize": {
                     "value": "[parameters('virtualMachineSize')]"
                   }
@@ -3297,7 +3288,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6634079303257338929"
+                      "templateHash": "2801279397241649837"
                     }
                   },
                   "parameters": {
@@ -3465,9 +3456,6 @@
                     "vDOTInstaller": {
                       "type": "string"
                     },
-                    "virtualMachineName": {
-                      "type": "string"
-                    },
                     "virtualMachineSize": {
                       "type": "string"
                     }
@@ -3597,7 +3585,7 @@
                     {
                       "type": "Microsoft.Compute/virtualMachines/runCommands",
                       "apiVersion": "2023-07-01",
-                      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'runbook')]",
+                      "name": "[format('{0}/{1}', parameters('managementVirtualMachineName'), 'runbook')]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
                       "properties": {
@@ -3646,7 +3634,7 @@
                           }
                         ],
                         "source": {
-                          "script": "        param (\r\n          [string]$AutomationAccountName,\r\n          [string]$ContainerName,\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$RunbookName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $BlobName = 'New-AzureZeroTrustImageBuild.ps1'\r\n        try \r\n        {\r\n          Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n          $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n          $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n          $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n          $ScriptFile = \"$env:windir\\temp\\$BlobName\"\r\n          Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ScriptFile\r\n          Import-AzAutomationRunbook -Name $RunbookName -Path $ScriptFile -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null\r\n        }\r\n        catch \r\n        {\r\n            $_ | Select-Object *\r\n            throw\r\n        }\r\n      "
+                          "script": "        param (\r\n          [string]$AutomationAccountName,\r\n          [string]$ContainerName,\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$RunbookName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $BlobName = 'New-AzureZeroTrustImageBuild.ps1'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $File = \"$env:windir\\temp\\$BlobName\"\r\n        do\r\n        {\r\n            try\r\n            {\r\n                Write-Output \"Download Attempt $i\"\r\n                Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $File\r\n            }\r\n            catch [System.Net.WebException]\r\n            {\r\n                Start-Sleep -Seconds 60\r\n                $i++\r\n                if($i -gt 10){throw}\r\n                continue\r\n            }\r\n            catch\r\n            {\r\n                $Output = $_ | select *\r\n                Write-Output $Output\r\n                throw\r\n            }\r\n        }\r\n        until(Test-Path -Path $File)\r\n        Import-AzAutomationRunbook -Name $RunbookName -Path $File -Type PowerShell -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Published -Force | Out-Null\r\n      "
                         }
                       }
                     },
@@ -3683,7 +3671,7 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]",
                         "[resourceId('Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups', parameters('automationAccountName'), 'Zero Trust Image Build Automation')]",
-                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('managementVirtualMachineName'), 'runbook')]",
                         "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), parameters('imageDefinitionName'))]"
                       ]
                     },
@@ -3723,17 +3711,17 @@
                       "apiVersion": "2022-08-08",
                       "name": "[format('{0}/{1}/{2}', parameters('automationAccountName'), 'Zero Trust Image Build Automation', guid(resourceId('Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups', parameters('automationAccountName'), 'Zero Trust Image Build Automation')))]",
                       "properties": {
-                        "vmResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                        "vmResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('managementVirtualMachineName'))]"
                       },
                       "dependsOn": [
                         "[resourceId('Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups', parameters('automationAccountName'), 'Zero Trust Image Build Automation')]",
-                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('managementVirtualMachineName'), 'runbook')]"
                       ]
                     },
                     {
                       "type": "Microsoft.Compute/virtualMachines/extensions",
                       "apiVersion": "2022-03-01",
-                      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'HybridWorkerForWindows')]",
+                      "name": "[format('{0}/{1}', parameters('managementVirtualMachineName'), 'HybridWorkerForWindows')]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
                       "properties": {
@@ -3748,14 +3736,14 @@
                       },
                       "dependsOn": [
                         "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]",
-                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('managementVirtualMachineName'), 'runbook')]"
                       ]
                     },
                     {
                       "condition": "[and(and(not(empty(parameters('domainJoinUserPrincipalName'))), not(empty(parameters('domainName')))), not(empty(parameters('oUPath'))))]",
                       "type": "Microsoft.Compute/virtualMachines/extensions",
                       "apiVersion": "2021-03-01",
-                      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'JsonADDomainExtension')]",
+                      "name": "[format('{0}/{1}', parameters('managementVirtualMachineName'), 'JsonADDomainExtension')]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
                       "properties": {
@@ -3776,8 +3764,8 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('virtualMachineName'), 'HybridWorkerForWindows')]",
-                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'runbook')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('managementVirtualMachineName'), 'HybridWorkerForWindows')]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('managementVirtualMachineName'), 'runbook')]"
                       ]
                     }
                   ]
