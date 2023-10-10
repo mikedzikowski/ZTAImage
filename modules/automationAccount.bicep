@@ -56,7 +56,7 @@ param vDOTInstaller string
 param virtualMachineSize string
 
 var parameters = {
-  computeGalleryName: split(computeGalleryResourceId, '/')[8]
+  computeGalleryResourceId: computeGalleryResourceId
   containerName: containerName
   customizations: string(customizations)
   diskEncryptionSetResourceId: diskEncryptionSetResourceId
@@ -293,7 +293,7 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
   name: jobScheduleName
   properties: {
     parameters: {
-      parameters: string(parameters)
+      parameters: replace(string(parameters), '"', '\\"')
     }
     runbook: {
       name: runbookName

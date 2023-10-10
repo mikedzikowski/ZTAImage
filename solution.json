@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "15905385769406424480"
+      "templateHash": "13958174691063752141"
     }
   },
   "parameters": {
@@ -1204,7 +1204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "6682658794295684280"
+              "templateHash": "2993754963786534907"
             }
           },
           "parameters": {
@@ -3288,7 +3288,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8433068282216888077"
+                      "templateHash": "3813445486025303291"
                     }
                   },
                   "parameters": {
@@ -3462,7 +3462,7 @@
                   },
                   "variables": {
                     "parameters": {
-                      "computeGalleryName": "[split(parameters('computeGalleryResourceId'), '/')[8]]",
+                      "computeGalleryResourceId": "[parameters('computeGalleryResourceId')]",
                       "containerName": "[parameters('containerName')]",
                       "customizations": "[string(parameters('customizations'))]",
                       "diskEncryptionSetResourceId": "[parameters('diskEncryptionSetResourceId')]",
@@ -3662,7 +3662,7 @@
                       "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('jobScheduleName'))]",
                       "properties": {
                         "parameters": {
-                          "parameters": "[string(variables('parameters'))]"
+                          "parameters": "[replace(string(variables('parameters')), '\"', '\\\"')]"
                         },
                         "runbook": {
                           "name": "[variables('runbookName')]"
