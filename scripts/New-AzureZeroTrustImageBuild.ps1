@@ -12,12 +12,6 @@ try
 	$Values = $Parameters | ConvertFrom-Json
 
 	# Set Variables
-	if($SharedGalleryImageResourceId)
-	{
-		$SourceGalleryName = $Values.sharedGalleryImageResourceId.Split('/')[8]
-		$SourceGalleryResourceGroupName = $Values.sharedGalleryImageResourceId.Split('/')[4]
-		$SourceImageDefinitionName = $Values.sharedGalleryImageResourceId.Split('/')[10]
-	}
 	$DestinationGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
 	$DestinationGalleryResourceGroupName = $Values.computeGalleryResourceId.Split('/')[4]
 	$DestinationImageDefinitionName = $Values.imageDefinitionName
@@ -36,6 +30,11 @@ try
     switch($Values.sourceImageType)
     {
         'AzureComputeGallery' {
+			# Set Variables
+			$SourceGalleryName = $Values.sharedGalleryImageResourceId.Split('/')[8]
+			$SourceGalleryResourceGroupName = $Values.sharedGalleryImageResourceId.Split('/')[4]
+			$SourceImageDefinitionName = $Values.sharedGalleryImageResourceId.Split('/')[10]
+
             # Get the date of the latest image definition version
             $SourceImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $SourceGalleryResourceGroupName -GalleryName $SourceGalleryName -GalleryImageDefinitionName $SourceImageDefinitionName | Where-Object {$_.PublishingProfile.ExcludeFromLatest -eq $false -and $_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
             Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Source), Latest Version Date: $SourceImageVersionDate."
@@ -56,7 +55,7 @@ try
 	{   
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build initiated with a new source image version."
 		$TemplateParameters = @{
-			computeGalleryName = $Values.computeGalleryName
+			computeGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
 			containerName = $Values.containerName
 			customizations = $Values.customizations
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
@@ -113,6 +112,6 @@ try
 catch 
 {
 	Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build failed. Review the deployment errors in the Azure Portal and correct the issue."
-	Write-Output $Error[0].Exception
+	Write-Output $($Error[0] | Select-Object *)
 	throw
 }
