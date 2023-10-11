@@ -98,7 +98,7 @@ var parameters = {
   teamsInstaller: teamsInstaller
   templateSpecResourceId: templateSpecResourceId
   tenantId: tenantId
-  userAssignedIdentityClient: userAssignedIdentityClientId
+  userAssignedIdentityClientId: userAssignedIdentityClientId
   userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId
   userAssignedIdentityResourceId: userAssignedIdentityResourceId
   vcRedistInstaller: vcRedistInstaller

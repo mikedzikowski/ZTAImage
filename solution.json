@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "13958174691063752141"
+      "templateHash": "5756643571352094419"
     }
   },
   "parameters": {
@@ -1204,7 +1204,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2993754963786534907"
+              "templateHash": "2791964870530963762"
             }
           },
           "parameters": {
@@ -3288,7 +3288,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "3813445486025303291"
+                      "templateHash": "4277778473379051699"
                     }
                   },
                   "parameters": {
@@ -3504,7 +3504,7 @@
                       "teamsInstaller": "[parameters('teamsInstaller')]",
                       "templateSpecResourceId": "[parameters('templateSpecResourceId')]",
                       "tenantId": "[variables('tenantId')]",
-                      "userAssignedIdentityClient": "[parameters('userAssignedIdentityClientId')]",
+                      "userAssignedIdentityClientId": "[parameters('userAssignedIdentityClientId')]",
                       "userAssignedIdentityPrincipalId": "[parameters('userAssignedIdentityPrincipalId')]",
                       "userAssignedIdentityResourceId": "[parameters('userAssignedIdentityResourceId')]",
                       "vcRedistInstaller": "[parameters('vcRedistInstaller')]",
