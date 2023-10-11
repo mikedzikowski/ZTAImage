@@ -2,7 +2,7 @@ targetScope = 'resourceGroup'
 
 param computeGalleryName string
 param containerName string
-param customizations array
+param customizations array = []
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool
@@ -42,12 +42,12 @@ param sharedGalleryImageResourceId string = ''
 param sourceImageType string
 param storageAccountName string
 param subnetResourceId string
-param tags object
+param tags object = {}
 param teamsInstaller string = ''
 param userAssignedIdentityClientId string
 param userAssignedIdentityPrincipalId string
 param userAssignedIdentityResourceId string
-param vcRedistInstaller string
+param vcRedistInstaller string = ''
 param vDOTInstaller string = ''
 param virtualMachineSize string
 
