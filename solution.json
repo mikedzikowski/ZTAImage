@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5892042726182651258"
+      "templateHash": "665661835049386722"
     }
   },
   "parameters": {
@@ -1191,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2791964870530963762"
+              "templateHash": "7824423008755225479"
             }
           },
           "parameters": {
@@ -3275,7 +3275,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4277778473379051699"
+                      "templateHash": "15829975061655542086"
                     }
                   },
                   "parameters": {
@@ -3499,7 +3499,7 @@
                       "virtualMachineSize": "[parameters('virtualMachineSize')]"
                     },
                     "privateEndpointName": "[format('pe-{0}', parameters('automationAccountName'))]",
-                    "runbookName": "Zero-Trust-Image-Build-Automation",
+                    "runbookName": "New-AzureZeroTrustImageBuild",
                     "storageEndpoint": "[environment().suffixes.storage]",
                     "subscriptionId": "[subscription().subscriptionId]",
                     "tenantId": "[subscription().tenantId]"

@@ -106,7 +106,7 @@ var parameters = {
   virtualMachineSize: virtualMachineSize
 }
 var privateEndpointName = 'pe-${automationAccountName}'
-var runbookName = 'Zero-Trust-Image-Build-Automation'
+var runbookName = 'New-AzureZeroTrustImageBuild'
 var storageEndpoint = environment().suffixes.storage
 var subscriptionId = subscription().subscriptionId
 var tenantId = subscription().tenantId
