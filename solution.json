@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "15922577360856845107"
+      "templateHash": "17975523034672017800"
     }
   },
   "parameters": {
@@ -1191,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "724364102071402197"
+              "templateHash": "115620740117495927"
             }
           },
           "parameters": {
@@ -1385,6 +1385,62 @@
                     ]
                   }
                 ]
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('virtual-network-{0}', parameters('deploymentNameSuffix'))]",
+              "subscriptionId": "[split(parameters('subnetResourceId'), '/')[2]]",
+              "resourceGroup": "[split(parameters('subnetResourceId'), '/')[4]]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "principalId": {
+                    "value": "[parameters('userAssignedIdentityPrincipalId')]"
+                  },
+                  "virtualNetworkName": {
+                    "value": "[split(parameters('subnetResourceId'), '/')[8]]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "14936926749409693547"
+                    }
+                  },
+                  "parameters": {
+                    "principalId": {
+                      "type": "string"
+                    },
+                    "virtualNetworkName": {
+                      "type": "string"
+                    }
+                  },
+                  "variables": {
+                    "roleDefinitionId": "9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Network/virtualNetworks/{0}', parameters('virtualNetworkName'))]",
+                      "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal"
+                      }
+                    }
+                  ]
+                }
               }
             },
             {

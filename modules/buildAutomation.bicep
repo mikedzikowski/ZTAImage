@@ -78,6 +78,15 @@ resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
   }
 }
 
+module virtualNetwork 'virtualNetwork.bicep' = {
+  scope: resourceGroup(split(subnetResourceId, '/')[2], split(subnetResourceId, '/')[4])
+  name: 'virtual-network-${deploymentNameSuffix}'
+  params: {
+    principalId: userAssignedIdentityPrincipalId
+    virtualNetworkName: split(subnetResourceId, '/')[8]
+  }
+}
+
 module keyVault 'keyVault.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   name: 'key-vault-${deploymentNameSuffix}'
