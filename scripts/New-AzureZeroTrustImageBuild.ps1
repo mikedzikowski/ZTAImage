@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 try 
 {
 	# Convert JSON string to PowerShell
-	$Values = $Parameters | ConvertFrom-Json
+	$Values = $Parameters.Replace('\"', '"') | ConvertFrom-Json
 
 	# Set Variables
 	$DestinationGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
@@ -20,11 +20,15 @@ try
     Import-Module -Name 'Az.Accounts','Az.Compute','Az.Resources'
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Imported the required modules."
 
+	# Disable saving of Azure Context
+    Disable-AzContextAutosave -Scope Process | Out-Null
+	Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Disabled saving of Azure Context."
+
     # Connect to Azure using the System Assigned Identity
-    Connect-AzAccount -Environment $Values.environmentName -Subscription $Values.subscriptionId -Tenant $Values.tenantId -Identity | Out-Null
+    $AzureContext = (Connect-AzAccount -Environment $Values.environmentName -Subscription $Values.subscriptionId -Tenant $Values.tenantId -Identity -AccountId $Values.userAssignedIdentityClientId).Context
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Connected to Azure."
 
-    $CurrentImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $DestinationGalleryResourceGroupName -GalleryName $DestinationGalleryName -GalleryImageDefinitionName $DestinationImageDefinitionName | Where-Object {$_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
+    $CurrentImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $DestinationGalleryResourceGroupName -GalleryName $DestinationGalleryName -GalleryImageDefinitionName $DestinationImageDefinitionName -DefaultProfile $AzureContext | Where-Object {$_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Destination), Latest Version Date: $CurrentImageVersionDate."
 	
     switch($Values.sourceImageType)
@@ -36,12 +40,12 @@ try
 			$SourceImageDefinitionName = $Values.sharedGalleryImageResourceId.Split('/')[10]
 
             # Get the date of the latest image definition version
-            $SourceImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $SourceGalleryResourceGroupName -GalleryName $SourceGalleryName -GalleryImageDefinitionName $SourceImageDefinitionName | Where-Object {$_.PublishingProfile.ExcludeFromLatest -eq $false -and $_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
+            $SourceImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $SourceGalleryResourceGroupName -GalleryName $SourceGalleryName -GalleryImageDefinitionName $SourceImageDefinitionName -DefaultProfile $AzureContext | Where-Object {$_.PublishingProfile.ExcludeFromLatest -eq $false -and $_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
             Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Source), Latest Version Date: $SourceImageVersionDate."
         }
         'AzureMarketplace' {
             # Get the date of the latest marketplace image version
-            $ImageVersionDateRaw = (Get-AzVMImage -Location $Values.location -PublisherName $Values.marketplaceImagePublisher -Offer $Values.marketplaceImageOffer -Skus $Values.marketplaceImageSku | Sort-Object -Property 'Version' -Descending | Select-Object -First 1).Version.Split('.')[-1]
+            $ImageVersionDateRaw = (Get-AzVMImage -Location $Values.location -PublisherName $Values.marketplaceImagePublisher -Offer $Values.marketplaceImageOffer -Skus $Values.marketplaceImageSku -DefaultProfile $AzureContext | Sort-Object -Property 'Version' -Descending | Select-Object -First 1).Version.Split('.')[-1]
             $Year = '20' + $ImageVersionDateRaw.Substring(0,2)
             $Month = $ImageVersionDateRaw.Substring(2,2)
             $Day = $ImageVersionDateRaw.Substring(4,2)
@@ -57,7 +61,7 @@ try
 		$TemplateParameters = @{
 			computeGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
 			containerName = $Values.containerName
-			customizations = $Values.customizations
+			customizations = if($Values.customizations -eq '[]'){@()}else{$Values.customizations}
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
 			enableBuildAutomation = $Values.enableBuildAutomation
 			excludeFromLatest = $true
@@ -92,7 +96,7 @@ try
 			sourceImageType = $Values.sourceImageType
 			storageAccountName = $Values.storageAccountName
 			subnetResourceId = $Values.subnetResourceId
-			tags = $Values.tags
+			tags = if($Values.tags -eq '{}'){@{}}else{$Values.tags}
 			teamsInstaller = $Values.teamsInstaller
 			userAssignedIdentityClientId = $Values.userAssignedIdentityClientId
 			userAssignedIdentityPrincipalId = $Values.userAssignedIdentityPrincipalId
@@ -101,7 +105,7 @@ try
 			vDOTInstaller = $Values.vDOTInstaller
 			virtualMachineSize = $Values.virtualMachineSize
         }
-        New-AzDeployment -Location $Values.location -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters
+        New-AzDeployment -Location $Values.location -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters -DefaultProfile $AzureContext
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery."
 	}
 	else 
