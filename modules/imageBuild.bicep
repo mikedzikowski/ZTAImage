@@ -1,4 +1,4 @@
-targetScope = 'subscription'
+targetScope = 'resourceGroup'
 
 param computeGalleryName string
 param containerName string
@@ -29,7 +29,7 @@ param keyVaultName string = ''
 param localAdministratorPassword string = ''
 @secure()
 param localAdministratorUsername string = ''
-param location string = deployment().location
+param location string = resourceGroup().location
 param managementVirtualMachineName string
 param marketplaceImageOffer string = ''
 param marketplaceImagePublisher string = ''

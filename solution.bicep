@@ -213,6 +213,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
 
 module imageBuild 'modules/imageBuild.bicep' = {
   name: 'image-build-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     computeGalleryName: computeGalleryName
     containerName: containerName

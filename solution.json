@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "3264593511401084000"
+      "templateHash": "18221578742734137100"
     }
   },
   "parameters": {
@@ -1191,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "10807411654836914555"
+              "templateHash": "8847553047894758791"
             }
           },
           "parameters": {
@@ -1644,7 +1644,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8926558644382224530"
+                      "templateHash": "11275547451431450980"
                     }
                   },
                   "parameters": {
@@ -1660,13 +1660,13 @@
                   },
                   "variables": {
                     "$fxv#0": {
-                      "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                      "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                       "contentVersion": "1.0.0.0",
                       "metadata": {
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "15096744803400320833"
+                          "templateHash": "14392785769907660589"
                         }
                       },
                       "parameters": {
@@ -1757,7 +1757,7 @@
                         },
                         "location": {
                           "type": "string",
-                          "defaultValue": "[[deployment().location]"
+                          "defaultValue": "[[resourceGroup().location]"
                         },
                         "managementVirtualMachineName": {
                           "type": "string"
@@ -3777,7 +3777,8 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('image-build-{0}', parameters('deploymentNameSuffix'))]",
-      "location": "[deployment().location]",
+      "subscriptionId": "[variables('subscriptionId')]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -3933,13 +3934,13 @@
           }
         },
         "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "15096744803400320833"
+              "templateHash": "14392785769907660589"
             }
           },
           "parameters": {
@@ -4030,7 +4031,7 @@
             },
             "location": {
               "type": "string",
-              "defaultValue": "[deployment().location]"
+              "defaultValue": "[resourceGroup().location]"
             },
             "managementVirtualMachineName": {
               "type": "string"
