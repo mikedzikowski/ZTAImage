@@ -61,7 +61,6 @@ try
 		$TemplateParameters = @{
 			computeGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
 			containerName = $Values.containerName
-			customizations = if($Values.customizations -eq '[]'){@()}else{$Values.customizations}
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
 			enableBuildAutomation = $Values.enableBuildAutomation
 			excludeFromLatest = $true
@@ -95,7 +94,6 @@ try
 			sourceImageType = $Values.sourceImageType
 			storageAccountName = $Values.storageAccountName
 			subnetResourceId = $Values.subnetResourceId
-			tags = if($Values.tags -eq '{}'){@{}}else{$Values.tags}
 			teamsInstaller = $Values.teamsInstaller
 			userAssignedIdentityClientId = $Values.userAssignedIdentityClientId
 			userAssignedIdentityPrincipalId = $Values.userAssignedIdentityPrincipalId
@@ -104,7 +102,9 @@ try
 			vDOTInstaller = $Values.vDOTInstaller
 			virtualMachineSize = $Values.virtualMachineSize
         }
-        New-AzResourceGroupDeployment -ResourceGroupName $Values.resourceGroupName -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters -DefaultProfile $AzureContext
+		if($Values.customizations -ne '[]'){$TemplateParameters.Add('customizations', $Values.customizations)}
+        if($Values.tags -ne '{}'){$TemplateParameters.Add('tags', $Values.tags)}
+		New-AzResourceGroupDeployment -ResourceGroupName $Values.resourceGroupName -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters -DefaultProfile $AzureContext
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery."
 	}
 	else 
