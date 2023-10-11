@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "4877470834080483480"
+      "templateHash": "41473034199746810"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "115620740117495927"
+              "templateHash": "2762123352434271852"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10462765584617042181"
+                      "templateHash": "18241620539875942728"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "1446933281032286475"
+                          "templateHash": "1747846775437740436"
                         }
                       },
                       "parameters": {
@@ -3153,7 +3153,7 @@
                             }
                           },
                           "dependsOn": [
-                            "[[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
                             "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         }
@@ -4033,7 +4033,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "1446933281032286475"
+              "templateHash": "1747846775437740436"
             }
           },
           "parameters": {
@@ -5404,7 +5404,7 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+                "[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
                 "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             }

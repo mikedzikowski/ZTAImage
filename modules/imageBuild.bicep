@@ -188,6 +188,6 @@ module remove 'removeVM.bicep' = {
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
-    generalize
+    imageVersion
   ]
 }

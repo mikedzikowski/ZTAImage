@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "1446933281032286475"
+      "templateHash": "1747846775437740436"
     }
   },
   "parameters": {
@@ -1376,7 +1376,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
         "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     }
