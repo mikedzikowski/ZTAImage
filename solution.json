@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "6290769056495430792"
+      "templateHash": "15922577360856845107"
     }
   },
   "parameters": {
@@ -1191,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "13326235703108914756"
+              "templateHash": "724364102071402197"
             }
           },
           "parameters": {
@@ -1644,7 +1644,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "1969548088698636155"
+                      "templateHash": "10462765584617042181"
                     }
                   },
                   "parameters": {
@@ -1666,7 +1666,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "8898256180210728014"
+                          "templateHash": "1446933281032286475"
                         }
                       },
                       "parameters": {
@@ -1677,7 +1677,8 @@
                           "type": "string"
                         },
                         "customizations": {
-                          "type": "array"
+                          "type": "array",
+                          "defaultValue": []
                         },
                         "deploymentNameSuffix": {
                           "type": "string",
@@ -1803,7 +1804,8 @@
                           "type": "string"
                         },
                         "tags": {
-                          "type": "object"
+                          "type": "object",
+                          "defaultValue": {}
                         },
                         "teamsInstaller": {
                           "type": "string",
@@ -1819,7 +1821,8 @@
                           "type": "string"
                         },
                         "vcRedistInstaller": {
-                          "type": "string"
+                          "type": "string",
+                          "defaultValue": ""
                         },
                         "vDOTInstaller": {
                           "type": "string",
@@ -3914,7 +3917,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "8898256180210728014"
+              "templateHash": "1446933281032286475"
             }
           },
           "parameters": {
@@ -3925,7 +3928,8 @@
               "type": "string"
             },
             "customizations": {
-              "type": "array"
+              "type": "array",
+              "defaultValue": []
             },
             "deploymentNameSuffix": {
               "type": "string",
@@ -4051,7 +4055,8 @@
               "type": "string"
             },
             "tags": {
-              "type": "object"
+              "type": "object",
+              "defaultValue": {}
             },
             "teamsInstaller": {
               "type": "string",
@@ -4067,7 +4072,8 @@
               "type": "string"
             },
             "vcRedistInstaller": {
-              "type": "string"
+              "type": "string",
+              "defaultValue": ""
             },
             "vDOTInstaller": {
               "type": "string",
