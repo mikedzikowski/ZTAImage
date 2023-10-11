@@ -10,7 +10,17 @@ graph TD;
 
 ## Prequisites
 
+### Azure Resource Provider Feature for Encryption At Host
+
+This solution adheres to Zero Trust which dictates that all virtual machine disks must be encrypted. The encryption at host feature enables disk encryption on virtual machine temp and cache disks. To use this feature, a resource provider feature must enabled on your Azure subscription. Use the following PowerShell script to enable the feature:
+
+```powershell
+Register-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
+```
+
 ### Software
+
+Ensure the following software is installed on your client workstation:
 
 * [Azure Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep)
 * [Azure PowerShell Modules](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0)
