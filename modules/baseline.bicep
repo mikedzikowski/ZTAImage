@@ -48,6 +48,15 @@ module storageAccount 'storageAccount.bicep' = {
   }
 }
 
+module diskEncryptionSet 'diskEncryptionSet.bicep' = {
+  scope: resourceGroup(split(diskEncryptionSetResourceId, '/')[2], split(diskEncryptionSetResourceId, '/')[4])
+  name: 'disk-encryption-set-${deploymentNameSuffix}'
+  params: {
+    diskEncryptionSetName: split(diskEncryptionSetResourceId, '/')[8]
+    principalId: userAssignedIdentity.outputs.principalId
+  }
+}
+
 module managementVM 'managementVM.bicep' = {
   name: 'management-vm-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "8886486357360807949"
+      "templateHash": "4877470834080483480"
     }
   },
   "parameters": {
@@ -334,7 +334,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17629825971531006993"
+              "templateHash": "14797523274311152334"
             }
           },
           "parameters": {
@@ -573,6 +573,65 @@
                       "apiVersion": "2022-04-01",
                       "scope": "[format('Microsoft.Storage/storageAccounts/{0}', split(parameters('storageAccountResourceId'), '/')[8])]",
                       "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), parameters('storageAccountResourceId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('disk-encryption-set-{0}', parameters('deploymentNameSuffix'))]",
+              "subscriptionId": "[split(parameters('diskEncryptionSetResourceId'), '/')[2]]",
+              "resourceGroup": "[split(parameters('diskEncryptionSetResourceId'), '/')[4]]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "diskEncryptionSetName": {
+                    "value": "[split(parameters('diskEncryptionSetResourceId'), '/')[8]]"
+                  },
+                  "principalId": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.principalId.value]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "4012582573559935033"
+                    }
+                  },
+                  "parameters": {
+                    "diskEncryptionSetName": {
+                      "type": "string"
+                    },
+                    "principalId": {
+                      "type": "string"
+                    }
+                  },
+                  "variables": {
+                    "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Compute/diskEncryptionSets/{0}', parameters('diskEncryptionSetName'))]",
+                      "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), resourceId('Microsoft.Compute/diskEncryptionSets', parameters('diskEncryptionSetName')))]",
                       "properties": {
                         "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
                         "principalId": "[parameters('principalId')]",
