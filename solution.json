@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5756643571352094419"
+      "templateHash": "12856162394252447436"
     }
   },
   "parameters": {
@@ -281,6 +281,9 @@
           "diskEncryptionSetResourceId": {
             "value": "[parameters('diskEncryptionSetResourceId')]"
           },
+          "enableBuildAutomation": {
+            "value": "[parameters('enableBuildAutomation')]"
+          },
           "hybridUseBenefit": {
             "value": "[parameters('hybridUseBenefit')]"
           },
@@ -331,7 +334,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "1971220057646601768"
+              "templateHash": "11725922508136843757"
             }
           },
           "parameters": {
@@ -346,6 +349,9 @@
             },
             "diskEncryptionSetResourceId": {
               "type": "string"
+            },
+            "enableBuildAutomation": {
+              "type": "bool"
             },
             "hybridUseBenefit": {
               "type": "bool"
@@ -885,6 +891,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "enableBuildAutomation": {
+                    "value": "[parameters('enableBuildAutomation')]"
+                  },
                   "imageDefinitionName": {
                     "value": "[parameters('imageDefinitionName')]"
                   },
@@ -902,6 +911,9 @@
                   },
                   "tags": {
                     "value": "[parameters('tags')]"
+                  },
+                  "userAssignedIdentityPrincipalId": {
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.principalId.value]"
                   }
                 },
                 "template": {
@@ -911,12 +923,15 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4273082835219700943"
+                      "templateHash": "11493713703934912871"
                     }
                   },
                   "parameters": {
                     "computeGalleryName": {
                       "type": "string"
+                    },
+                    "enableBuildAutomation": {
+                      "type": "bool"
                     },
                     "imageDefinitionName": {
                       "type": "string"
@@ -932,7 +947,13 @@
                     },
                     "tags": {
                       "type": "object"
+                    },
+                    "userAssignedIdentityPrincipalId": {
+                      "type": "string"
                     }
+                  },
+                  "variables": {
+                    "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
                   },
                   "resources": [
                     {
@@ -941,6 +962,21 @@
                       "name": "[parameters('computeGalleryName')]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]"
+                    },
+                    {
+                      "condition": "[parameters('enableBuildAutomation')]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[format('Microsoft.Compute/galleries/{0}', parameters('computeGalleryName'))]",
+                      "name": "[guid(parameters('userAssignedIdentityPrincipalId'), variables('roleDefinitionId'), resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName')))]",
+                      "properties": {
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                        "principalId": "[parameters('userAssignedIdentityPrincipalId')]",
+                        "principalType": "ServicePrincipal"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
+                      ]
                     },
                     {
                       "type": "Microsoft.Compute/galleries/images",
@@ -989,7 +1025,10 @@
                     }
                   }
                 }
-              }
+              },
+              "dependsOn": [
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
+              ]
             }
           ],
           "outputs": {

@@ -4,6 +4,7 @@ param computeGalleryName string
 param containerName string
 param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
+param enableBuildAutomation bool
 param hybridUseBenefit bool
 param imageDefinitionName string
 @secure()
@@ -78,12 +79,14 @@ module computeGallery 'computeGallery.bicep' = {
   name: 'gallery-image-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
+    enableBuildAutomation: enableBuildAutomation
     imageDefinitionName: imageDefinitionName
     location: location
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     computeGalleryName: computeGalleryName
     tags: tags
+    userAssignedIdentityPrincipalId: userAssignedIdentity.outputs.principalId
   }
 }
 

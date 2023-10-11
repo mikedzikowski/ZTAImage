@@ -130,6 +130,7 @@ module baseline 'modules/baseline.bicep' = {
     containerName: containerName
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    enableBuildAutomation: enableBuildAutomation
     hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     localAdministratorPassword: localAdministratorPassword
