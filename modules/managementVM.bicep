@@ -120,15 +120,6 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     asyncExecution: false
     parameters: [
       {
-        name: 'Arguments'
-        value: '/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart'
-      }
-      {
-        name: 'BlobName'
-        value: 'Az-Cmdlets-10.2.0.37547-x64.msi'
-      }
-
-      {
         name: 'ContainerName'
         value: containerName
       }
@@ -148,8 +139,6 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
     source: {
       script: '''
         param(
-          [string]$Arguments,
-          [string]$BlobName,
           [string]$ContainerName,
           [string]$StorageAccountName,
           [string]$StorageEndpoint,
@@ -159,34 +148,47 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
         $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
-        do
+        $BlobNames = @('az.accounts.2.12.1.nupkg','az.compute.5.7.0.nupkg','az.resources.6.6.0.nupkg')
+        foreach($BlobName in $BlobNames)
         {
-            try
-            {
-                Write-Output "Download Attempt $i"
-                Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile "$env:windir\temp\$Blobname"
-            }
-            catch [System.Net.WebException]
-            {
-                Start-Sleep -Seconds 60
-                $i++
-                if($i -gt 10){throw}
-                continue
-            }
-            catch
-            {
-                $Output = $_ | select *
-                Write-Output $Output
-                throw
-            }
+          do
+          {
+              try
+              {
+                  Write-Output "Download Attempt $i"
+                  Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile "$env:windir\temp\$BlobName"
+              }
+              catch [System.Net.WebException]
+              {
+                  Start-Sleep -Seconds 60
+                  $i++
+                  if($i -gt 10){throw}
+                  continue
+              }
+              catch
+              {
+                  $Output = $_ | select *
+                  Write-Output $Output
+                  throw
+              }
+          }
+          until(Test-Path -Path $env:windir\temp\$BlobName)
+          Start-Sleep -Seconds 5
+          Unblock-File -Path $env:windir\temp\$BlobName
+          $BlobZipName = $Blobname.Replace('nupkg','zip')
+          Rename-Item -Path $env:windir\temp\$BlobName -NewName $BlobZipName
+          $BlobNameArray = $BlobName.Split('.')
+          $ModuleFolderName = $BlobNameArray[0] + '.' + $BlobNameArray[1]
+          $VersionFolderName = $BlobNameArray[2] + '.' + $BlobNameArray[3]+ '.' + $BlobNameArray[4]
+          $ModulesDirectory = "C:\Program Files\WindowsPowerShell\Modules"
+          New-Item -Path $ModulesDirectory -Name $ModuleFolderName -ItemType "Directory" -Force
+          Expand-Archive -Path $env:windir\temp\$BlobZipName -DestinationPath "$ModulesDirectory\$ModuleFolderName\$VersionFolderName" -Force
+          Remove-Item -Path "$ModulesDirectory\$ModuleFolderName\$VersionFolderName\_rels" -Force -Recurse
+          Remove-Item -Path "$ModulesDirectory\$ModuleFolderName\$VersionFolderName\package" -Force -Recurse
+          Remove-Item -LiteralPath "$ModulesDirectory\$ModuleFolderName\$VersionFolderName\[Content_Types].xml" -Force
+          Remove-Item -Path "$ModulesDirectory\$ModuleFolderName\$VersionFolderName\$ModuleFolderName.nuspec" -Force
         }
-        until(Test-Path -Path $env:windir\temp\$Blobname)
-        Start-Sleep -Seconds 5
-        Set-Location -Path $env:windir\temp
-
-        # Install PowerSHell Modules
-        Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait -Passthru
-        Get-InstalledModule | Where-Object {$_.name -like "Az"}
+        Remove-Item -Path "$env:windir\temp\az*" -Force
       '''
     }
   }
