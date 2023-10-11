@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "18221578742734137100"
+      "templateHash": "6290769056495430792"
     }
   },
   "parameters": {
@@ -1191,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "8847553047894758791"
+              "templateHash": "13326235703108914756"
             }
           },
           "parameters": {
@@ -1644,7 +1644,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "11275547451431450980"
+                      "templateHash": "1969548088698636155"
                     }
                   },
                   "parameters": {
@@ -1666,7 +1666,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "14392785769907660589"
+                          "templateHash": "8898256180210728014"
                         }
                       },
                       "parameters": {
@@ -1785,9 +1785,6 @@
                         "replicaCount": {
                           "type": "int"
                         },
-                        "resourceGroupName": {
-                          "type": "string"
-                        },
                         "runbookExecution": {
                           "type": "bool",
                           "defaultValue": false
@@ -1804,10 +1801,6 @@
                         },
                         "subnetResourceId": {
                           "type": "string"
-                        },
-                        "subscriptionId": {
-                          "type": "string",
-                          "defaultValue": "[[subscription().subscriptionId]"
                         },
                         "tags": {
                           "type": "object"
@@ -1839,6 +1832,7 @@
                       "variables": {
                         "autoImageVersion": "[[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
                         "imageSuffix": "[[take(parameters('deploymentNameSuffix'), 9)]",
+                        "resourceGroupName": "[[resourceGroup().name]",
                         "storageEndpoint": "[[environment().suffixes.storage]"
                       },
                       "resources": [
@@ -1846,8 +1840,6 @@
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('image-vm-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -1857,8 +1849,8 @@
                               "diskEncryptionSetResourceId": {
                                 "value": "[[parameters('diskEncryptionSetResourceId')]"
                               },
-                              "localAdministratorPassword": "[[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
-                              "localAdministratorUsername": "[[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
+                              "localAdministratorPassword": "[[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
+                              "localAdministratorUsername": "[[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
                               "location": {
                                 "value": "[[parameters('location')]"
                               },
@@ -2051,8 +2043,6 @@
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('customizations-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -2120,7 +2110,7 @@
                                 "value": "[[parameters('userAssignedIdentityPrincipalId')]"
                               },
                               "vmName": {
-                                "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                                "value": "[[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
                               "vDotInstaller": {
                                 "value": "[[parameters('vDOTInstaller')]"
@@ -2473,15 +2463,13 @@
                             }
                           },
                           "dependsOn": [
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         },
                         {
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('restart-vm-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -2489,10 +2477,10 @@
                             "mode": "Incremental",
                             "parameters": {
                               "imageVirtualMachineName": {
-                                "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                                "value": "[[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
                               "resourceGroupName": {
-                                "value": "[[parameters('resourceGroupName')]"
+                                "value": "[[variables('resourceGroupName')]"
                               },
                               "location": {
                                 "value": "[[parameters('location')]"
@@ -2582,16 +2570,14 @@
                             }
                           },
                           "dependsOn": [
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('customizations-{0}', parameters('deploymentNameSuffix')))]",
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                            "[[resourceId('Microsoft.Resources/deployments', format('customizations-{0}', parameters('deploymentNameSuffix')))]",
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         },
                         {
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('sysprep-vm-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -2617,7 +2603,7 @@
                                 "value": "[[parameters('userAssignedIdentityPrincipalId')]"
                               },
                               "virtualMachineName": {
-                                "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                                "value": "[[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               }
                             },
                             "template": {
@@ -2690,16 +2676,14 @@
                             }
                           },
                           "dependsOn": [
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                            "[[resourceId('Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         },
                         {
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('generalize-vm-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -2707,10 +2691,10 @@
                             "mode": "Incremental",
                             "parameters": {
                               "imageVirtualMachineName": {
-                                "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                                "value": "[[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
                               "resourceGroupName": {
-                                "value": "[[parameters('resourceGroupName')]"
+                                "value": "[[variables('resourceGroupName')]"
                               },
                               "location": {
                                 "value": "[[parameters('location')]"
@@ -2801,16 +2785,14 @@
                             }
                           },
                           "dependsOn": [
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]",
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                            "[[resourceId('Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]",
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         },
                         {
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('image-version-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -2833,7 +2815,7 @@
                                 "value": "[[variables('autoImageVersion')]"
                               },
                               "imageVirtualMachineResourceId": {
-                                "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.resourceId.value]"
+                                "value": "[[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.resourceId.value]"
                               },
                               "location": {
                                 "value": "[[parameters('location')]"
@@ -2929,16 +2911,14 @@
                             }
                           },
                           "dependsOn": [
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                            "[[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         },
                         {
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('remove-vm-{0}', parameters('deploymentNameSuffix'))]",
-                          "subscriptionId": "[[parameters('subscriptionId')]",
-                          "resourceGroup": "[[parameters('resourceGroupName')]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -2949,10 +2929,10 @@
                                 "value": "[[parameters('enableBuildAutomation')]"
                               },
                               "imageVirtualMachineName": {
-                                "value": "[[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                                "value": "[[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                               },
                               "resourceGroupName": {
-                                "value": "[[parameters('resourceGroupName')]"
+                                "value": "[[variables('resourceGroupName')]"
                               },
                               "location": {
                                 "value": "[[parameters('location')]"
@@ -3054,8 +3034,8 @@
                             }
                           },
                           "dependsOn": [
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
-                            "[[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                            "[[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+                            "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
                         }
                       ]
@@ -3890,9 +3870,6 @@
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
           },
-          "resourceGroupName": {
-            "value": "[parameters('resourceGroupName')]"
-          },
           "sharedGalleryImageResourceId": {
             "value": "[parameters('sharedGalleryImageResourceId')]"
           },
@@ -3904,9 +3881,6 @@
           },
           "subnetResourceId": {
             "value": "[parameters('subnetResourceId')]"
-          },
-          "subscriptionId": {
-            "value": "[variables('subscriptionId')]"
           },
           "tags": {
             "value": "[parameters('tags')]"
@@ -3940,7 +3914,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14392785769907660589"
+              "templateHash": "8898256180210728014"
             }
           },
           "parameters": {
@@ -4059,9 +4033,6 @@
             "replicaCount": {
               "type": "int"
             },
-            "resourceGroupName": {
-              "type": "string"
-            },
             "runbookExecution": {
               "type": "bool",
               "defaultValue": false
@@ -4078,10 +4049,6 @@
             },
             "subnetResourceId": {
               "type": "string"
-            },
-            "subscriptionId": {
-              "type": "string",
-              "defaultValue": "[subscription().subscriptionId]"
             },
             "tags": {
               "type": "object"
@@ -4113,6 +4080,7 @@
           "variables": {
             "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
             "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
+            "resourceGroupName": "[resourceGroup().name]",
             "storageEndpoint": "[environment().suffixes.storage]"
           },
           "resources": [
@@ -4120,8 +4088,6 @@
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('image-vm-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -4131,8 +4097,8 @@
                   "diskEncryptionSetResourceId": {
                     "value": "[parameters('diskEncryptionSetResourceId')]"
                   },
-                  "localAdministratorPassword": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
-                  "localAdministratorUsername": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
+                  "localAdministratorPassword": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorPassword')), createObject('value', parameters('localAdministratorPassword')))]",
+                  "localAdministratorUsername": "[if(parameters('runbookExecution'), createObject('reference', createObject('keyVault', createObject('id', resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', 'LocalAdministratorUsername')), createObject('value', parameters('localAdministratorUsername')))]",
                   "location": {
                     "value": "[parameters('location')]"
                   },
@@ -4325,8 +4291,6 @@
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('customizations-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -4394,7 +4358,7 @@
                     "value": "[parameters('userAssignedIdentityPrincipalId')]"
                   },
                   "vmName": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
                   "vDotInstaller": {
                     "value": "[parameters('vDOTInstaller')]"
@@ -4747,15 +4711,13 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             },
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('restart-vm-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -4763,10 +4725,10 @@
                 "mode": "Incremental",
                 "parameters": {
                   "imageVirtualMachineName": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
                   "resourceGroupName": {
-                    "value": "[parameters('resourceGroupName')]"
+                    "value": "[variables('resourceGroupName')]"
                   },
                   "location": {
                     "value": "[parameters('location')]"
@@ -4856,16 +4818,14 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('customizations-{0}', parameters('deploymentNameSuffix')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                "[resourceId('Microsoft.Resources/deployments', format('customizations-{0}', parameters('deploymentNameSuffix')))]",
+                "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             },
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('sysprep-vm-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -4891,7 +4851,7 @@
                     "value": "[parameters('userAssignedIdentityPrincipalId')]"
                   },
                   "virtualMachineName": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   }
                 },
                 "template": {
@@ -4964,16 +4924,14 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                "[resourceId('Microsoft.Resources/deployments', format('restart-vm-{0}', parameters('deploymentNameSuffix')))]",
+                "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             },
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('generalize-vm-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -4981,10 +4939,10 @@
                 "mode": "Incremental",
                 "parameters": {
                   "imageVirtualMachineName": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
                   "resourceGroupName": {
-                    "value": "[parameters('resourceGroupName')]"
+                    "value": "[variables('resourceGroupName')]"
                   },
                   "location": {
                     "value": "[parameters('location')]"
@@ -5075,16 +5033,14 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                "[resourceId('Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]",
+                "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             },
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('image-version-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -5107,7 +5063,7 @@
                     "value": "[variables('autoImageVersion')]"
                   },
                   "imageVirtualMachineResourceId": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.resourceId.value]"
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.resourceId.value]"
                   },
                   "location": {
                     "value": "[parameters('location')]"
@@ -5203,16 +5159,14 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                "[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+                "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             },
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('remove-vm-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
@@ -5223,10 +5177,10 @@
                     "value": "[parameters('enableBuildAutomation')]"
                   },
                   "imageVirtualMachineName": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   },
                   "resourceGroupName": {
-                    "value": "[parameters('resourceGroupName')]"
+                    "value": "[variables('resourceGroupName')]"
                   },
                   "location": {
                     "value": "[parameters('location')]"
@@ -5328,8 +5282,8 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
+                "[resourceId('Microsoft.Resources/deployments', format('generalize-vm-{0}', parameters('deploymentNameSuffix')))]",
+                "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             }
           ]

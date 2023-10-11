@@ -250,12 +250,10 @@ module imageBuild 'modules/imageBuild.bicep' = {
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
     officeInstaller: officeInstaller
     replicaCount: replicaCount
-    resourceGroupName: resourceGroupName
     sharedGalleryImageResourceId: sharedGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     subnetResourceId: subnetResourceId
-    subscriptionId: subscriptionId
     tags: tags
     teamsInstaller: teamsInstaller
     userAssignedIdentityClientId: baseline.outputs.userAssignedIdentityClientId

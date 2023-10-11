@@ -90,7 +90,6 @@ try
 			msrdcwebrtcsvcInstaller = $Values.msrdcwebrtcsvcInstaller
 			officeInstaller = $Values.officeInstaller
 			replicaCount = [int]$Values.replicaCount
-			resourceGroupName = $Values.resourceGroupName
 			runbookExecution = $true
 			sharedGalleryImageResourceId = $Values.sharedGalleryImageResourceId
 			sourceImageType = $Values.sourceImageType
@@ -105,7 +104,7 @@ try
 			vDOTInstaller = $Values.vDOTInstaller
 			virtualMachineSize = $Values.virtualMachineSize
         }
-        New-AzDeployment -Location $Values.location -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters -DefaultProfile $AzureContext
+        New-AzResourceGroupDeployment -ResourceGroupName $Values.resourceGroupName -TemplateSpecId $Values.templateSpecResourceId -TemplateParameterObject $TemplateParameters -DefaultProfile $AzureContext
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build succeeded. New image version available in the destination Compute Gallery."
 	}
 	else 

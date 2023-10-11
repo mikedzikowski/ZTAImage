@@ -37,13 +37,11 @@ param marketplaceImageSKU string = ''
 param msrdcwebrtcsvcInstaller string = ''
 param officeInstaller string = ''
 param replicaCount int
-param resourceGroupName string
 param runbookExecution bool = false
 param sharedGalleryImageResourceId string = ''
 param sourceImageType string
 param storageAccountName string
 param subnetResourceId string
-param subscriptionId string = subscription().subscriptionId
 param tags object
 param teamsInstaller string = ''
 param userAssignedIdentityClientId string
@@ -55,16 +53,15 @@ param virtualMachineSize string
 
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
 var imageSuffix = take(deploymentNameSuffix, 9)
+var resourceGroupName = resourceGroup().name
 var storageEndpoint = environment().suffixes.storage
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (runbookExecution) {
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   name: keyVaultName
 }
 
 module virtualMachine 'virtualMachine.bicep' = {
   name: 'image-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     localAdministratorPassword: runbookExecution ? keyVault.getSecret('LocalAdministratorPassword') : localAdministratorPassword
@@ -85,7 +82,6 @@ module virtualMachine 'virtualMachine.bicep' = {
 
 module addCustomizations 'customizations.bicep' = {
   name: 'customizations-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     location: location
     containerName: containerName
@@ -118,7 +114,6 @@ module addCustomizations 'customizations.bicep' = {
 
 module restart 'restart.bicep' = {
   name: 'restart-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     imageVirtualMachineName: virtualMachine.outputs.name
     resourceGroupName: resourceGroupName
@@ -134,7 +129,6 @@ module restart 'restart.bicep' = {
 
 module sysprep 'sysprep.bicep' = {
   name: 'sysprep-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     containerName: containerName
     location: location
@@ -151,7 +145,6 @@ module sysprep 'sysprep.bicep' = {
 
 module generalize 'generalize.bicep' = {
   name: 'generalize-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     imageVirtualMachineName: virtualMachine.outputs.name
     resourceGroupName: resourceGroupName
@@ -167,7 +160,6 @@ module generalize 'generalize.bicep' = {
 
 module imageVersion 'imageVersion.bicep' = {
   name: 'image-version-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     computeGalleryName: computeGalleryName
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
@@ -186,7 +178,6 @@ module imageVersion 'imageVersion.bicep' = {
 
 module remove 'removeVM.bicep' = {
   name: 'remove-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
     enableBuildAutomation: enableBuildAutomation
     imageVirtualMachineName: virtualMachine.outputs.name
