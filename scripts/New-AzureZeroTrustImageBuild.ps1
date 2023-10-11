@@ -62,11 +62,11 @@ try
 			computeGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
 			containerName = $Values.containerName
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
-			enableBuildAutomation = $Values.enableBuildAutomation
+			enableBuildAutomation = if($Values.enableBuildAutomation -eq 'true'){$true}else{$false}
 			excludeFromLatest = $true
 			imageDefinitionName = $Values.imageDefinitionName
-			imageMajorVersion = if($Values.imageMajorVersion -eq 'true'){$true}else{$false}
-			imageMinorVersion = if($Values.imageMinorVersion -eq 'true'){$true}else{$false}
+			imageMajorVersion = [int]$Values.imageMajorVersion
+			imageMinorVersion = [int]$Values.imageMinorVersion
 			imageVirtualMachineName = $Values.imageVirtualMachineName
 			installAccess = if($Values.installAccess -eq 'true'){$true}else{$false}
 			installExcel = if($Values.installExcel -eq 'true'){$true}else{$false}
