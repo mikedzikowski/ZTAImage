@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "41473034199746810"
+      "templateHash": "18377378076138628659"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2762123352434271852"
+              "templateHash": "7423061196631408382"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "18241620539875942728"
+                      "templateHash": "8815145464122067551"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "1747846775437740436"
+                          "templateHash": "3371772234457720807"
                         }
                       },
                       "parameters": {
@@ -2835,7 +2835,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "10556106359317874126"
+                                  "templateHash": "13513809798535126456"
                                 }
                               },
                               "parameters": {
@@ -2896,7 +2896,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 30\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
+                                      "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 60\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
                                     }
                                   }
                                 }
@@ -4033,7 +4033,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "1747846775437740436"
+              "templateHash": "3371772234457720807"
             }
           },
           "parameters": {
@@ -5086,7 +5086,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10556106359317874126"
+                      "templateHash": "13513809798535126456"
                     }
                   },
                   "parameters": {
@@ -5147,7 +5147,7 @@
                           }
                         ],
                         "source": {
-                          "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 30\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
+                          "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Start-Sleep 60\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
                         }
                       }
                     }

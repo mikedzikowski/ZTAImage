@@ -61,7 +61,7 @@ resource generalize 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
         $ErrorActionPreference = 'Stop'
         $WarningPreference = 'SilentlyContinue'
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
-        Start-Sleep 30
+        Start-Sleep 60
         Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized
       '''
     }
