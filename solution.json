@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "12856162394252447436"
+      "templateHash": "7168459280946113709"
     }
   },
   "parameters": {
@@ -334,7 +334,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "11725922508136843757"
+              "templateHash": "8881340907454173281"
             }
           },
           "parameters": {
@@ -469,58 +469,6 @@
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('role-assignment-automation-{0}', parameters('deploymentNameSuffix'))]",
-              "subscriptionId": "[parameters('subscriptionId')]",
-              "resourceGroup": "[parameters('resourceGroupName')]",
-              "properties": {
-                "expressionEvaluationOptions": {
-                  "scope": "inner"
-                },
-                "mode": "Incremental",
-                "parameters": {
-                  "principalId": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.principalId.value]"
-                  }
-                },
-                "template": {
-                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                  "contentVersion": "1.0.0.0",
-                  "metadata": {
-                    "_generator": {
-                      "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "14009831759573928868"
-                    }
-                  },
-                  "parameters": {
-                    "principalId": {
-                      "type": "string"
-                    }
-                  },
-                  "variables": {
-                    "roleDefinitionId": "f353d9bd-d4a6-484e-a77a-8050b599b867"
-                  },
-                  "resources": [
-                    {
-                      "type": "Microsoft.Authorization/roleAssignments",
-                      "apiVersion": "2022-04-01",
-                      "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), resourceGroup().name)]",
-                      "properties": {
-                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
-                        "principalId": "[parameters('principalId')]",
-                        "principalType": "ServicePrincipal"
-                      }
-                    }
-                  ]
-                }
-              },
-              "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Resources/deployments",
-              "apiVersion": "2022-09-01",
               "name": "[format('role-assignment-compute-{0}', parameters('deploymentNameSuffix'))]",
               "subscriptionId": "[parameters('subscriptionId')]",
               "resourceGroup": "[parameters('resourceGroupName')]",
@@ -541,7 +489,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "12687940535192200264"
+                      "templateHash": "13178147716414648825"
                     }
                   },
                   "parameters": {
@@ -550,15 +498,23 @@
                     }
                   },
                   "variables": {
-                    "roleDefinitionId": "9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                    "roleDefinitionIds": [
+                      "f353d9bd-d4a6-484e-a77a-8050b599b867",
+                      "acdd72a7-3385-48ef-bd42-f606fba81ae7",
+                      "9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                    ]
                   },
                   "resources": [
                     {
+                      "copy": {
+                        "name": "roleAssignment",
+                        "count": "[length(variables('roleDefinitionIds'))]"
+                      },
                       "type": "Microsoft.Authorization/roleAssignments",
                       "apiVersion": "2022-04-01",
-                      "name": "[guid(parameters('principalId'), variables('roleDefinitionId'), resourceGroup().name)]",
+                      "name": "[guid(parameters('principalId'), variables('roleDefinitionIds')[copyIndex()], resourceGroup().name)]",
                       "properties": {
-                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionIds')[copyIndex()])]",
                         "principalId": "[parameters('principalId')]",
                         "principalType": "ServicePrincipal"
                       }

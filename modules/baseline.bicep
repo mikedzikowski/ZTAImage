@@ -31,15 +31,7 @@ module userAssignedIdentity 'userAssignedIdentity.bicep' = {
   }
 }
 
-module roleAssignmentAutomation 'roleAssignmentAutomation.bicep' = {
-  name: 'role-assignment-automation-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
-  params: {
-    principalId: userAssignedIdentity.outputs.principalId
-  }
-}
-
-module roleAssignmentCompute 'roleAssignmentCompute.bicep' = {
+module roleAssignments 'roleAssignments.bicep' = {
   name: 'role-assignment-compute-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
@@ -47,7 +39,7 @@ module roleAssignmentCompute 'roleAssignmentCompute.bicep' = {
   }
 }
 
-module roleAssignmentStorage 'roleAssignmentStorage.bicep' = {
+module storageAccount 'storageAccount.bicep' = {
   name: 'role-assignment-storage-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, split(storageAccountResourceId, '/')[4])
   params: {
