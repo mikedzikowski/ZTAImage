@@ -72,10 +72,10 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
         $ErrorActionPreference = 'Stop'
         $WarningPreference = 'SilentlyContinue'
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
-        Remove-AzVM -Name $imageVmName -ResourceGroupName $ResourceGroupName -Force
+        Remove-AzVM -Name $ImageVmName -ResourceGroupName $ResourceGroupName -Force
         if($EnableBuildAutomation -eq 'false')
         {
-          Remove-AzVM -Name $managementVmName -ResourceGroupName $ResourceGroupName -NoWait -Force -AsJob
+          Remove-AzVM -Name $ManagementVmName -ResourceGroupName $ResourceGroupName -NoWait -Force -AsJob
         }
       '''
     }
