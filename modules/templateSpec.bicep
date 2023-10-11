@@ -22,4 +22,4 @@ resource version 'Microsoft.Resources/templateSpecs/versions@2022-02-01' = {
   }
 }
 
-output resourceId string = templateSpec.id
+output resourceId string = version.id
