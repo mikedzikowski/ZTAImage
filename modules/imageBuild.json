@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5202473877434882843"
+      "templateHash": "9053944708891829201"
     }
   },
   "parameters": {
@@ -1255,7 +1255,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "13271877733130492796"
+              "templateHash": "9114212748408436740"
             }
           },
           "parameters": {
@@ -1290,8 +1290,8 @@
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
-                "treatFailureAsDeploymentFailure": true,
-                "asyncExecution": "[if(parameters('enableBuildAutomation'), false(), true())]",
+                "treatFailureAsDeploymentFailure": false,
+                "asyncExecution": true,
                 "parameters": [
                   {
                     "name": "EnableBuildAutomation",
@@ -1327,7 +1327,7 @@
                   }
                 ],
                 "source": {
-                  "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -Force\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob\r\n        }\r\n      "
+                  "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -NoWait -Force -AsJob\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob\r\n        }\r\n      "
                 }
               }
             }

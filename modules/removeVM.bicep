@@ -21,8 +21,8 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
   parent: vm
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
-    treatFailureAsDeploymentFailure: true
-    asyncExecution: enableBuildAutomation ? false : true
+    treatFailureAsDeploymentFailure: false
+    asyncExecution: true
     parameters: [
       {
         name: 'EnableBuildAutomation'
@@ -71,7 +71,7 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
         )
         $ErrorActionPreference = 'Stop'
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
-        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -Force
+        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -NoWait -Force -AsJob
         if($EnableBuildAutomation -eq 'false')
         {
           Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob
