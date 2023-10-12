@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "2972049119556603455"
+      "templateHash": "3826560811514131780"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14147548669240115531"
+              "templateHash": "13063213591383950855"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "12380915242202415660"
+                      "templateHash": "13861099209559671776"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "9053944708891829201"
+                          "templateHash": "16599369620145923356"
                         }
                       },
                       "parameters": {
@@ -3115,6 +3115,75 @@
                             "[[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
                             "[[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
                           ]
+                        },
+                        {
+                          "type": "Microsoft.Resources/deployments",
+                          "apiVersion": "2022-09-01",
+                          "name": "[[format('remove-run-commands-{0}', parameters('deploymentNameSuffix'))]",
+                          "properties": {
+                            "expressionEvaluationOptions": {
+                              "scope": "inner"
+                            },
+                            "mode": "Incremental",
+                            "parameters": {
+                              "location": {
+                                "value": "[[parameters('location')]"
+                              },
+                              "tags": {
+                                "value": "[[parameters('tags')]"
+                              },
+                              "virtualMachineName": {
+                                "value": "[[parameters('managementVirtualMachineName')]"
+                              }
+                            },
+                            "template": {
+                              "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                              "contentVersion": "1.0.0.0",
+                              "metadata": {
+                                "_generator": {
+                                  "name": "bicep",
+                                  "version": "0.22.6.54827",
+                                  "templateHash": "4117733365257233063"
+                                }
+                              },
+                              "parameters": {
+                                "location": {
+                                  "type": "string"
+                                },
+                                "tags": {
+                                  "type": "object"
+                                },
+                                "timestamp": {
+                                  "type": "string",
+                                  "defaultValue": "[[utcNow('yyyyMMddhhmmss')]"
+                                },
+                                "virtualMachineName": {
+                                  "type": "string"
+                                }
+                              },
+                              "resources": [
+                                {
+                                  "type": "Microsoft.Compute/virtualMachines/extensions",
+                                  "apiVersion": "2023-07-01",
+                                  "name": "[[format('{0}/{1}', parameters('virtualMachineName'), 'CustomScriptExtension')]",
+                                  "location": "[[parameters('location')]",
+                                  "tags": "[[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
+                                  "properties": {
+                                    "publisher": "Microsoft.Compute",
+                                    "type": "CustomScriptExtension",
+                                    "typeHandlerVersion": "1.10",
+                                    "autoUpgradeMinorVersion": true,
+                                    "settings": {
+                                      "timestamp": "[[parameters('timestamp')]"
+                                    },
+                                    "protectedSettings": {
+                                      "commandToExecute": "[[format('powershell -ExecutionPolicy Unrestricted -Command {{Get-AzResource -ResourceGroupName \"{0}\" -ResourceType \"Microsoft.Compute/virtualMachines/runCommands\" | Remove-AzResource -Force | Out-Null}}', resourceGroup().name)]"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         }
                       ]
                     }
@@ -3992,7 +4061,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9053944708891829201"
+              "templateHash": "16599369620145923356"
             }
           },
           "parameters": {
@@ -5325,6 +5394,75 @@
                 "[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
                 "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('remove-run-commands-{0}', parameters('deploymentNameSuffix'))]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "virtualMachineName": {
+                    "value": "[parameters('managementVirtualMachineName')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "4117733365257233063"
+                    }
+                  },
+                  "parameters": {
+                    "location": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "object"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "defaultValue": "[utcNow('yyyyMMddhhmmss')]"
+                    },
+                    "virtualMachineName": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Compute/virtualMachines/extensions",
+                      "apiVersion": "2023-07-01",
+                      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'CustomScriptExtension')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
+                      "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "CustomScriptExtension",
+                        "typeHandlerVersion": "1.10",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                          "timestamp": "[parameters('timestamp')]"
+                        },
+                        "protectedSettings": {
+                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command {{Get-AzResource -ResourceGroupName \"{0}\" -ResourceType \"Microsoft.Compute/virtualMachines/runCommands\" | Remove-AzResource -Force | Out-Null}}', resourceGroup().name)]"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             }
           ]
         }

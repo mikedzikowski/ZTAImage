@@ -187,3 +187,12 @@ module remove 'removeVM.bicep' = {
     imageVersion
   ]
 }
+
+module removeRunCommands 'removeRunCommands.bicep' = {
+  name: 'remove-run-commands-${deploymentNameSuffix}'
+  params: {
+    location: location
+    tags: tags
+    virtualMachineName: managementVirtualMachineName
+  }
+}
