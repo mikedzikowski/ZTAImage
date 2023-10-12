@@ -130,12 +130,8 @@ module restart 'restart.bicep' = {
 module sysprep 'sysprep.bicep' = {
   name: 'sysprep-vm-${deploymentNameSuffix}'
   params: {
-    containerName: containerName
     location: location
-    storageAccountName: storageAccountName
-    storageEndpoint: storageEndpoint
     tags: tags
-    userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
     virtualMachineName: virtualMachine.outputs.name
   }
   dependsOn: [

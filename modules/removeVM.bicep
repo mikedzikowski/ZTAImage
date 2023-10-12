@@ -22,7 +22,7 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
     treatFailureAsDeploymentFailure: true
-    asyncExecution: enableBuildAutomation ? true : false
+    asyncExecution: enableBuildAutomation ? false : true
     parameters: [
       {
         name: 'EnableBuildAutomation'

@@ -61,6 +61,7 @@ resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = 
         $ErrorActionPreference = 'Stop'
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
         Restart-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName
+        $AgentStatus = $Null
         while ($Null -eq $AgentStatus) 
         {
             Start-Sleep -Seconds 5

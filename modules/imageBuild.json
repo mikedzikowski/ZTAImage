@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "18412746616094248928"
+      "templateHash": "5202473877434882843"
     }
   },
   "parameters": {
@@ -844,7 +844,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16670763504665835463"
+              "templateHash": "14348619378720481227"
             }
           },
           "parameters": {
@@ -904,7 +904,7 @@
                   }
                 ],
                 "source": {
-                  "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName\r\n        while ($Null -eq $AgentStatus) \r\n        {\r\n            Start-Sleep -Seconds 5\r\n            $AgentStatus = (Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Status).VMAgent\r\n        }\r\n      "
+                  "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Restart-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName\r\n        $AgentStatus = $Null\r\n        while ($Null -eq $AgentStatus) \r\n        {\r\n            Start-Sleep -Seconds 5\r\n            $AgentStatus = (Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Status).VMAgent\r\n        }\r\n      "
                 }
               }
             }
@@ -926,23 +926,11 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "containerName": {
-            "value": "[parameters('containerName')]"
-          },
           "location": {
             "value": "[parameters('location')]"
           },
-          "storageAccountName": {
-            "value": "[parameters('storageAccountName')]"
-          },
-          "storageEndpoint": {
-            "value": "[variables('storageEndpoint')]"
-          },
           "tags": {
             "value": "[parameters('tags')]"
-          },
-          "userAssignedIdentityObjectId": {
-            "value": "[parameters('userAssignedIdentityPrincipalId')]"
           },
           "virtualMachineName": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
@@ -955,27 +943,15 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9201474361482352660"
+              "templateHash": "12976754705186061116"
             }
           },
           "parameters": {
-            "containerName": {
-              "type": "string"
-            },
             "location": {
-              "type": "string"
-            },
-            "storageAccountName": {
-              "type": "string"
-            },
-            "storageEndpoint": {
               "type": "string"
             },
             "tags": {
               "type": "object"
-            },
-            "userAssignedIdentityObjectId": {
-              "type": "string"
             },
             "virtualMachineName": {
               "type": "string"
@@ -989,28 +965,11 @@
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
-                "treatFailureAsDeploymentFailure": true,
+                "treatFailureAsDeploymentFailure": false,
                 "asyncExecution": true,
-                "parameters": [
-                  {
-                    "name": "ContainerName",
-                    "value": "[parameters('containerName')]"
-                  },
-                  {
-                    "name": "StorageAccountName",
-                    "value": "[parameters('storageAccountName')]"
-                  },
-                  {
-                    "name": "StorageEndpoint",
-                    "value": "[parameters('storageEndpoint')]"
-                  },
-                  {
-                    "name": "UserAssignedIdentityObjectId",
-                    "value": "[parameters('userAssignedIdentityObjectId')]"
-                  }
-                ],
+                "parameters": [],
                 "source": {
-                  "script": "        param(\r\n          [string]$ContainerName,\r\n          [string]$StorageAccountName,\r\n          [string]$StorageEndpoint,\r\n          [string]$UserAssignedIdentityObjectId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $BlobName = 'New-PepareVHDToUploadToAzure.ps1'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$BlobName\r\n        Start-Sleep -Seconds 5\r\n        Set-Location -Path $env:windir\\temp\r\n        .\\New-PepareVHDToUploadToAzure.ps1\r\n      "
+                  "script": "        $ErrorActionPreference = 'Stop'\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
                 }
               }
             }
@@ -1058,7 +1017,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12939496630934649146"
+              "templateHash": "2290791285010502700"
             }
           },
           "parameters": {
@@ -1119,7 +1078,7 @@
                   }
                 ],
                 "source": {
-                  "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        while ($PowerStatus -ne 'VM stopped') \r\n        {\r\n            Start-Sleep -Seconds 5\r\n            $PowerStatus = (Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Status).Statuses[1].DisplayStatus\r\n        }\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n      "
+                  "script": "        param(\r\n          [string]$Environment,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId,\r\n          [string]$VirtualMachineName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        $PowerStatus = ''\r\n        while ($PowerStatus -ne 'VM stopped') \r\n        {\r\n            Start-Sleep -Seconds 5\r\n            $PowerStatus = (Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Status).Statuses[1].DisplayStatus\r\n        }\r\n        Set-AzVm -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Generalized\r\n        Start-Sleep -Seconds 30\r\n      "
                 }
               }
             }
@@ -1296,7 +1255,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "3643037437980841616"
+              "templateHash": "13271877733130492796"
             }
           },
           "parameters": {
@@ -1332,7 +1291,7 @@
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
                 "treatFailureAsDeploymentFailure": true,
-                "asyncExecution": "[if(parameters('enableBuildAutomation'), true(), false())]",
+                "asyncExecution": "[if(parameters('enableBuildAutomation'), false(), true())]",
                 "parameters": [
                   {
                     "name": "EnableBuildAutomation",
