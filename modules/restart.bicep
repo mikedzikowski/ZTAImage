@@ -59,23 +59,13 @@ resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = 
           [string]$VirtualMachineName
         )
         $ErrorActionPreference = 'Stop'
-        $WarningPreference = 'SilentlyContinue'
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
-        Restart-AzVM -Name $VirtualMachineName -ResourceGroupName $ResourceGroupName
-        $lastProvisioningState = ""
-        $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code
-        $condition = ($provisioningState -eq "PowerState/running")
-        while (!$condition) {
-          if ($lastProvisioningState -ne $provisioningState) {
-            write-host $VirtualMachineName "under" $ResourceGroupName "is" $provisioningState "(waiting for state change)"
-          }
-          $lastProvisioningState = $provisioningState
-          Start-Sleep -Seconds 5
-          $provisioningState = (Get-AzVM -resourcegroupname $ResourceGroupName -name $VirtualMachineName -Status).Statuses[1].Code
-          $condition = ($provisioningState -eq "PowerState/running")
+        Restart-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName
+        while ($Null -eq $AgentStatus) 
+        {
+            Start-Sleep -Seconds 5
+            $AgentStatus = (Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VirtualMachineName -Status).VMAgent
         }
-        write-host $VirtualMachineName "under" $ResourceGroupName "is" $provisioningState
-        start-sleep 30
       '''
     }
   }
