@@ -59,7 +59,7 @@
       "installExcel": {
           "value": false // TODO: Fill in parameter value
       },
-      "installOneDriveForBusiness": {
+      "installOneDrive": {
           "value": false // TODO: Fill in parameter value
       },
       "installOneNote": {

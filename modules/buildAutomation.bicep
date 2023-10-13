@@ -18,7 +18,7 @@ param imageMinorVersion int
 param imageVirtualMachineName string
 param installAccess bool
 param installExcel bool
-param installOneDriveForBusiness bool
+param installOneDrive bool
 param installOneNote bool
 param installOutlook bool
 param installPowerPoint bool
@@ -135,7 +135,7 @@ module automationAccount 'automationAccount.bicep' = {
     imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
     installExcel: installExcel
-    installOneDriveForBusiness: installOneDriveForBusiness
+    installOneDrive: installOneDrive
     installOneNote: installOneNote
     installOutlook: installOutlook
     installPowerPoint: installPowerPoint

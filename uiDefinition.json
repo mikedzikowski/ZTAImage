@@ -641,7 +641,7 @@
                                     "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
-                                    "name": "installOneDriveForBusiness",
+                                    "name": "installOneDrive",
                                     "type": "Microsoft.Common.OptionsGroup",
                                     "label": "Install One Dive For Business",
                                     "defaultValue": "false",
@@ -1129,7 +1129,7 @@
                 "imageMinorVersion": "[steps('destination').imageVersion.minorVersion]",
                 "installAccess": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installAccess,'false')]",
                 "installExcel": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installExcel,'false')]",
-                "installOneDriveForBusiness": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDriveForBusiness,'false')]",
+                "installOneDrive": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDrive,'false')]",
                 "installOneNote": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneNote,'false')]",
                 "installOutlook": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOutlook,'false')]",
                 "installPowerPoint": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installPowerPoint,'false')]",

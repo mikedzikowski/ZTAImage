@@ -15,7 +15,7 @@ param imageMinorVersion int
 param imageVirtualMachineName string
 param installAccess bool
 param installExcel bool
-param installOneDriveForBusiness bool
+param installOneDrive bool
 param installOneNote bool
 param installOutlook bool
 param installPowerPoint bool
@@ -68,7 +68,7 @@ var parameters = {
   imageVirtualMachineName: imageVirtualMachineName
   installAccess: string(installAccess)
   installExcel: string(installExcel)
-  installOneDriveForBusiness: string(installOneDriveForBusiness)
+  InstallOneDrive: string(installOneDrive)
   installOneNote: string(installOneNote)
   installOutlook: string(installOutlook)
   installPowerPoint: string(installPowerPoint)

@@ -20,7 +20,7 @@ param imageMajorVersion int
 param imageMinorVersion int
 param installAccess bool
 param installExcel bool
-param installOneDriveForBusiness bool
+param installOneDrive bool
 param installOneNote bool
 param installOutlook bool
 param installPowerPoint bool
@@ -168,7 +168,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
     installExcel: installExcel
-    installOneDriveForBusiness: installOneDriveForBusiness
+    installOneDrive: installOneDrive
     installOneNote: installOneNote
     installOutlook: installOutlook
     installPowerPoint: installPowerPoint
@@ -228,7 +228,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
     installExcel: installExcel
-    installOneDriveForBusiness: installOneDriveForBusiness
+    installOneDrive: installOneDrive
     installOneNote: installOneNote
     installOutlook: installOutlook
     installPowerPoint: installPowerPoint

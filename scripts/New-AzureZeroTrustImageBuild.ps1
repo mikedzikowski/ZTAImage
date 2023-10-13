@@ -70,7 +70,7 @@ try
 			imageVirtualMachineName = $Values.imageVirtualMachineName
 			installAccess = if($Values.installAccess -eq 'true'){$true}else{$false}
 			installExcel = if($Values.installExcel -eq 'true'){$true}else{$false}
-			installOneDriveForBusiness = if($Values.installOneDriveForBusiness -eq 'true'){$true}else{$false}
+			installOneDrive = if($Values.installOneDrive -eq 'true'){$true}else{$false}
 			installOneNote = if($Values.installOneNote -eq 'true'){$true}else{$false}
 			installOutlook = if($Values.installOutlook -eq 'true'){$true}else{$false}
 			installPowerPoint = if($Values.installPowerPoint -eq 'true'){$true}else{$false}
