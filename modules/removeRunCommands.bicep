@@ -26,7 +26,7 @@ resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@202
       timestamp: timestamp
     }
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command ${braceLeft}Connect-AzAccount -Environment ${environment().name} -Tenant ${tenant().tenantId} -Subscription ${subscription().subscriptionId} -Identity -AccountId ${userAssignedIdentityClientId}; Remove-AzVMRunCommand -ResourceGroupName ${resourceGroup().name} -VMName ${virtualMachineName} -RunCommandName ${runCommandName}${braceRight}'
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command ${braceLeft}Remove-AzVMRunCommand -ResourceGroupName ${resourceGroup().name} -VMName ${virtualMachineName} -RunCommandName ${runCommandName}${braceRight}'
     }
   }
 }
