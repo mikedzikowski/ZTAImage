@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9787135078598465867"
+      "templateHash": "6799671312564346147"
     }
   },
   "parameters": {
@@ -74,7 +74,7 @@
     "installExcel": {
       "type": "bool"
     },
-    "installOneDriveForBusiness": {
+    "installOneDrive": {
       "type": "bool"
     },
     "installOneNote": {
@@ -1123,8 +1123,8 @@
           "installExcel": {
             "value": "[parameters('installExcel')]"
           },
-          "installOneDriveForBusiness": {
-            "value": "[parameters('installOneDriveForBusiness')]"
+          "installOneDrive": {
+            "value": "[parameters('installOneDrive')]"
           },
           "installOneNote": {
             "value": "[parameters('installOneNote')]"
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2759908365303205608"
+              "templateHash": "9878131262676464176"
             }
           },
           "parameters": {
@@ -1306,7 +1306,7 @@
             "installExcel": {
               "type": "bool"
             },
-            "installOneDriveForBusiness": {
+            "installOneDrive": {
               "type": "bool"
             },
             "installOneNote": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "7679176352142286826"
+                      "templateHash": "8734992687620588709"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "17622906034301957321"
+                          "templateHash": "12469783672222887727"
                         }
                       },
                       "parameters": {
@@ -1827,7 +1827,7 @@
                         "installExcel": {
                           "type": "bool"
                         },
-                        "installOneDriveForBusiness": {
+                        "installOneDrive": {
                           "type": "bool"
                         },
                         "installOneNote": {
@@ -2183,8 +2183,8 @@
                               "installExcel": {
                                 "value": "[[parameters('installExcel')]"
                               },
-                              "installOneDriveForBusiness": {
-                                "value": "[[parameters('installOneDriveForBusiness')]"
+                              "installOneDrive": {
+                                "value": "[[parameters('installOneDrive')]"
                               },
                               "installOneNote": {
                                 "value": "[[parameters('installOneNote')]"
@@ -2254,7 +2254,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "6060589614181505234"
+                                  "templateHash": "7035699636155179002"
                                 }
                               },
                               "parameters": {
@@ -2270,7 +2270,7 @@
                                 "installExcel": {
                                   "type": "bool"
                                 },
-                                "installOneDriveForBusiness": {
+                                "installOneDrive": {
                                   "type": "bool"
                                 },
                                 "installOneNote": {
@@ -2341,7 +2341,7 @@
                                 "installAccessVar": "[[format('{0}installAccess', parameters('installAccess'))]",
                                 "installers": "[[parameters('customizations')]",
                                 "installExcelVar": "[[format('{0}installWord', parameters('installExcel'))]",
-                                "installOneDriveForBusinessVar": "[[format('{0}installOneDrive', parameters('installOneDriveForBusiness'))]",
+                                "installOneDriveVar": "[[format('{0}installOneDrive', parameters('installOneDrive'))]",
                                 "installOneNoteVar": "[[format('{0}installOneNote', parameters('installOneNote'))]",
                                 "installOutlookVar": "[[format('{0}installOutlook', parameters('installOutlook'))]",
                                 "installPowerPointVar": "[[format('{0}installPowerPoint', parameters('installPowerPoint'))]",
@@ -2403,7 +2403,7 @@
                                   }
                                 },
                                 {
-                                  "condition": "[[or(or(or(or(or(or(or(or(or(or(parameters('installAccess'), parameters('installExcel')), parameters('installOneDriveForBusiness')), parameters('installOneNote')), parameters('installOutlook')), parameters('installPowerPoint')), parameters('installPublisher')), parameters('installSkypeForBusiness')), parameters('installWord')), parameters('installVisio')), parameters('installProject'))]",
+                                  "condition": "[[or(or(or(or(or(or(or(or(or(or(parameters('installAccess'), parameters('installExcel')), parameters('installOneDrive')), parameters('installOneNote')), parameters('installOutlook')), parameters('installPowerPoint')), parameters('installPublisher')), parameters('installSkypeForBusiness')), parameters('installWord')), parameters('installVisio')), parameters('installProject'))]",
                                   "type": "Microsoft.Compute/virtualMachines/runCommands",
                                   "apiVersion": "2023-07-01",
                                   "name": "[[format('{0}/{1}', parameters('virtualMachineName'), 'office')]",
@@ -2426,8 +2426,8 @@
                                         "value": "[[variables('installExcelVar')]"
                                       },
                                       {
-                                        "name": "InstallOneDriveForBusiness",
-                                        "value": "[[variables('installOneDriveForBusinessVar')]"
+                                        "name": "InstallOneDrive",
+                                        "value": "[[variables('installOneDriveVar')]"
                                       },
                                       {
                                         "name": "InstallOneNote",
@@ -2479,7 +2479,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDriveForBusiness,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          $excludeAccess = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          $excludeExcel = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n          $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n        $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n    }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          $excludeOneNote = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          $excludeOutlook = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          $excludePowerPoint = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          $excludePublisher = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      $o365Settings = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          $o365SharedActivation = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      $o365Configfooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $ErrorActionPreference = \"Stop\"\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
+                                      "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDrive,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDrive -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneDrive\" />'\r\n      }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
                                     }
                                   },
                                   "dependsOn": [
@@ -3150,7 +3150,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "14232696257205234975"
+                                  "templateHash": "10879950300868978361"
                                 }
                               },
                               "parameters": {
@@ -3203,7 +3203,7 @@
                                       "timestamp": "[[parameters('timestamp')]"
                                     },
                                     "protectedSettings": {
-                                      "commandToExecute": "[[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().id, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
+                                      "commandToExecute": "[[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().subscriptionId, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
                                       "fileUris": [
                                         "[[format('https://{0}.blob.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
                                       ],
@@ -3318,8 +3318,8 @@
                   "installExcel": {
                     "value": "[parameters('installExcel')]"
                   },
-                  "installOneDriveForBusiness": {
-                    "value": "[parameters('installOneDriveForBusiness')]"
+                  "installOneDrive": {
+                    "value": "[parameters('installOneDrive')]"
                   },
                   "installOneNote": {
                     "value": "[parameters('installOneNote')]"
@@ -3437,7 +3437,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "15829975061655542086"
+                      "templateHash": "1105150678801490668"
                     }
                   },
                   "parameters": {
@@ -3489,7 +3489,7 @@
                     "installExcel": {
                       "type": "bool"
                     },
-                    "installOneDriveForBusiness": {
+                    "installOneDrive": {
                       "type": "bool"
                     },
                     "installOneNote": {
@@ -3623,7 +3623,7 @@
                       "imageVirtualMachineName": "[parameters('imageVirtualMachineName')]",
                       "installAccess": "[string(parameters('installAccess'))]",
                       "installExcel": "[string(parameters('installExcel'))]",
-                      "installOneDriveForBusiness": "[string(parameters('installOneDriveForBusiness'))]",
+                      "InstallOneDrive": "[string(parameters('installOneDrive'))]",
                       "installOneNote": "[string(parameters('installOneNote'))]",
                       "installOutlook": "[string(parameters('installOutlook'))]",
                       "installPowerPoint": "[string(parameters('installPowerPoint'))]",
@@ -3986,8 +3986,8 @@
           "installExcel": {
             "value": "[parameters('installExcel')]"
           },
-          "installOneDriveForBusiness": {
-            "value": "[parameters('installOneDriveForBusiness')]"
+          "installOneDrive": {
+            "value": "[parameters('installOneDrive')]"
           },
           "installOneNote": {
             "value": "[parameters('installOneNote')]"
@@ -4096,7 +4096,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17622906034301957321"
+              "templateHash": "12469783672222887727"
             }
           },
           "parameters": {
@@ -4141,7 +4141,7 @@
             "installExcel": {
               "type": "bool"
             },
-            "installOneDriveForBusiness": {
+            "installOneDrive": {
               "type": "bool"
             },
             "installOneNote": {
@@ -4497,8 +4497,8 @@
                   "installExcel": {
                     "value": "[parameters('installExcel')]"
                   },
-                  "installOneDriveForBusiness": {
-                    "value": "[parameters('installOneDriveForBusiness')]"
+                  "installOneDrive": {
+                    "value": "[parameters('installOneDrive')]"
                   },
                   "installOneNote": {
                     "value": "[parameters('installOneNote')]"
@@ -4568,7 +4568,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6060589614181505234"
+                      "templateHash": "7035699636155179002"
                     }
                   },
                   "parameters": {
@@ -4584,7 +4584,7 @@
                     "installExcel": {
                       "type": "bool"
                     },
-                    "installOneDriveForBusiness": {
+                    "installOneDrive": {
                       "type": "bool"
                     },
                     "installOneNote": {
@@ -4655,7 +4655,7 @@
                     "installAccessVar": "[format('{0}installAccess', parameters('installAccess'))]",
                     "installers": "[parameters('customizations')]",
                     "installExcelVar": "[format('{0}installWord', parameters('installExcel'))]",
-                    "installOneDriveForBusinessVar": "[format('{0}installOneDrive', parameters('installOneDriveForBusiness'))]",
+                    "installOneDriveVar": "[format('{0}installOneDrive', parameters('installOneDrive'))]",
                     "installOneNoteVar": "[format('{0}installOneNote', parameters('installOneNote'))]",
                     "installOutlookVar": "[format('{0}installOutlook', parameters('installOutlook'))]",
                     "installPowerPointVar": "[format('{0}installPowerPoint', parameters('installPowerPoint'))]",
@@ -4717,7 +4717,7 @@
                       }
                     },
                     {
-                      "condition": "[or(or(or(or(or(or(or(or(or(or(parameters('installAccess'), parameters('installExcel')), parameters('installOneDriveForBusiness')), parameters('installOneNote')), parameters('installOutlook')), parameters('installPowerPoint')), parameters('installPublisher')), parameters('installSkypeForBusiness')), parameters('installWord')), parameters('installVisio')), parameters('installProject'))]",
+                      "condition": "[or(or(or(or(or(or(or(or(or(or(parameters('installAccess'), parameters('installExcel')), parameters('installOneDrive')), parameters('installOneNote')), parameters('installOutlook')), parameters('installPowerPoint')), parameters('installPublisher')), parameters('installSkypeForBusiness')), parameters('installWord')), parameters('installVisio')), parameters('installProject'))]",
                       "type": "Microsoft.Compute/virtualMachines/runCommands",
                       "apiVersion": "2023-07-01",
                       "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'office')]",
@@ -4740,8 +4740,8 @@
                             "value": "[variables('installExcelVar')]"
                           },
                           {
-                            "name": "InstallOneDriveForBusiness",
-                            "value": "[variables('installOneDriveForBusinessVar')]"
+                            "name": "InstallOneDrive",
+                            "value": "[variables('installOneDriveVar')]"
                           },
                           {
                             "name": "InstallOneNote",
@@ -4793,7 +4793,7 @@
                           }
                         ],
                         "source": {
-                          "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDriveForBusiness,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          $excludeAccess = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          $excludeExcel = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n          $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n      }\r\n      if($InstallOneDriveForBusiness -notlike '*true*'){\r\n        $excludeOneDriveForBusiness = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Groove\" />'\r\n    }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          $excludeOneNote = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          $excludeOutlook = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          $excludePowerPoint = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          $excludePublisher = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          $excludeSkypeForBusiness= Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      $o365Settings = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          $o365SharedActivation = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      $o365Configfooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $ErrorActionPreference = \"Stop\"\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
+                          "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDrive,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDrive -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneDrive\" />'\r\n      }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
                         }
                       },
                       "dependsOn": [
@@ -5464,7 +5464,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "14232696257205234975"
+                      "templateHash": "10879950300868978361"
                     }
                   },
                   "parameters": {
@@ -5517,7 +5517,7 @@
                           "timestamp": "[parameters('timestamp')]"
                         },
                         "protectedSettings": {
-                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().id, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
+                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().subscriptionId, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
                           "fileUris": [
                             "[format('https://{0}.blob.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
                           ],
