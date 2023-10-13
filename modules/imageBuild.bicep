@@ -199,7 +199,6 @@ module removeRunCommands 'removeRunCommands.bicep' = [for i in range(0, length(r
     location: location
     runCommandName: runCommandNames[i]
     tags: tags
-    userAssignedIdentityClientId: userAssignedIdentityClientId
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [

@@ -2,11 +2,7 @@ param location string
 param tags object
 param runCommandName string
 param timestamp string = utcNow('yyyyMMddhhmmss')
-param userAssignedIdentityClientId string
 param virtualMachineName string
-
-var braceLeft = '{'
-var braceRight = '}'
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-07-01' existing = {
   name: virtualMachineName
@@ -26,7 +22,7 @@ resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@202
       timestamp: timestamp
     }
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command ${braceLeft}Remove-AzVMRunCommand -ResourceGroupName ${resourceGroup().name} -VMName ${virtualMachineName} -RunCommandName ${runCommandName}${braceRight}'
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command Remove-AzVMRunCommand -ResourceGroupName ${resourceGroup().name} -VMName ${virtualMachineName} -RunCommandName ${runCommandName} -ErrorAction Stop'
     }
   }
 }

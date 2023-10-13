@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "15862220066637748248"
+      "templateHash": "11142765783072075490"
     }
   },
   "parameters": {
@@ -1364,9 +1364,6 @@
           "tags": {
             "value": "[parameters('tags')]"
           },
-          "userAssignedIdentityClientId": {
-            "value": "[parameters('userAssignedIdentityClientId')]"
-          },
           "virtualMachineName": {
             "value": "[parameters('managementVirtualMachineName')]"
           }
@@ -1378,7 +1375,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4559691616641024106"
+              "templateHash": "18349457068771879480"
             }
           },
           "parameters": {
@@ -1395,16 +1392,9 @@
               "type": "string",
               "defaultValue": "[utcNow('yyyyMMddhhmmss')]"
             },
-            "userAssignedIdentityClientId": {
-              "type": "string"
-            },
             "virtualMachineName": {
               "type": "string"
             }
-          },
-          "variables": {
-            "braceLeft": "{",
-            "braceRight": "}"
           },
           "resources": [
             {
@@ -1422,7 +1412,7 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command {0}Remove-AzVMRunCommand -ResourceGroupName {1} -VMName {2} -RunCommandName {3}{4}', variables('braceLeft'), resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'), variables('braceRight'))]"
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzVMRunCommand -ResourceGroupName {0} -VMName {1} -RunCommandName {2} -ErrorAction Stop', resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                 }
               }
             }
