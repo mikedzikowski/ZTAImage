@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "2275843780223168969"
+      "templateHash": "9787135078598465867"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "1239390495752957389"
+              "templateHash": "2759908365303205608"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4808198851897373999"
+                      "templateHash": "7679176352142286826"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "12959714276756401283"
+                          "templateHash": "17622906034301957321"
                         }
                       },
                       "parameters": {
@@ -3150,7 +3150,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "1578506943027198079"
+                                  "templateHash": "14232696257205234975"
                                 }
                               },
                               "parameters": {
@@ -3205,7 +3205,7 @@
                                     "protectedSettings": {
                                       "commandToExecute": "[[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().id, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
                                       "fileUris": [
-                                        "[[format('https://{0}.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
+                                        "[[format('https://{0}.blob.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
                                       ],
                                       "managedIdentity": {
                                         "clientId": "[[parameters('userAssignedIdentityClientId')]"
@@ -4096,7 +4096,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12959714276756401283"
+              "templateHash": "17622906034301957321"
             }
           },
           "parameters": {
@@ -5464,7 +5464,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "1578506943027198079"
+                      "templateHash": "14232696257205234975"
                     }
                   },
                   "parameters": {
@@ -5519,7 +5519,7 @@
                         "protectedSettings": {
                           "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().id, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
                           "fileUris": [
-                            "[format('https://{0}.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
+                            "[format('https://{0}.blob.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
                           ],
                           "managedIdentity": {
                             "clientId": "[parameters('userAssignedIdentityClientId')]"
