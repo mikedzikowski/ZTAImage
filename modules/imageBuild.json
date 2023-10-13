@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5477502432814228343"
+      "templateHash": "13450296876870648467"
     }
   },
   "parameters": {
@@ -1237,9 +1237,6 @@
           "imageVirtualMachineName": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
-          "resourceGroupName": {
-            "value": "[variables('resourceGroupName')]"
-          },
           "location": {
             "value": "[parameters('location')]"
           },
@@ -1260,7 +1257,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9114212748408436740"
+              "templateHash": "3826075092376046992"
             }
           },
           "parameters": {
@@ -1268,9 +1265,6 @@
               "type": "bool"
             },
             "imageVirtualMachineName": {
-              "type": "string"
-            },
-            "resourceGroupName": {
               "type": "string"
             },
             "location": {
@@ -1291,7 +1285,7 @@
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'removeVm')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'removeVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -1316,7 +1310,7 @@
                   },
                   {
                     "name": "ResourceGroupName",
-                    "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
+                    "value": "[resourceGroup().name]"
                   },
                   {
                     "name": "SubscriptionId",
@@ -1370,6 +1364,9 @@
           "tags": {
             "value": "[parameters('tags')]"
           },
+          "userAssignedIdentityClientId": {
+            "value": "[parameters('userAssignedIdentityClientId')]"
+          },
           "virtualMachineName": {
             "value": "[parameters('managementVirtualMachineName')]"
           }
@@ -1381,7 +1378,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14290667001786373436"
+              "templateHash": "7275370883175927081"
             }
           },
           "parameters": {
@@ -1397,6 +1394,9 @@
             "timestamp": {
               "type": "string",
               "defaultValue": "[utcNow('yyyyMMddhhmmss')]"
+            },
+            "userAssignedIdentityClientId": {
+              "type": "string"
             },
             "virtualMachineName": {
               "type": "string"
@@ -1418,7 +1418,7 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command {{Connect-AzAccount -Environment {0} -Tenant {1} -Subscription {2} -Identity -AccountId {3}; Remove-AzResource -ResourceId \"{4}/resourceGroups/{5}/providers/Microsoft.Compute/virtualMachines/{6}/runCommands/{7}\" -Force}}', environment().name, tenant().tenantId, subscription().subscriptionId, parameters('userAssignedIdentityClientId'), subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                 }
               }
             }
