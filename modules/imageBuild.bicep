@@ -188,7 +188,7 @@ module removeVirtualMachine 'removeVirtualMachine.bicep' = {
 }
 
 module removeRunCommands 'removeRunCommands.bicep' = if (enableBuildAutomation) {
-  name: 'remove-run-command-${deploymentNameSuffix}'
+  name: 'remove-run-commands-${deploymentNameSuffix}'
   params: {
     containerName: containerName
     location: location

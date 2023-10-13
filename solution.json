@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "6799671312564346147"
+      "templateHash": "8606840492697944978"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9878131262676464176"
+              "templateHash": "14406307444268692706"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8734992687620588709"
+                      "templateHash": "9931921807720922216"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "12469783672222887727"
+                          "templateHash": "10841541149486393767"
                         }
                       },
                       "parameters": {
@@ -3114,7 +3114,7 @@
                           "condition": "[[parameters('enableBuildAutomation')]",
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
-                          "name": "[[format('remove-run-command-{0}', parameters('deploymentNameSuffix'))]",
+                          "name": "[[format('remove-run-commands-{0}', parameters('deploymentNameSuffix'))]",
                           "properties": {
                             "expressionEvaluationOptions": {
                               "scope": "inner"
@@ -4096,7 +4096,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12469783672222887727"
+              "templateHash": "10841541149486393767"
             }
           },
           "parameters": {
@@ -5428,7 +5428,7 @@
               "condition": "[parameters('enableBuildAutomation')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
-              "name": "[format('remove-run-command-{0}', parameters('deploymentNameSuffix'))]",
+              "name": "[format('remove-run-commands-{0}', parameters('deploymentNameSuffix'))]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
