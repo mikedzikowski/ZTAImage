@@ -160,7 +160,7 @@ Specifies if FsLogix will be installed on the image created.
 Type: Boolean
 ```
 
-#### -InstallOneDriveForBusiness
+#### -InstallOneDrive
 
 Specifies if OneDrive For Business will be installed on the image created.
 
