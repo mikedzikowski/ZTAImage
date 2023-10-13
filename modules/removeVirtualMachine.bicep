@@ -1,24 +1,22 @@
 param enableBuildAutomation bool
 param imageVirtualMachineName string
-param resourceGroupName string
 param location string = resourceGroup().location
 param tags object
 param userAssignedIdentityClientId string
 param virtualMachineName string
 
-resource imageVm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
-  scope: resourceGroup(resourceGroupName)
+resource imageVirtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: imageVirtualMachineName
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: virtualMachineName
 }
 
-resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
-  name: 'removeVm'
+resource removeVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
+  parent: virtualMachine
+  name: 'removeVirtualMachine'
   location: location
-  parent: vm
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
     treatFailureAsDeploymentFailure: false
@@ -34,15 +32,15 @@ resource removeVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
       }
       {
         name: 'ImageVmName'
-        value: imageVm.name
+        value: imageVirtualMachine.name
       }
       {
         name: 'ManagementVmName'
-        value: vm.name
+        value: virtualMachine.name
       }
       {
         name: 'ResourceGroupName'
-        value: split(imageVm.id, '/')[4]
+        value: resourceGroup().name
       }
       {
         name: 'SubscriptionId'
