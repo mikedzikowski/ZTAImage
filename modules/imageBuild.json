@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "7167427104106385022"
+      "templateHash": "12959714276756401283"
     }
   },
   "parameters": {
@@ -175,11 +175,6 @@
     "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
     "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
     "resourceGroupName": "[resourceGroup().name]",
-    "runCommandNames": [
-      "generalizeVirtualMachine",
-      "removeVirtualMachine",
-      "restartVirtualMachine"
-    ],
     "storageEndpoint": "[environment().suffixes.storage]"
   },
   "resources": [
@@ -1339,30 +1334,33 @@
       ]
     },
     {
-      "copy": {
-        "name": "removeRunCommands",
-        "count": "[length(range(0, length(variables('runCommandNames'))))]",
-        "mode": "serial",
-        "batchSize": 1
-      },
       "condition": "[parameters('enableBuildAutomation')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('remove-run-command-{0}-{1}', range(0, length(variables('runCommandNames')))[copyIndex()], parameters('deploymentNameSuffix'))]",
+      "name": "[format('remove-run-command-{0}', parameters('deploymentNameSuffix'))]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
         },
         "mode": "Incremental",
         "parameters": {
+          "containerName": {
+            "value": "[parameters('containerName')]"
+          },
           "location": {
             "value": "[parameters('location')]"
           },
-          "runCommandName": {
-            "value": "[variables('runCommandNames')[range(0, length(variables('runCommandNames')))[copyIndex()]]]"
+          "storageAccountName": {
+            "value": "[parameters('storageAccountName')]"
+          },
+          "storageEndpoint": {
+            "value": "[variables('storageEndpoint')]"
           },
           "tags": {
             "value": "[parameters('tags')]"
+          },
+          "userAssignedIdentityClientId": {
+            "value": "[parameters('userAssignedIdentityClientId')]"
           },
           "virtualMachineName": {
             "value": "[parameters('managementVirtualMachineName')]"
@@ -1375,26 +1373,42 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "11163134199697091498"
+              "templateHash": "1578506943027198079"
             }
           },
           "parameters": {
+            "containerName": {
+              "type": "string"
+            },
             "location": {
               "type": "string"
             },
             "tags": {
               "type": "object"
             },
-            "runCommandName": {
+            "storageAccountName": {
+              "type": "string"
+            },
+            "storageEndpoint": {
               "type": "string"
             },
             "timestamp": {
               "type": "string",
               "defaultValue": "[utcNow('yyyyMMddhhmmss')]"
             },
+            "userAssignedIdentityClientId": {
+              "type": "string"
+            },
             "virtualMachineName": {
               "type": "string"
             }
+          },
+          "variables": {
+            "runCommands": [
+              "generalizeVirtualMachine",
+              "removeVirtualMachine",
+              "restartVirtualMachine"
+            ]
           },
           "resources": [
             {
@@ -1412,7 +1426,13 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('Remove-AzVMRunCommand -ResourceGroupName {0} -VMName {1} -RunCommandName {2} -ErrorAction Stop', resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().id, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
+                  "fileUris": [
+                    "[format('https://{0}.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
+                  ],
+                  "managedIdentity": {
+                    "clientId": "[parameters('userAssignedIdentityClientId')]"
+                  }
                 }
               }
             }

@@ -54,11 +54,6 @@ param virtualMachineSize string
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
 var imageSuffix = take(deploymentNameSuffix, 9)
 var resourceGroupName = resourceGroup().name
-var runCommandNames = [
-  'generalizeVirtualMachine'
-  'removeVirtualMachine'
-  'restartVirtualMachine'
-]
 var storageEndpoint = environment().suffixes.storage
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (runbookExecution) {
@@ -192,16 +187,18 @@ module removeVirtualMachine 'removeVirtualMachine.bicep' = {
   ]
 }
 
-@batchSize(1)
-module removeRunCommands 'removeRunCommands.bicep' = [for i in range(0, length(runCommandNames)): if (enableBuildAutomation) {
-  name: 'remove-run-command-${i}-${deploymentNameSuffix}'
+module removeRunCommands 'removeRunCommands.bicep' = if (enableBuildAutomation) {
+  name: 'remove-run-command-${deploymentNameSuffix}'
   params: {
+    containerName: containerName
     location: location
-    runCommandName: runCommandNames[i]
+    storageAccountName: storageAccountName
+    storageEndpoint: storageEndpoint
     tags: tags
+    userAssignedIdentityClientId: userAssignedIdentityClientId
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
     removeVirtualMachine
   ]
-}]
+}
