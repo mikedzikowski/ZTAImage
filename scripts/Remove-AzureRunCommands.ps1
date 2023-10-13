@@ -54,15 +54,17 @@ $WarningPreference = 'SilentlyContinue'
 try 
 {
     Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
+    Write-Log -Message "Connection to Azure Succeeded" -Type 'INFO'
     [array]$RunCommandNames = $RunCommands.Replace("'",'"') | ConvertFrom-Json
     Write-Log -Message "Run Command Names:" -Type 'INFO'
     $RunCommandNames | Add-Content -Path 'C:\cse.txt' -Force | Out-Null
     foreach($RunCommandName in $RunCommandNames)
     {
-        Remove-AzVMRunCommand -ResourceGroupName $ResourceGroupName -VMName $VirtualMachineName -RunCommandName $RunCommandName -ErrorAction Stop
+        Remove-AzVMRunCommand -ResourceGroupName $ResourceGroupName -VMName $VirtualMachineName -RunCommandName $RunCommandName
+        Write-Log -Message "Remove '$RunCommandName' Run Command Succeeded" -Type 'INFO'
     }
-    Write-Log -Message 'Remove Run Commands Succeeded' -Type 'INFO'
     Disconnect-AzAccount | Out-Null
+    Write-Log -Message "Disconnection to Azure Succeeded" -Type 'INFO'
 }
 catch 
 {
