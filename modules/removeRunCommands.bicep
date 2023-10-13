@@ -22,7 +22,7 @@ resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@202
       timestamp: timestamp
     }
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command Remove-AzVMRunCommand -ResourceGroupName ${resourceGroup().name} -VMName ${virtualMachineName} -RunCommandName ${runCommandName} -ErrorAction Stop'
+      commandToExecute: 'Remove-AzVMRunCommand -ResourceGroupName ${resourceGroup().name} -VMName ${virtualMachineName} -RunCommandName ${runCommandName} -ErrorAction Stop'
     }
   }
 }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "11142765783072075490"
+      "templateHash": "7167427104106385022"
     }
   },
   "parameters": {
@@ -1375,7 +1375,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "18349457068771879480"
+              "templateHash": "11163134199697091498"
             }
           },
           "parameters": {
@@ -1412,7 +1412,7 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzVMRunCommand -ResourceGroupName {0} -VMName {1} -RunCommandName {2} -ErrorAction Stop', resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                  "commandToExecute": "[format('Remove-AzVMRunCommand -ResourceGroupName {0} -VMName {1} -RunCommandName {2} -ErrorAction Stop', resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                 }
               }
             }
