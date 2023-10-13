@@ -25,7 +25,7 @@ param teamsInstaller string
 param userAssignedIdentityObjectId string
 param vcRedistInstaller string
 param vDotInstaller string
-param vmName string
+param virtualMachineName string
 
 var installAccessVar = '${installAccess}installAccess'
 var installers = customizations
@@ -40,16 +40,16 @@ var installSkypeForBusinessVar = '${installSkypeForBusiness}installSkypeForBusin
 var installVisioVar = '${installVisio}installVisio'
 var installWordVar = '${installWord}installWord'
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
-  name: vmName
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
+  name: virtualMachineName
 }
 
 @batchSize(1)
 resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = [for installer in installers: {
+  parent: virtualMachine
   name: 'app-${installer.name}'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
-  parent: vm
   properties: {
     treatFailureAsDeploymentFailure: true
     asyncExecution: false
@@ -151,10 +151,10 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01'
 }]
 
 resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
+  parent: virtualMachine
   name: 'office'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
-  parent: vm
   properties: {
     treatFailureAsDeploymentFailure: true
     asyncExecution: false
@@ -313,10 +313,10 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if 
 }
 
 resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installVirtualDesktopOptimizationTool) {
+  parent: virtualMachine
   name: 'vdot'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
-  parent: vm
   properties: {
     treatFailureAsDeploymentFailure: true
     asyncExecution: false
@@ -360,7 +360,6 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ZIP
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp
-        $ErrorActionPreference = "Stop"
         Unblock-File -Path $ZIP
         Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp" -Force
         $Path = (Get-ChildItem -Path "$env:windir\temp" -Recurse | Where-Object {$_.Name -eq "Windows_VDOT.ps1"}).FullName
@@ -368,7 +367,6 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
         $ScriptUpdate = $Script.Replace("Set-NetAdapterAdvancedProperty","#Set-NetAdapterAdvancedProperty")
         $ScriptUpdate | Set-Content -Path $Path
         & $Path -Optimizations @("AppxPackages","Autologgers","DefaultUserSettings","LGPO";"NetworkOptimizations","ScheduledTasks","Services","WindowsMediaPlayer") -AdvancedOptimizations "All" -AcceptEULA
-        Write-Host "Optimized the operating system using the Virtual Desktop Optimization Tool"
       '''
     }
     timeoutInSeconds: 640
@@ -381,10 +379,10 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
 }
 
 // resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installFsLogix) {
+//   parent: virtualMachine
 //   name: 'fslogix'
 //   location: location
 //   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
-//   parent: vm
 //   properties: {
 //     treatFailureAsDeploymentFailure: true
 //     asyncExecution: false
@@ -411,10 +409,10 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
 // }
 
 resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installTeams) {
+  parent: virtualMachine
   name: 'teams'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
-  parent: vm
   properties: {
     treatFailureAsDeploymentFailure: true
     asyncExecution: false

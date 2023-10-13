@@ -108,7 +108,7 @@ module addCustomizations 'customizations.bicep' = {
     storageEndpoint: storageEndpoint
     tags: tags
     userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
-    vmName: virtualMachine.outputs.name
+    virtualMachineName: virtualMachine.outputs.name
     vDotInstaller: vDOTInstaller
     officeInstaller: officeInstaller
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller

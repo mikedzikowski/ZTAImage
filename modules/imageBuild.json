@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "7988598744059801215"
+      "templateHash": "5278850225200578360"
     }
   },
   "parameters": {
@@ -456,7 +456,7 @@
           "userAssignedIdentityObjectId": {
             "value": "[parameters('userAssignedIdentityPrincipalId')]"
           },
-          "vmName": {
+          "virtualMachineName": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
           },
           "vDotInstaller": {
@@ -482,7 +482,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4501331892005679873"
+              "templateHash": "6060589614181505234"
             }
           },
           "parameters": {
@@ -561,7 +561,7 @@
             "vDotInstaller": {
               "type": "string"
             },
-            "vmName": {
+            "virtualMachineName": {
               "type": "string"
             }
           },
@@ -589,7 +589,7 @@
               },
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('vmName'), format('app-{0}', variables('installers')[copyIndex()].name))]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), format('app-{0}', variables('installers')[copyIndex()].name))]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -634,7 +634,7 @@
               "condition": "[or(or(or(or(or(or(or(or(or(or(parameters('installAccess'), parameters('installExcel')), parameters('installOneDriveForBusiness')), parameters('installOneNote')), parameters('installOutlook')), parameters('installPowerPoint')), parameters('installPublisher')), parameters('installSkypeForBusiness')), parameters('installWord')), parameters('installVisio')), parameters('installProject'))]",
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('vmName'), 'office')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'office')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -718,7 +718,7 @@
               "condition": "[parameters('installVirtualDesktopOptimizationTool')]",
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('vmName'), 'vdot')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'vdot')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -747,21 +747,21 @@
                   }
                 ],
                 "source": {
-                  "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $ZIP = \"$env:windir\\temp\\VDOT.zip\"\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        $ErrorActionPreference = \"Stop\"\r\n        Unblock-File -Path $ZIP\r\n        Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\" -Force\r\n        $Path = (Get-ChildItem -Path \"$env:windir\\temp\" -Recurse | Where-Object {$_.Name -eq \"Windows_VDOT.ps1\"}).FullName\r\n        $Script = Get-Content -Path $Path\r\n        $ScriptUpdate = $Script.Replace(\"Set-NetAdapterAdvancedProperty\",\"#Set-NetAdapterAdvancedProperty\")\r\n        $ScriptUpdate | Set-Content -Path $Path\r\n        & $Path -Optimizations @(\"AppxPackages\",\"Autologgers\",\"DefaultUserSettings\",\"LGPO\";\"NetworkOptimizations\",\"ScheduledTasks\",\"Services\",\"WindowsMediaPlayer\") -AdvancedOptimizations \"All\" -AcceptEULA\r\n        Write-Host \"Optimized the operating system using the Virtual Desktop Optimization Tool\"\r\n      "
+                  "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $ZIP = \"$env:windir\\temp\\VDOT.zip\"\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        Unblock-File -Path $ZIP\r\n        Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\" -Force\r\n        $Path = (Get-ChildItem -Path \"$env:windir\\temp\" -Recurse | Where-Object {$_.Name -eq \"Windows_VDOT.ps1\"}).FullName\r\n        $Script = Get-Content -Path $Path\r\n        $ScriptUpdate = $Script.Replace(\"Set-NetAdapterAdvancedProperty\",\"#Set-NetAdapterAdvancedProperty\")\r\n        $ScriptUpdate | Set-Content -Path $Path\r\n        & $Path -Optimizations @(\"AppxPackages\",\"Autologgers\",\"DefaultUserSettings\",\"LGPO\";\"NetworkOptimizations\",\"ScheduledTasks\",\"Services\",\"WindowsMediaPlayer\") -AdvancedOptimizations \"All\" -AcceptEULA\r\n      "
                 },
                 "timeoutInSeconds": 640
               },
               "dependsOn": [
                 "applications",
-                "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('vmName'), 'office')]",
-                "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('vmName'), 'teams')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'office')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'teams')]"
               ]
             },
             {
               "condition": "[parameters('installTeams')]",
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('vmName'), 'teams')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'teams')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -803,7 +803,7 @@
               },
               "dependsOn": [
                 "applications",
-                "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('vmName'), 'office')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'office')]"
               ]
             }
           ]
