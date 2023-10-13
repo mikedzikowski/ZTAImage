@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "13450296876870648467"
+      "templateHash": "5790595743207102540"
     }
   },
   "parameters": {
@@ -1378,7 +1378,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "7275370883175927081"
+              "templateHash": "7556950607847923424"
             }
           },
           "parameters": {
@@ -1402,6 +1402,10 @@
               "type": "string"
             }
           },
+          "variables": {
+            "braceLeft": "{",
+            "braceRight": "}"
+          },
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -1418,7 +1422,7 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command {{Connect-AzAccount -Environment {0} -Tenant {1} -Subscription {2} -Identity -AccountId {3}; Remove-AzResource -ResourceId \"{4}/resourceGroups/{5}/providers/Microsoft.Compute/virtualMachines/{6}/runCommands/{7}\" -Force}}', environment().name, tenant().tenantId, subscription().subscriptionId, parameters('userAssignedIdentityClientId'), subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command {0}Connect-AzAccount -Environment {1} -Tenant {2} -Subscription {3} -Identity -AccountId {4}; Remove-AzResource -ResourceId \"{5}/resourceGroups/{6}/providers/Microsoft.Compute/virtualMachines/{7}/runCommands/{8}\" -Force{9}', variables('braceLeft'), environment().name, tenant().tenantId, subscription().subscriptionId, parameters('userAssignedIdentityClientId'), subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'), variables('braceRight'))]"
                 }
               }
             }
