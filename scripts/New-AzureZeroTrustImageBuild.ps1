@@ -55,7 +55,7 @@ try
     }
 
 	# If the latest source image was released after the last image build then trigger a new image build
-	if($SourceImageVersionDate -gt $CurrentImageVersionDate)
+	if($SourceImageVersionDate -gt $CurrentImageVersionDate -or !$CurrentImageVersionDate)
 	{   
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build initiated with a new source image version."
 		$TemplateParameters = @{
