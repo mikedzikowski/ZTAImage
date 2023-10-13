@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "2806646278324520342"
+      "templateHash": "5477502432814228343"
     }
   },
   "parameters": {
@@ -1351,6 +1351,7 @@
         "mode": "serial",
         "batchSize": 1
       },
+      "condition": "[parameters('enableBuildAutomation')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('remove-run-command-{0}-{1}', range(0, length(variables('runCommandNames')))[copyIndex()], parameters('deploymentNameSuffix'))]",

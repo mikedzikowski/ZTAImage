@@ -194,7 +194,7 @@ module removeVirtualMachine 'removeVirtualMachine.bicep' = {
 }
 
 @batchSize(1)
-module removeRunCommands 'removeRunCommands.bicep' = [for i in range(0, length(runCommandNames)): {
+module removeRunCommands 'removeRunCommands.bicep' = [for i in range(0, length(runCommandNames)): if (enableBuildAutomation) {
   name: 'remove-run-command-${i}-${deploymentNameSuffix}'
   params: {
     location: location

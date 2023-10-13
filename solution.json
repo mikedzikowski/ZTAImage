@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5778072243065537924"
+      "templateHash": "9231653663595433411"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12459000308185788135"
+              "templateHash": "5907949816384057146"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "9412500679913058972"
+                      "templateHash": "3026912077794986908"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "2806646278324520342"
+                          "templateHash": "5477502432814228343"
                         }
                       },
                       "parameters": {
@@ -3128,6 +3128,7 @@
                             "mode": "serial",
                             "batchSize": 1
                           },
+                          "condition": "[[parameters('enableBuildAutomation')]",
                           "type": "Microsoft.Resources/deployments",
                           "apiVersion": "2022-09-01",
                           "name": "[[format('remove-run-command-{0}-{1}', range(0, length(variables('runCommandNames')))[copyIndex()], parameters('deploymentNameSuffix'))]",
@@ -4081,7 +4082,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2806646278324520342"
+              "templateHash": "5477502432814228343"
             }
           },
           "parameters": {
@@ -5427,6 +5428,7 @@
                 "mode": "serial",
                 "batchSize": 1
               },
+              "condition": "[parameters('enableBuildAutomation')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('remove-run-command-{0}-{1}', range(0, length(variables('runCommandNames')))[copyIndex()], parameters('deploymentNameSuffix'))]",
