@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5278850225200578360"
+      "templateHash": "2806646278324520342"
     }
   },
   "parameters": {
@@ -1380,7 +1380,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12198743611637510097"
+              "templateHash": "14290667001786373436"
             }
           },
           "parameters": {
@@ -1417,7 +1417,7 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force | Out-Null', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                 }
               }
             }

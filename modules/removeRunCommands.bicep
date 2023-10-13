@@ -22,7 +22,7 @@ resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@202
       timestamp: timestamp
     }
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId "${subscription().id}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Compute/virtualMachines/${virtualMachineName}/runCommands/${runCommandName}" -Force | Out-Null'
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId "${subscription().id}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Compute/virtualMachines/${virtualMachineName}/runCommands/${runCommandName}" -Force'
     }
   }
 }

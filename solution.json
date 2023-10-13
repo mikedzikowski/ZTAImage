@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "8957424038074763405"
+      "templateHash": "5778072243065537924"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16658283476135664741"
+              "templateHash": "12459000308185788135"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4777965327056307842"
+                      "templateHash": "9412500679913058972"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "5278850225200578360"
+                          "templateHash": "2806646278324520342"
                         }
                       },
                       "parameters": {
@@ -3157,7 +3157,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "12198743611637510097"
+                                  "templateHash": "14290667001786373436"
                                 }
                               },
                               "parameters": {
@@ -3194,7 +3194,7 @@
                                       "timestamp": "[[parameters('timestamp')]"
                                     },
                                     "protectedSettings": {
-                                      "commandToExecute": "[[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force | Out-Null', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                                      "commandToExecute": "[[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                                     }
                                   }
                                 }
@@ -4081,7 +4081,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "5278850225200578360"
+              "templateHash": "2806646278324520342"
             }
           },
           "parameters": {
@@ -5456,7 +5456,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "12198743611637510097"
+                      "templateHash": "14290667001786373436"
                     }
                   },
                   "parameters": {
@@ -5493,7 +5493,7 @@
                           "timestamp": "[parameters('timestamp')]"
                         },
                         "protectedSettings": {
-                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force | Out-Null', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
+                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                         }
                       }
                     }
