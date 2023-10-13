@@ -5,20 +5,20 @@ param tags object
 param userAssignedIdentityClientId string
 param virtualMachineName string
 
-resource imageVm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
+resource imageVirtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   scope: resourceGroup(resourceGroupName)
   name: imageVirtualMachineName
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' existing = {
   name: virtualMachineName
 }
 
-resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
-  name: 'restartVm'
+resource restartVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
+  name: 'restartVirtualMachine'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
-  parent: vm
+  parent: virtualMachine
   properties: {
     treatFailureAsDeploymentFailure: true
     asyncExecution: false
@@ -29,7 +29,7 @@ resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = 
       }
       {
         name: 'ResourceGroupName'
-        value: split(imageVm.id, '/')[4]
+        value: resourceGroupName
       }
       {
         name: 'SubscriptionId'
@@ -45,7 +45,7 @@ resource restartVm 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = 
       }
       {
         name: 'VirtualMachineName'
-        value: imageVm.name
+        value: imageVirtualMachine.name
       }
     ]
     source: {

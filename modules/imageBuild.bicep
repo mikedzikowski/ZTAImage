@@ -54,6 +54,11 @@ param virtualMachineSize string
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
 var imageSuffix = take(deploymentNameSuffix, 9)
 var resourceGroupName = resourceGroup().name
+var runCommandNames = [
+  'generalizeVirtualMachine'
+  'removeVirtualMachine'
+  'restartVirtualMachine'
+]
 var storageEndpoint = environment().suffixes.storage
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (runbookExecution) {
@@ -112,7 +117,7 @@ module addCustomizations 'customizations.bicep' = {
   }
 }
 
-module restart 'restart.bicep' = {
+module restartVirtualMachine 'restartVirtualMachine.bicep' = {
   name: 'restart-vm-${deploymentNameSuffix}'
   params: {
     imageVirtualMachineName: virtualMachine.outputs.name
@@ -127,7 +132,7 @@ module restart 'restart.bicep' = {
   ]
 }
 
-module sysprep 'sysprep.bicep' = {
+module sysprepVirtualMachine 'sysprepVirtualMachine.bicep' = {
   name: 'sysprep-vm-${deploymentNameSuffix}'
   params: {
     location: location
@@ -135,11 +140,11 @@ module sysprep 'sysprep.bicep' = {
     virtualMachineName: virtualMachine.outputs.name
   }
   dependsOn: [
-    restart
+    restartVirtualMachine
   ]
 }
 
-module generalize 'generalize.bicep' = {
+module generalizeVirtualMachine 'generalizeVirtualMachine.bicep' = {
   name: 'generalize-vm-${deploymentNameSuffix}'
   params: {
     imageVirtualMachineName: virtualMachine.outputs.name
@@ -150,7 +155,7 @@ module generalize 'generalize.bicep' = {
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
-    sysprep
+    sysprepVirtualMachine
   ]
 }
 
@@ -168,11 +173,11 @@ module imageVersion 'imageVersion.bicep' = {
     tags: tags
   }
   dependsOn: [
-    generalize
+    generalizeVirtualMachine
   ]
 }
 
-module remove 'removeVM.bicep' = {
+module removeVirtualMachine 'removeVirtualMachine.bicep' = {
   name: 'remove-vm-${deploymentNameSuffix}'
   params: {
     enableBuildAutomation: enableBuildAutomation
@@ -188,11 +193,16 @@ module remove 'removeVM.bicep' = {
   ]
 }
 
-module removeRunCommands 'removeRunCommands.bicep' = {
-  name: 'remove-run-commands-${deploymentNameSuffix}'
+@batchSize(1)
+module removeRunCommands 'removeRunCommands.bicep' = [for i in range(0, length(runCommandNames)): {
+  name: 'remove-run-command-${i}-${deploymentNameSuffix}'
   params: {
     location: location
+    runCommandName: runCommandNames[i]
     tags: tags
     virtualMachineName: managementVirtualMachineName
   }
-}
+  dependsOn: [
+    removeVirtualMachine
+  ]
+}]

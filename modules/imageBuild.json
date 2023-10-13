@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "16599369620145923356"
+      "templateHash": "7988598744059801215"
     }
   },
   "parameters": {
@@ -175,6 +175,11 @@
     "autoImageVersion": "[format('{0}.{1}.{2}', parameters('imageMajorVersion'), variables('imageSuffix'), parameters('imageMinorVersion'))]",
     "imageSuffix": "[take(parameters('deploymentNameSuffix'), 9)]",
     "resourceGroupName": "[resourceGroup().name]",
+    "runCommandNames": [
+      "generalizeVirtualMachine",
+      "removeVirtualMachine",
+      "restartVirtualMachine"
+    ],
     "storageEndpoint": "[environment().suffixes.storage]"
   },
   "resources": [
@@ -844,7 +849,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14348619378720481227"
+              "templateHash": "18097440764640844274"
             }
           },
           "parameters": {
@@ -871,7 +876,7 @@
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'restartVm')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'restartVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -884,7 +889,7 @@
                   },
                   {
                     "name": "ResourceGroupName",
-                    "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
+                    "value": "[parameters('resourceGroupName')]"
                   },
                   {
                     "name": "SubscriptionId",
@@ -943,7 +948,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12976754705186061116"
+              "templateHash": "14101801830901127925"
             }
           },
           "parameters": {
@@ -961,7 +966,7 @@
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'sysprep')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'sysprepVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -1017,7 +1022,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2290791285010502700"
+              "templateHash": "16249460143298409774"
             }
           },
           "parameters": {
@@ -1045,7 +1050,7 @@
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
               "apiVersion": "2023-07-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'generalize')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'generalizeVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
               "properties": {
@@ -1058,7 +1063,7 @@
                   },
                   {
                     "name": "ResourceGroupName",
-                    "value": "[split(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Compute/virtualMachines', parameters('imageVirtualMachineName')), '/')[4]]"
+                    "value": "[parameters('resourceGroupName')]"
                   },
                   {
                     "name": "SubscriptionId",
@@ -1340,9 +1345,15 @@
       ]
     },
     {
+      "copy": {
+        "name": "removeRunCommands",
+        "count": "[length(range(0, length(variables('runCommandNames'))))]",
+        "mode": "serial",
+        "batchSize": 1
+      },
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('remove-run-commands-{0}', parameters('deploymentNameSuffix'))]",
+      "name": "[format('remove-run-command-{0}-{1}', range(0, length(variables('runCommandNames')))[copyIndex()], parameters('deploymentNameSuffix'))]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -1351,6 +1362,9 @@
         "parameters": {
           "location": {
             "value": "[parameters('location')]"
+          },
+          "runCommandName": {
+            "value": "[variables('runCommandNames')[range(0, length(variables('runCommandNames')))[copyIndex()]]]"
           },
           "tags": {
             "value": "[parameters('tags')]"
@@ -1366,7 +1380,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4117733365257233063"
+              "templateHash": "12198743611637510097"
             }
           },
           "parameters": {
@@ -1375,6 +1389,9 @@
             },
             "tags": {
               "type": "object"
+            },
+            "runCommandName": {
+              "type": "string"
             },
             "timestamp": {
               "type": "string",
@@ -1400,13 +1417,16 @@
                   "timestamp": "[parameters('timestamp')]"
                 },
                 "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command {{Get-AzResource -ResourceGroupName \"{0}\" -ResourceType \"Microsoft.Compute/virtualMachines/runCommands\" | Remove-AzResource -Force | Out-Null}}', resourceGroup().name)]"
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -Command Remove-AzResource -ResourceId \"{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/runCommands/{3}\" -Force | Out-Null', subscription().id, resourceGroup().name, parameters('virtualMachineName'), parameters('runCommandName'))]"
                 }
               }
             }
           ]
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('remove-vm-{0}', parameters('deploymentNameSuffix')))]"
+      ]
     }
   ]
 }
