@@ -182,7 +182,6 @@ module removeVirtualMachine 'removeVirtualMachine.bicep' = {
   params: {
     enableBuildAutomation: enableBuildAutomation
     imageVirtualMachineName: virtualMachine.outputs.name
-    resourceGroupName: resourceGroupName
     location: location
     tags: tags
     userAssignedIdentityClientId: userAssignedIdentityClientId
@@ -200,6 +199,7 @@ module removeRunCommands 'removeRunCommands.bicep' = [for i in range(0, length(r
     location: location
     runCommandName: runCommandNames[i]
     tags: tags
+    userAssignedIdentityClientId: userAssignedIdentityClientId
     virtualMachineName: managementVirtualMachineName
   }
   dependsOn: [
