@@ -69,7 +69,7 @@ resource removeVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@202
         )
         $ErrorActionPreference = 'Stop'
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null
-        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -NoWait -Force -AsJob
+        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -Force
         if($EnableBuildAutomation -eq 'false')
         {
           Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "14609068601076310319"
+      "templateHash": "18035291562101553725"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "18059933175203683618"
+              "templateHash": "12788542192816330663"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "5309453306351877216"
+                      "templateHash": "3483697380094432557"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "12964113879031254022"
+                          "templateHash": "1305825023875311204"
                         }
                       },
                       "parameters": {
@@ -3029,7 +3029,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "11837549103676904049"
+                                  "templateHash": "10428531641658303661"
                                 }
                               },
                               "parameters": {
@@ -3098,7 +3098,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -NoWait -Force -AsJob\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob\r\n        }\r\n      "
+                                      "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -Force\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob\r\n        }\r\n      "
                                     }
                                   }
                                 }
@@ -4096,7 +4096,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12964113879031254022"
+              "templateHash": "1305825023875311204"
             }
           },
           "parameters": {
@@ -5343,7 +5343,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "11837549103676904049"
+                      "templateHash": "10428531641658303661"
                     }
                   },
                   "parameters": {
@@ -5412,7 +5412,7 @@
                           }
                         ],
                         "source": {
-                          "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -NoWait -Force -AsJob\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob\r\n        }\r\n      "
+                          "script": "        param(\r\n          [string]$EnableBuildAutomation,\r\n          [string]$Environment,\r\n          [string]$ImageVmName,\r\n          [string]$ManagementVmName,\r\n          [string]$ResourceGroupName,\r\n          [string]$SubscriptionId,\r\n          [string]$TenantId,\r\n          [string]$UserAssignedIdentityClientId\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -Identity -AccountId $UserAssignedIdentityClientId | Out-Null\r\n        Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ImageVmName -Force\r\n        if($EnableBuildAutomation -eq 'false')\r\n        {\r\n          Remove-AzVM -ResourceGroupName $ResourceGroupName -Name $ManagementVmName -NoWait -Force -AsJob\r\n        }\r\n      "
                         }
                       }
                     }
