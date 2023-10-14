@@ -19,8 +19,8 @@ resource removeVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@202
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
-    treatFailureAsDeploymentFailure: false
-    asyncExecution: true
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: enableBuildAutomation ? false : true
     parameters: [
       {
         name: 'EnableBuildAutomation'

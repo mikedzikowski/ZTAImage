@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "8606840492697944978"
+      "templateHash": "14609068601076310319"
     }
   },
   "parameters": {
@@ -1251,7 +1251,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14406307444268692706"
+              "templateHash": "18059933175203683618"
             }
           },
           "parameters": {
@@ -1760,7 +1760,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "9931921807720922216"
+                      "templateHash": "5309453306351877216"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1782,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "10841541149486393767"
+                          "templateHash": "12964113879031254022"
                         }
                       },
                       "parameters": {
@@ -3029,7 +3029,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "3826075092376046992"
+                                  "templateHash": "11837549103676904049"
                                 }
                               },
                               "parameters": {
@@ -3061,8 +3061,8 @@
                                   "location": "[[parameters('location')]",
                                   "tags": "[[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
                                   "properties": {
-                                    "treatFailureAsDeploymentFailure": false,
-                                    "asyncExecution": true,
+                                    "treatFailureAsDeploymentFailure": true,
+                                    "asyncExecution": "[[if(parameters('enableBuildAutomation'), false(), true())]",
                                     "parameters": [
                                       {
                                         "name": "EnableBuildAutomation",
@@ -4096,7 +4096,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "10841541149486393767"
+              "templateHash": "12964113879031254022"
             }
           },
           "parameters": {
@@ -5343,7 +5343,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "3826075092376046992"
+                      "templateHash": "11837549103676904049"
                     }
                   },
                   "parameters": {
@@ -5375,8 +5375,8 @@
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
                       "properties": {
-                        "treatFailureAsDeploymentFailure": false,
-                        "asyncExecution": true,
+                        "treatFailureAsDeploymentFailure": true,
+                        "asyncExecution": "[if(parameters('enableBuildAutomation'), false(), true())]",
                         "parameters": [
                           {
                             "name": "EnableBuildAutomation",
