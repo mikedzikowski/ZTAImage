@@ -58,10 +58,12 @@ try
     [array]$RunCommandNames = $RunCommands.Replace("'",'"') | ConvertFrom-Json
     Write-Log -Message "Run Command Names:" -Type 'INFO'
     $RunCommandNames | Add-Content -Path 'C:\cse.txt' -Force | Out-Null
+    $StatusFolder =  (Get-ChildItem -Path 'C:\Packages\Plugins\Microsoft.CPlat.Core.RunCommandWindows' | Sort-Object -Descending)[0].FullName + '\Status\'
     foreach($RunCommandName in $RunCommandNames)
     {
-        Remove-AzVMRunCommand -ResourceGroupName $ResourceGroupName -VMName $VirtualMachineName -RunCommandName $RunCommandName
-        Write-Log -Message "Remove '$RunCommandName' Run Command Succeeded" -Type 'INFO'
+        Remove-Item -Path ($StatusFolder + $RunCommandName + '.status') -Force
+        # -ResourceGroupName $ResourceGroupName -VMName $VirtualMachineName -RunCommandName $RunCommandName
+        Write-Log -Message "Remove status for '$RunCommandName' Run Command Succeeded" -Type 'INFO'
     }
     Disconnect-AzAccount | Out-Null
     Write-Log -Message "Disconnection to Azure Succeeded" -Type 'INFO'
