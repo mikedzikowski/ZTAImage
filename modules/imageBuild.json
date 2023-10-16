@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "1305825023875311204"
+      "templateHash": "8948679376706264441"
     }
   },
   "parameters": {
@@ -477,7 +477,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "7035699636155179002"
+              "templateHash": "5212977892119735880"
             }
           },
           "parameters": {
@@ -583,7 +583,7 @@
                 "batchSize": 1
               },
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), format('app-{0}', variables('installers')[copyIndex()].name))]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -628,7 +628,7 @@
             {
               "condition": "[or(or(or(or(or(or(or(or(or(or(parameters('installAccess'), parameters('installExcel')), parameters('installOneDrive')), parameters('installOneNote')), parameters('installOutlook')), parameters('installPowerPoint')), parameters('installPublisher')), parameters('installSkypeForBusiness')), parameters('installWord')), parameters('installVisio')), parameters('installProject'))]",
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'office')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -712,7 +712,7 @@
             {
               "condition": "[parameters('installVirtualDesktopOptimizationTool')]",
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'vdot')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -755,7 +755,7 @@
             {
               "condition": "[parameters('installTeams')]",
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'teams')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -844,7 +844,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "18097440764640844274"
+              "templateHash": "5601333789074973372"
             }
           },
           "parameters": {
@@ -870,7 +870,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'restartVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -943,7 +943,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14101801830901127925"
+              "templateHash": "9392173561857844235"
             }
           },
           "parameters": {
@@ -960,7 +960,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'sysprepVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -969,7 +969,7 @@
                 "asyncExecution": true,
                 "parameters": [],
                 "source": {
-                  "script": "        $ErrorActionPreference = 'Stop'\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
+                  "script": "        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
                 }
               }
             }
@@ -1017,7 +1017,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16249460143298409774"
+              "templateHash": "15500540794576473624"
             }
           },
           "parameters": {
@@ -1044,7 +1044,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'generalizeVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -1252,7 +1252,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "10428531641658303661"
+              "templateHash": "17264141109660054381"
             }
           },
           "parameters": {
@@ -1279,7 +1279,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/runCommands",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'removeVirtualMachine')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
@@ -1373,7 +1373,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "10879950300868978361"
+              "templateHash": "9234689346582944273"
             }
           },
           "parameters": {
@@ -1413,7 +1413,7 @@
           "resources": [
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
-              "apiVersion": "2023-07-01",
+              "apiVersion": "2023-03-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'CustomScriptExtension')]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",

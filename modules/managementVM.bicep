@@ -110,7 +110,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   }
 }
 
-resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
+resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
   name: 'appAzModules'
   location: location
   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}

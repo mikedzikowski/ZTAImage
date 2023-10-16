@@ -45,7 +45,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' existing 
 }
 
 @batchSize(1)
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = [for installer in installers: {
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers: {
   parent: virtualMachine
   name: 'app-${installer.name}'
   location: location
@@ -150,7 +150,7 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01'
   }
 }]
 
-resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installAccess || installExcel || installOneDrive || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
+resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installAccess || installExcel || installOneDrive || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
   parent: virtualMachine
   name: 'office'
   location: location
@@ -308,7 +308,7 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if 
   ]
 }
 
-resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installVirtualDesktopOptimizationTool) {
+resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installVirtualDesktopOptimizationTool) {
   parent: virtualMachine
   name: 'vdot'
   location: location
@@ -374,7 +374,7 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
   ]
 }
 
-// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installFsLogix) {
+// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installFsLogix) {
 //   parent: virtualMachine
 //   name: 'fslogix'
 //   location: location
@@ -404,7 +404,7 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (i
 //   ]
 // }
 
-resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = if (installTeams) {
+resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installTeams) {
   parent: virtualMachine
   name: 'teams'
   location: location

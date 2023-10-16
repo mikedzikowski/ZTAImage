@@ -14,7 +14,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' existing 
   name: virtualMachineName
 }
 
-resource generalizeVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' = {
+resource generalizeVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
   parent: virtualMachine
   name: 'generalizeVirtualMachine'
   location: location

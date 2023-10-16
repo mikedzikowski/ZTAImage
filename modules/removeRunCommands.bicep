@@ -17,7 +17,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-07-01' existing 
   name: virtualMachineName
 }
 
-resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@2023-07-01' = {
+resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   parent: virtualMachine
   name: 'CustomScriptExtension'
   location: location
