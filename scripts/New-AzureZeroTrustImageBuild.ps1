@@ -28,6 +28,15 @@ try
     $AzureContext = (Connect-AzAccount -Environment $Values.environmentName -Subscription $Values.subscriptionId -Tenant $Values.tenantId -Identity -AccountId $Values.userAssignedIdentityClientId).Context
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Connected to Azure."
 
+	# Cleanup previous image build
+	$RunCommandNames = @('generalizeVirtualMachine','removeVirtualMachine','restartVirtualMachine')
+    foreach($RunCommandName in $RunCommandNames)
+    {
+        Remove-AzVMRunCommand -ResourceGroupName $Values.resourceGroupName -VMName $Values.managementVirtualMachineName -RunCommandName $RunCommandName
+        Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Removed '$RunCommandName' Run Command"
+    }
+
+	# Get date on the latest image gallery version
     $CurrentImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $DestinationGalleryResourceGroupName -GalleryName $DestinationGalleryName -GalleryImageDefinitionName $DestinationImageDefinitionName -DefaultProfile $AzureContext | Where-Object {$_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
     Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Compute Gallery Image (Destination), Latest Version Date: $CurrentImageVersionDate."
 	
