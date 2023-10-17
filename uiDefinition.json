@@ -1158,6 +1158,7 @@
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",
+                "tags": "[steps('tags').tags]",
                 "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
                 "userAssignedIdentityName": "[steps('virtualMachines').userAssignedIdentityName]",
                 "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
