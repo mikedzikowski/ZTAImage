@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "8948679376706264441"
+      "templateHash": "17827590760725274255"
     }
   },
   "parameters": {
@@ -1331,116 +1331,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
         "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
-      ]
-    },
-    {
-      "condition": "[parameters('enableBuildAutomation')]",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "[format('remove-run-commands-{0}', parameters('deploymentNameSuffix'))]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "containerName": {
-            "value": "[parameters('containerName')]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
-          },
-          "storageAccountName": {
-            "value": "[parameters('storageAccountName')]"
-          },
-          "storageEndpoint": {
-            "value": "[variables('storageEndpoint')]"
-          },
-          "tags": {
-            "value": "[parameters('tags')]"
-          },
-          "userAssignedIdentityClientId": {
-            "value": "[parameters('userAssignedIdentityClientId')]"
-          },
-          "virtualMachineName": {
-            "value": "[parameters('managementVirtualMachineName')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.22.6.54827",
-              "templateHash": "9234689346582944273"
-            }
-          },
-          "parameters": {
-            "containerName": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            },
-            "tags": {
-              "type": "object"
-            },
-            "storageAccountName": {
-              "type": "string"
-            },
-            "storageEndpoint": {
-              "type": "string"
-            },
-            "timestamp": {
-              "type": "string",
-              "defaultValue": "[utcNow('yyyyMMddhhmmss')]"
-            },
-            "userAssignedIdentityClientId": {
-              "type": "string"
-            },
-            "virtualMachineName": {
-              "type": "string"
-            }
-          },
-          "variables": {
-            "runCommands": [
-              "generalizeVirtualMachine",
-              "removeVirtualMachine",
-              "restartVirtualMachine"
-            ]
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Compute/virtualMachines/extensions",
-              "apiVersion": "2023-03-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'CustomScriptExtension')]",
-              "location": "[parameters('location')]",
-              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
-              "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.10",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "timestamp": "[parameters('timestamp')]"
-                },
-                "protectedSettings": {
-                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File Remove-AzureRunCommands.ps1 -Environment {0} -ResourceGroupName {1} -RunCommands {2} -SubscriptionId {3} -TenantId {4} -UserAssignedIdentityClientId {5} -VirtualMachineName {6}', environment().name, resourceGroup().name, variables('runCommands'), subscription().subscriptionId, tenant().tenantId, parameters('userAssignedIdentityClientId'), parameters('virtualMachineName'))]",
-                  "fileUris": [
-                    "[format('https://{0}.blob.{1}/{2}/Remove-AzureRunCommands.ps1', parameters('storageAccountName'), parameters('storageEndpoint'), parameters('containerName'))]"
-                  ],
-                  "managedIdentity": {
-                    "clientId": "[parameters('userAssignedIdentityClientId')]"
-                  }
-                }
-              }
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', format('remove-vm-{0}', parameters('deploymentNameSuffix')))]"
       ]
     }
   ]

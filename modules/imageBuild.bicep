@@ -186,19 +186,3 @@ module removeVirtualMachine 'removeVirtualMachine.bicep' = {
     imageVersion
   ]
 }
-
-module removeRunCommands 'removeRunCommands.bicep' = if (enableBuildAutomation) {
-  name: 'remove-run-commands-${deploymentNameSuffix}'
-  params: {
-    containerName: containerName
-    location: location
-    storageAccountName: storageAccountName
-    storageEndpoint: storageEndpoint
-    tags: tags
-    userAssignedIdentityClientId: userAssignedIdentityClientId
-    virtualMachineName: managementVirtualMachineName
-  }
-  dependsOn: [
-    removeVirtualMachine
-  ]
-}
