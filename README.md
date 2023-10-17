@@ -10,7 +10,17 @@ graph TD;
 
 ## Prequisites
 
+### Azure Resource Provider Feature for Encryption At Host
+
+This solution adheres to Zero Trust which dictates that all virtual machine disks must be encrypted. The encryption at host feature enables disk encryption on virtual machine temp and cache disks. To use this feature, a resource provider feature must enabled on your Azure subscription. Use the following PowerShell script to enable the feature:
+
+```powershell
+Register-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
+```
+
 ### Software
+
+Ensure the following software is installed on your client workstation:
 
 * [Azure Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep)
 * [Azure PowerShell Modules](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0)
@@ -18,7 +28,10 @@ graph TD;
 ### Upload the following scripts and files to your storage account container
 
 * [Scripts](https://github.com/mikedzikowski/ZTAImage/tree/main/ImageCustomizationScripts)
-* [Az Modules Installers](https://github.com/Azure/azure-powershell/releases/download/v10.2.0-August2023/Az-Cmdlets-10.2.0.37547-x64.msi)
+* [Az.Accounts 2.12.1 PowerShell Module](https://www.powershellgallery.com/api/v2/package/Az.Accounts/2.12.1)
+* [Az.Automation 1.9.0 PowerShell Module](https://www.powershellgallery.com/api/v2/package/Az.Automation/1.9.0)
+* [Az.Compute 5.7.0 PowerShell Module](https://www.powershellgallery.com/api/v2/package/Az.Compute/5.7.0)
+* [Az.Resources 6.6.0 PowerShell Module](https://www.powershellgallery.com/api/v2/package/Az.Resources/6.6.0)
 * [vDot Installers](https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip)
 * [Teams Installer - Commercial](https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true)
 * [Teams Installer - DoD](https://dod.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true)
@@ -26,19 +39,6 @@ graph TD;
 * [Teams Installer - GCCH](https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true)
 * [Microsoft Visual C++ Redistributable](https://aka.ms/vs/16/release/vc_redist.x64.exe)
 * [Remote Desktop WebRTC Redirector Service](https://aka.ms/msrdcwebrtcsvc/msi)
-
-If the above installer Az Modules version is not used, please update the following lines in managementVM.Bicep to match the MSI installer version used in your environment:
-
-```bicep
-var installers = [
-  {
-    name: 'AzModules'
-    blobName: 'Az-Cmdlets-10.2.0.37547-x64.msi'
-    arguments: '/i Az-Cmdlets-10.2.0.37547-x64.msi /qn /norestart'
-    enabled: true
-  }
-]
-```
 
 ### Example Custom Installers
 
@@ -53,10 +53,6 @@ The following resources must exist in your Azure environment before deployment:
   * Private Endpoint
   * Private DNS Zone
   * Blob container with executables, scripts, etc. that are required for the imaging deployment
-* Azure Compute Gallery
-* User Assigned Identity
-  * Role Assignment - "Storage Blob Data Owner" scoped at the storage account or parent resource group
-  * Role Assignment - "Virtual Machine Contributor" scoped at the resource group where the image and management vms will be deployed (or the following action must be allowed for the UAMI - Microsoft.Compute/virtualMachines/generalize/action)
 
 ## Creating Template Spec
 
@@ -164,7 +160,7 @@ Specifies if FsLogix will be installed on the image created.
 Type: Boolean
 ```
 
-#### -InstallOneDriveForBusiness
+#### -InstallOneDrive
 
 Specifies if OneDrive For Business will be installed on the image created.
 

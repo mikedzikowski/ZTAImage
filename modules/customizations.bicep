@@ -1,9 +1,10 @@
 targetScope = 'resourceGroup'
 
 param containerName string
+param customizations array
 param installAccess bool
 param installExcel bool
-param installOneDriveForBusiness bool
+param installOneDrive bool
 param installOneNote bool
 param installOutlook bool
 param installPowerPoint bool
@@ -14,28 +15,22 @@ param installTeams bool
 param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
-param location string = resourceGroup().location
+param location string
+param msrdcwebrtcsvcInstaller string
+param officeInstaller string
 param storageAccountName string
 param storageEndpoint string
-param vmName string
-@allowed([
-  'Commercial'
-  'DepartmentOfDefense'
-  'GovernmentCommunityCloud'
-  'GovernmentCommunityCloudHigh'
-])
-param TenantType string
-param userAssignedIdentityObjectId string
-param customizations array
-param vDotInstaller string
-param officeInstaller string
+param tags object
 param teamsInstaller string
+param userAssignedIdentityObjectId string
 param vcRedistInstaller string
-param msrdcwebrtcsvcInstaller string
+param vDotInstaller string
+param virtualMachineName string
 
 var installAccessVar = '${installAccess}installAccess'
+var installers = customizations
 var installExcelVar = '${installExcel}installWord'
-var installOneDriveForBusinessVar = '${installOneDriveForBusiness}installOneDrive'
+var installOneDriveVar = '${installOneDrive}installOneDrive'
 var installOneNoteVar = '${installOneNote}installOneNote'
 var installOutlookVar = '${installOutlook}installOutlook'
 var installPowerPointVar = '${installPowerPoint}installPowerPoint'
@@ -45,20 +40,19 @@ var installSkypeForBusinessVar = '${installSkypeForBusiness}installSkypeForBusin
 var installVisioVar = '${installVisio}installVisio'
 var installWordVar = '${installWord}installWord'
 
-
-var installers = customizations
-
-resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
-  name: vmName
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' existing = {
+  name: virtualMachineName
 }
 
 @batchSize(1)
-resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers : {
+resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = [for installer in installers: {
+  parent: virtualMachine
   name: 'app-${installer.name}'
   location: location
-  parent: vm
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
     treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
@@ -91,20 +85,18 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
     ]
     source: {
       script: '''
-      param(
-        [string]$UserAssignedIdentityObjectId,
-        [string]$StorageAccountName,
-        [string]$ContainerName,
-        [string]$StorageEndpoint,
-        [string]$BlobName,
-        [string]$Installer,
-        [string]$Arguments
+        param(
+          [string]$UserAssignedIdentityObjectId,
+          [string]$StorageAccountName,
+          [string]$ContainerName,
+          [string]$StorageEndpoint,
+          [string]$BlobName,
+          [string]$Installer,
+          [string]$Arguments
         )
-        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-        $StorageAccountName = $StorageAccountName
-        $ContainerName = $ContainerName
-        $BlobName = $BlobName
-        $StorageAccountUrl = $StorageEndpoint
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         New-Item -Path $env:windir\temp -Name $Installer -ItemType "directory" -Force
@@ -156,14 +148,16 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
       '''
     }
   }
-  dependsOn:[]
 }]
 
-resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installAccess || installExcel || installOneDriveForBusiness || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
+resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installAccess || installExcel || installOneDrive || installOneNote || installOutlook || installPowerPoint || installPublisher || installSkypeForBusiness || installWord || installVisio || installProject) {
+  parent: virtualMachine
   name: 'office'
   location: location
-  parent: vm
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'InstallAccess'
@@ -178,8 +172,8 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
         value: installExcelVar
       }
       {
-        name: 'InstallOneDriveForBusiness'
-        value: installOneDriveForBusinessVar
+        name: 'InstallOneDrive'
+        value: installOneDriveVar
       }
       {
         name: 'InstallOneNote'
@@ -233,62 +227,57 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
     source: {
       script: '''
       param(
-      [string]$InstallAccess,
-      [string]$InstallExcel,
-      [string]$InstallOneDriveForBusiness,
-      [string]$InstallOutlook,
-      [string]$InstallProject,
-      [string]$InstallPublisher,
-      [string]$InstallSkypeForBusiness,
-      [string]$InstallVisio,
-      [string]$InstallWord,
-      [string]$InstallOneNote,
-      [string]$InstallPowerPoint,
-      [string]$UserAssignedIdentityObjectId,
-      [string]$StorageAccountName,
-      [string]$ContainerName,
-      [string]$StorageEndpoint,
-      [string]$BlobName
+        [string]$InstallAccess,
+        [string]$InstallExcel,
+        [string]$InstallOneDrive,
+        [string]$InstallOutlook,
+        [string]$InstallProject,
+        [string]$InstallPublisher,
+        [string]$InstallSkypeForBusiness,
+        [string]$InstallVisio,
+        [string]$InstallWord,
+        [string]$InstallOneNote,
+        [string]$InstallPowerPoint,
+        [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
+        [string]$ContainerName,
+        [string]$StorageEndpoint,
+        [string]$BlobName
       )
-      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-      $StorageAccountName = $StorageAccountName
-      $ContainerName = $ContainerName
-      $BlobName = $BlobName
-      $StorageAccountUrl = $StorageEndpoint
+      $ErrorActionPreference = 'Stop'
+      $WarningPreference = 'SilentlyContinue'
+      $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
       $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
       $sku = (Get-ComputerInfo).OsName
       $o365ConfigHeader = Set-Content "$env:windir\temp\office365x64.xml" '<Configuration><Add OfficeClientEdition="64" Channel="Current">'
       $o365OfficeHeader = Add-Content "$env:windir\temp\office365x64.xml" '<Product ID="O365ProPlusRetail"><Language ID="en-us" /><ExcludeApp ID="Teams"/>'
       if($InstallAccess -notlike '*true*'){
-          $excludeAccess = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Access" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Access" />'
       }
       if($InstallExcel -notlike '*true*'){
-          $excludeExcel = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Excel" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Excel" />'
       }
-      if($InstallOneDriveForBusiness -notlike '*true*'){
-          $excludeOneDriveForBusiness = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Groove" />'
+      if($InstallOneDrive -notlike '*true*'){
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="OneDrive" />'
       }
-      if($InstallOneDriveForBusiness -notlike '*true*'){
-        $excludeOneDriveForBusiness = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Groove" />'
-    }
       if($InstallOneNote -notlike '*true*'){
-          $excludeOneNote = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="OneNote" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="OneNote" />'
       }
       if($InstallOutlook -notlike '*true*'){
-          $excludeOutlook = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Outlook" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Outlook" />'
       }
       if($InstallPowerPoint -notlike '*true*'){
-          $excludePowerPoint = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="PowerPoint" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="PowerPoint" />'
       }
       if($InstallPublisher -notlike '*true*'){
-          $excludePublisher = Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Publisher" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Publisher" />'
       }
       if($InstallSkypeForBusiness -notlike '*true*'){
-          $excludeSkypeForBusiness= Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Lync" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Lync" />'
       }
       if($InstallWord -notlike '*true*'){
-          $excludeSkypeForBusiness= Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Word" />'
+          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Word" />'
       }
       $addOfficefooter = Add-Content "$env:windir\temp\office365x64.xml" '</Product>'
       if($InstallProject -like '*true*'){
@@ -297,12 +286,11 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
       if($InstallVisio -like '*true*'){
         Add-Content "$env:windir\temp\office365x64.xml" '<Product ID="VisioProRetail"><Language ID="en-us" /></Product>'
       }
-      $o365Settings = Add-Content "$env:windir\temp\office365x64.xml" '</Add><Updates Enabled="FALSE" /><Display Level="None" AcceptEULA="TRUE" /><Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>'
+      Add-Content "$env:windir\temp\office365x64.xml" '</Add><Updates Enabled="FALSE" /><Display Level="None" AcceptEULA="TRUE" /><Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>'
       $PerMachineConfiguration = if(($Sku).Contains("multi") -eq "true"){
-          $o365SharedActivation = Add-Content "$env:windir\temp\office365x64.xml" '<Property Name="SharedComputerLicensing" Value="1"/>'
+          Add-Content "$env:windir\temp\office365x64.xml" '<Property Name="SharedComputerLicensing" Value="1"/>'
       }
-      $o365Configfooter = Add-Content "$env:windir\temp\office365x64.xml" '</Configuration>'
-      $ErrorActionPreference = "Stop"
+      Add-Content "$env:windir\temp\office365x64.xml" '</Configuration>'
       $Installer = "$env:windir\temp\office.exe"
       #$DownloadLinks = Invoke-WebRequest -Uri "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117" -UseBasicParsing
       #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like "https://download.microsoft.com/download/*officedeploymenttool*"} | Select-Object -First 1
@@ -320,11 +308,14 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if 
   ]
 }
 
-resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installVirtualDesktopOptimizationTool) {
+resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installVirtualDesktopOptimizationTool) {
+  parent: virtualMachine
   name: 'vdot'
   location: location
-  parent: vm
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
       {
         name: 'UserAssignedIdentityObjectId'
@@ -349,25 +340,22 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
     ]
     source: {
       script: '''
-      param(
-        [string]$UserAssignedIdentityObjectId,
-        [string]$StorageAccountName,
-        [string]$ContainerName,
-        [string]$StorageEndpoint,
-        [string]$BlobName
+        param(
+          [string]$UserAssignedIdentityObjectId,
+          [string]$StorageAccountName,
+          [string]$ContainerName,
+          [string]$StorageEndpoint,
+          [string]$BlobName
         )
-        $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-        $StorageAccountName = $StorageAccountName
-        $ContainerName = $ContainerName
-        $BlobName = $BlobName
-        $StorageAccountUrl = $StorageEndpoint
+        $ErrorActionPreference = 'Stop'
+        $WarningPreference = 'SilentlyContinue'
+        $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         $ZIP = "$env:windir\temp\VDOT.zip"
         Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ZIP
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp
-        $ErrorActionPreference = "Stop"
         Unblock-File -Path $ZIP
         Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp" -Force
         $Path = (Get-ChildItem -Path "$env:windir\temp" -Recurse | Where-Object {$_.Name -eq "Windows_VDOT.ps1"}).FullName
@@ -375,7 +363,6 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
         $ScriptUpdate = $Script.Replace("Set-NetAdapterAdvancedProperty","#Set-NetAdapterAdvancedProperty")
         $ScriptUpdate | Set-Content -Path $Path
         & $Path -Optimizations @("AppxPackages","Autologgers","DefaultUserSettings","LGPO";"NetworkOptimizations","ScheduledTasks","Services","WindowsMediaPlayer") -AdvancedOptimizations "All" -AcceptEULA
-        Write-Host "Optimized the operating system using the Virtual Desktop Optimization Tool"
       '''
     }
     timeoutInSeconds: 640
@@ -387,11 +374,14 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
   ]
 }
 
-// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installFsLogix) {
+// resource fslogix 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installFsLogix) {
+//   parent: virtualMachine
 //   name: 'fslogix'
 //   location: location
-//   parent: vm
+//   tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
 //   properties: {
+//     treatFailureAsDeploymentFailure: true
+//     asyncExecution: false
 //     source: {
 //       script: '''
 //       $ErrorActionPreference = "Stop"
@@ -414,16 +404,15 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (i
 //   ]
 // }
 
-resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (installTeams) {
+resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installTeams) {
+  parent: virtualMachine
   name: 'teams'
   location: location
-  parent: vm
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
   properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
     parameters: [
-      {
-        name: 'TenantType'
-        value: TenantType
-      }
       {
         name: 'UserAssignedIdentityObjectId'
         value: userAssignedIdentityObjectId
@@ -456,7 +445,6 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
     source: {
       script: '''
       param(
-        [string]$TenantType,
         [string]$UserAssignedIdentityObjectId,
         [string]$StorageAccountName,
         [string]$ContainerName,
@@ -464,29 +452,10 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
         [string]$BlobName,
         [string]$BlobName2,
         [string]$BlobName3
-        )
-      If($TenantType -eq "Commercial")
-      {
-        $TeamsUrl = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-      }
-      If($TenantType -eq "DepartmentOfDefense")
-      {
-        $TeamsUrl = "https://dod.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-      }
-      If($TenantType -eq "GovernmentCommunityCloud")
-      {
-        $TeamsUrl = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&ring=general_gcc&download=true"
-      }
-      If($TenantType -eq "GovernmentCommunityCloudHigh")
-      {
-        $TeamsUrl = "https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-      }
-      Write-Host $($TeamsUrl)
-      $UserAssignedIdentityObjectId = $UserAssignedIdentityObjectId
-      $StorageAccountName = $StorageAccountName
-      $ContainerName = $ContainerName
-      $BlobName = $BlobName
-      $StorageAccountUrl = $StorageEndpoint
+      )
+      $ErrorActionPreference = 'Stop'
+      $WarningPreference = 'SilentlyContinue'
+      $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
       $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
       $vcRedistFile = "$env:windir\temp\vc_redist.x64.exe"
@@ -528,5 +497,3 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = if (
     office
   ]
 }
-
-output TenantType string = TenantType

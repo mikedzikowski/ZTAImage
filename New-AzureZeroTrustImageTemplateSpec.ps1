@@ -11,10 +11,10 @@ param (
 )
 
 New-AzTemplateSpec `
-    -Name ZTA `
-    -ResourceGroupName test2_group `
+    -Name $TemplateSpecName `
+    -ResourceGroupName $ResourceGroupName `
     -Version '1.0' `
-    -Location usgovvirginia `
+    -Location $Location `
     -DisplayName "Zero Trust Image Template" `
     -TemplateFile '.\solution.json' `
     -UIFormDefinitionFile '.\uiDefinition.json' `

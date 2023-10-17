@@ -3,69 +3,151 @@
     "view": {
         "kind": "Form",
         "properties": {
-            "title": "Zero Trust Imaging",
+            "title": "Zero Trust Image Build Solution",
             "steps": [
                 {
                     "name": "basics",
                     "label": "Basics",
                     "elements": [
                         {
-                            "name": "scope",
-                            "type": "Microsoft.Common.ResourceScope",
-                            "location": {
-                                "resourceTypes": []
-                            },
-                            "resourceTypeMetadata": []
-                        }
-                    ]
-                },
-                {
-                    "name": "info",
-                    "label": "Zero Trust Image Resources",
-                    "elements": [
-                        {
-                            "name": "infoPreReq",
+                            "name": "prerequisites",
                             "type": "Microsoft.Common.InfoBox",
                             "options": {
-                                "text": "Prior to deployment, make sure you meet the prerequisites outlined in the resource pre-reqs section in Zero Trust Image solution documentation:",
+                                "text": "Prior to deployment, make sure you meet the prerequisites outlined in the resource pre-reqs section in Zero Trust Image solution documentation.",
                                 "uri": "https://github.com/mikedzikowski/ZTAImage#prequisites",
                                 "icon": "Warning"
                             }
                         },
                         {
-                            "name": "resources",
+                            "name": "scope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        },
+                        {
+                            "name": "resourceGroupsApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "[concat(steps('basics').scope.subscription.id, '/resourceGroups?api-version=2021-04-01')]"
+                            }
+                        },
+                        {
+                            "name": "resourceGroup",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Existing resource group",
+                            "multiselect": false,
+                            "defaultValue": "",
+                            "toolTip": "Select the name of the existing resource group where the image will be created. Recommended to use the same resource group where the compute gallery resides.",
+                            "filterPlaceholder": "",
+                            "defaultDescription": "",
+                            "constraints": {
+                                "allowedValues": "[map(steps('basics').resourceGroupsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                "required": true
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "source",
+                    "label": "Source",
+                    "elements": [
+                        {
+                            "name": "type",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Type of image",
+                            "defaultValue": "Azure Marketplace",
+                            "toolTip": "Select the desired Azure service for the source image.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Azure Compute Gallery",
+                                        "value": "AzureComputeGallery"
+                                    },
+                                    {
+                                        "label": "Azure Marketplace",
+                                        "value": "AzureMarketplace"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "marketplace",
                             "type": "Microsoft.Common.Section",
-                            "label": "Existing Resources",
+                            "label": "Azure Marketplace",
+                            "visible": "[equals(steps('source').type, 'AzureMarketplace')]",
                             "elements": [
                                 {
-                                    "name": "ResourceGroupsApi",
-                                    "type": "Microsoft.Solutions.ArmApiControl",
-                                    "request": {
-                                        "method": "GET",
-                                        "path": "[concat(steps('basics').scope.subscription.id, '/resourceGroups?api-version=2021-04-01')]"
+                                    "name": "publisher",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Image Publisher",
+                                    "defaultValue": "MicrosoftWindowsDesktop",
+                                    "visible": true,
+                                    "constraints": {
+                                        "required": true
                                     }
                                 },
                                 {
-                                    "name": "resourceGroup",
+                                    "name": "offer",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "Deployment Resource Group",
-                                    "multiselect": false,
-                                    "defaultValue": "",
-                                    "toolTip": "Select the name of the existing resource group where the image will be created. Recommended to use the same resource group where the compute gallery resides.",
-                                    "filterPlaceholder": "",
-                                    "defaultDescription": "",
+                                    "label": "Offer",
+                                    "defaultValue": "Windows 11",
+                                    "toolTip": "Select the desired marketplace image offer.",
                                     "constraints": {
-                                        "allowedValues": "[map(steps('info').resources.ResourceGroupsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "allowedValues": [
+                                            {
+                                                "label": "Office 365",
+                                                "value": "office-365"
+                                            },
+                                            {
+                                                "label": "Windows 10",
+                                                "value": "Windows-10"
+                                            },
+                                            {
+                                                "label": "Windows 11",
+                                                "value": "windows-11"
+                                            }
+                                        ],
                                         "required": true
-                                    },
-                                    "infoMessages": [],
-                                    "visible": true
+                                    }
                                 },
                                 {
-                                    "name": "storageSelector",
+                                    "name": "skuApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/MicrosoftWindowsDesktop/artifacttypes/vmimage/offers/', steps('source').marketplace.offer, '/skus?api-version=2022-08-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "sku",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "SKU",
+                                    "defaultValue": "win11-22h2-avd",
+                                    "toolTip": "Select the desired marketplace image SKU.",
+                                    "constraints": {
+                                        "allowedValues": "[map(steps('source').marketplace.skuApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "required": true
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "gallery",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Compute Gallery",
+                            "visible": "[equals(steps('source').type, 'AzureComputeGallery')]",
+                            "elements": [
+                                {
+                                    "name": "gallery",
                                     "type": "Microsoft.Solutions.ResourceSelector",
-                                    "label": "Select storage account",
-                                    "resourceType": "Microsoft.Storage/storageAccounts",
+                                    "label": "Compute gallery",
+                                    "resourceType": "Microsoft.Compute/galleries",
                                     "options": {
                                         "filter": {
                                             "subscription": "onBasics",
@@ -74,171 +156,84 @@
                                     }
                                 },
                                 {
-                                    "name": "containerApi",
+                                    "name": "imageDefinitionApi",
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
                                         "method": "GET",
-                                        "path": "[concat(steps('info').resources.storageSelector.id, '/blobServices/default/containers?api-version=2023-01-01')]"
+                                        "path": "[concat(steps('source').gallery.gallery.id, '/images?api-version=2022-03-03')]"
                                     }
                                 },
                                 {
-                                    "name": "container",
+                                    "name": "imageDefinition",
                                     "type": "Microsoft.Common.DropDown",
-                                    "visible": true,
-                                    "label": "Container",
+                                    "label": "Image Definition",
                                     "defaultValue": "",
-                                    "toolTip": "Select an existing container.",
+                                    "toolTip": "Select the desired image definition.",
                                     "constraints": {
-                                        "required": true,
-                                        "allowedValues": "[map(steps('info').resources.containerApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                                        "allowedValues": "[map(steps('source').gallery.imageDefinitionApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+                                        "required": true
                                     }
                                 }
                             ]
-                        },
+                        }
+                    ]
+                },
+                {
+                    "name": "destination",
+                    "label": "Destination",
+                    "elements": [
                         {
-                            "name": "managedIdentity",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Select user assigned identity",
-                            "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
-                            "options": {
-                                "filter": {
-                                    "subscription": "onBasics",
-                                    "location": "onBasics"
-                                }
-                            }
-                        },
-                        {
-                            "name": "network",
-                            "type": "Microsoft.Common.Section",
-                            "label": "Network",
-                            "visible": true,
-                            "elements": [
-                                {
-                                    "name": "virtualNetworksApi",
-                                    "type": "Microsoft.Solutions.ArmApiControl",
-                                    "request": {
-                                        "method": "GET",
-                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Network/virtualNetworks?api-version=2022-11-01')]"
-                                    }
-                                },
-                                {
-                                    "name": "virtualNetwork",
-                                    "type": "Microsoft.Common.DropDown",
-                                    "visible": true,
-                                    "label": "Virtual Network",
-                                    "defaultValue": "",
-                                    "toolTip": "Select an existing virtual network for image capture.",
-                                    "constraints": {
-                                        "required": true,
-                                        "allowedValues": "[map(filter(steps('info').network.virtualNetworksApi.value, (item) => equals(item.location, steps('basics').scope.location.name)), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
-                                    }
-                                },
-                                {
-                                    "name": "subnetsApi",
-                                    "type": "Microsoft.Solutions.ArmApiControl",
-                                    "request": {
-                                        "method": "GET",
-                                        "path": "[concat(steps('info').network.virtualNetwork, '/subnets?api-version=2022-05-01')]"
-                                    }
-                                },
-                                {
-                                    "name": "subnet",
-                                    "type": "Microsoft.Common.DropDown",
-                                    "visible": true,
-                                    "label": "Subnet",
-                                    "defaultValue": "",
-                                    "toolTip": "Select an existing subnet for the image capture.",
-                                    "constraints": {
-                                        "required": true,
-                                        "allowedValues": "[map(steps('info').network.subnetsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "gallery",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Select compute gallery",
-                            "resourceType": "Microsoft.Compute/galleries",
-                            "options": {
-                                "filter": {
-                                    "subscription": "onBasics",
-                                    "location": "onBasics"
-                                }
-                            }
-                        },
-                        {
-                            "name": "TenantType",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Tenant Type",
-                            "placeholder": "",
-                            "defaultValue": [],
-                            "toolTip": "Multiple values can be selected",
-                            "multiselect": false,
-                            "selectAll": true,
-                            "filter": true,
-                            "filterPlaceholder": "Filter items ...",
+                            "name": "computeGalleryName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Compute gallery name",
+                            "defaultValue": "",
+                            "placeholder": "Example: cg_avd_d_eu",
+                            "toolTip": "Inpute the name for the Compute Gallery.",
                             "multiLine": false,
-                            "defaultDescription": "Select your Azure Tenant type",
                             "constraints": {
-                                "allowedValues": [
+                                "required": true,
+                                "validations": [
                                     {
-                                        "label": "Commercial",
-                                        "description": "Azure Commercial Tenant Type",
-                                        "value": "Commercial"
-                                    },
-                                    {
-                                        "label": "DepartmentOfDefense",
-                                        "description": "Azure DepartmentOfDefense Tenant Type",
-                                        "value": "DepartmentOfDefense"
-                                    },
-                                    {
-                                        "label": "GovernmentCommunityCloud",
-                                        "description": "Azure GovernmentCommunityCloud Tenant Type",
-                                        "value": "GovernmentCommunityCloud"
-                                    },
-                                    {
-                                        "label": "GovernmentCommunityCloudHigh",
-                                        "description": "Azure GovernmentCommunityCloudHigh Tenant Type",
-                                        "value": "GovernmentCommunityCloudHigh"
+                                        "regex": "^(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\._]{0,78}[a-zA-Z0-9])$",
+                                        "message": "The value must be between 1 - 80 characters. The value may only contain alphanumerics, periods, and underscores. The value must start and end with an alphanumeric."
                                     }
-                                ],
-                                "required": true
+                                ]
                             },
                             "visible": true
                         },
                         {
-                            "name": "image",
+                            "name": "imageDefinitionNamePrefix",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Image definition name prefix",
+                            "defaultValue": "",
+                            "placeholder": "Example: developer"
+                        },
+                        {
+                            "name": "imageVersion",
                             "type": "Microsoft.Common.Section",
-                            "label": "Image",
+                            "label": "Image version",
                             "elements": [
                                 {
-                                    "name": "excludeFromLatest",
-                                    "type": "Microsoft.Common.OptionsGroup",
-                                    "label": "Exclude Image From Latest",
-                                    "defaultValue": "false",
-                                    "toolTip": "Exclude Image From Latest",
+                                    "name": "replicaCount",
+                                    "type": "Microsoft.Common.Slider",
+                                    "min": 1,
+                                    "max": 50,
+                                    "label": "Replica count",
+                                    "subLabel": "count",
+                                    "defaultValue": 1,
+                                    "showStepMarkers": false,
+                                    "toolTip": "Regional replica count which specifies the number of replicas you want to create per region",
                                     "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "true",
-                                                "value": "true"
-                                            },
-                                            {
-                                                "label": "false",
-                                                "value": "false"
-                                            }
-                                        ],
-                                        "required": true
+                                        "required": false
                                     },
                                     "visible": true
                                 },
                                 {
-                                    "name": "name",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Image Name",
-                                    "defaultValue": "",
-                                    "placeholder": "Example: developerImage"
+                                    "name": "excludeFromLatest",
+                                    "type": "Microsoft.Common.CheckBox",
+                                    "label": "Exclude from latest",
+                                    "defaultValue": true,
+                                    "toolTip": "Determines whether the image version will be the latest available version."
                                 },
                                 {
                                     "name": "majorVersion",
@@ -271,108 +266,207 @@
                                     },
                                     "visible": true,
                                     "required": true
-                                },
-                                {
-                                    "name": "offer",
-                                    "type": "Microsoft.Common.DropDown",
-                                    "label": "Offer",
-                                    "defaultValue": "Windows 11",
-                                    "toolTip": "Select the desired marketplace image offer.",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "Office 365",
-                                                "value": "office-365"
-                                            },
-                                            {
-                                                "label": "Windows 10",
-                                                "value": "Windows-10"
-                                            },
-                                            {
-                                                "label": "Windows 11",
-                                                "value": "windows-11"
-                                            }
-                                        ],
-                                        "required": true
-                                    }
-                                },
-                                {
-                                    "name": "skuApi",
-                                    "type": "Microsoft.Solutions.ArmApiControl",
-                                    "request": {
-                                        "method": "GET",
-                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/MicrosoftWindowsDesktop/artifacttypes/vmimage/offers/', steps('info').image.offer, '/skus?api-version=2022-08-01')]"
-                                    }
-                                },
-                                {
-                                    "name": "sku",
-                                    "type": "Microsoft.Common.DropDown",
-                                    "label": "SKU",
-                                    "defaultValue": "win11-22h2-avd",
-                                    "toolTip": "Select the desired marketplace image SKU.",
-                                    "constraints": {
-                                        "allowedValues": "[map(steps('info').image.skuApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
-                                        "required": true
-                                    }
-                                },
-                                {
-                                    "name": "publisher",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Image Publisher",
-                                    "defaultValue": "MicrosoftWindowsDesktop",
-                                    "placeholder": "Example: MicrosoftWindowsDesktop",
-                                    "visible": true,
-                                    "constraints": {
-                                        "required": true
-                                    }
-                                },
-                                {
-                                    "name": "replicaCount",
-                                    "type": "Microsoft.Common.Slider",
-                                    "min": 1,
-                                    "max": 50,
-                                    "label": "Replica count",
-                                    "subLabel": "count",
-                                    "defaultValue": 1,
-                                    "showStepMarkers": false,
-                                    "toolTip": "Regional replica count which specifies the number of replicas you want to create per region",
-                                    "constraints": {
-                                        "required": false
-                                    },
-                                    "visible": true
-                                },
-                                {
-                                    "name": "vmSizesApi",
-                                    "type": "Microsoft.Solutions.ArmApiControl",
-                                    "request": {
-                                        "method": "GET",
-                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/vmSizes?api-version=2023-03-01')]"
-                                    }
-                                },
-                                {
-                                    "name": "vmSize",
-                                    "type": "Microsoft.Compute.SizeSelector",
-                                    "label": "Virtual Machine Size",
-                                    "toolTip": "",
-                                    "recommendedSizes": [
-                                        "Standard_D4_v4"
-                                    ],
-                                    "constraints": {},
-                                    "options": {
-                                        "hideDiskTypeFilter": false
-                                    },
-                                    "osPlatform": "Windows",
-                                    "visible": true
                                 }
                             ]
                         }
                     ]
                 },
                 {
+                    "name": "storage",
+                    "label": "Storage",
+                    "elements": [
+                        {
+                            "name": "storageSelector",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Select storage account",
+                            "resourceType": "Microsoft.Storage/storageAccounts",
+                            "options": {
+                                "filter": {
+                                    "subscription": "onBasics",
+                                    "location": "onBasics"
+                                }
+                            }
+                        },
+                        {
+                            "name": "containerApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "[concat(steps('storage').storageSelector.id, '/blobServices/default/containers?api-version=2023-01-01')]"
+                            }
+                        },
+                        {
+                            "name": "container",
+                            "type": "Microsoft.Common.DropDown",
+                            "visible": true,
+                            "label": "Container",
+                            "defaultValue": "",
+                            "toolTip": "Select an existing container.",
+                            "constraints": {
+                                "required": true,
+                                "allowedValues": "[map(steps('storage').containerApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "virtualMachines",
+                    "label": "Virtual Machines",
+                    "elements": [
+                        {
+                            "name": "userAssignedIdentityName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "User assigned identity name",
+                            "defaultValue": "",
+                            "toolTip": "Input the name for the User Assigned Identity.",
+                            "placeholder": "Example: uai-image-d-eu",
+                            "multiLine": false,
+                            "constraints": {
+                                "required": true,
+                                "validations": [
+                                    {
+                                        "regex": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,127}$",
+                                        "message": " The value must be between 2 - 127 characters. The value may only contain alphanumerics, hyphens, and underscores. The value must start with an alphanumeric."
+                                    }
+                                ]
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "network",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network",
+                            "visible": true,
+                            "elements": [
+                                {
+                                    "name": "virtualNetworksApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Network/virtualNetworks?api-version=2022-11-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "virtualNetwork",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Virtual Network",
+                                    "defaultValue": "",
+                                    "toolTip": "Select an existing virtual network for image capture.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(filter(steps('virtualMachines').network.virtualNetworksApi.value, (item) => equals(item.location, steps('basics').scope.location.name)), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
+                                },
+                                {
+                                    "name": "subnetsApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('virtualMachines').network.virtualNetwork, '/subnets?api-version=2022-05-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "subnet",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Subnet",
+                                    "defaultValue": "",
+                                    "toolTip": "Select an existing subnet for the image capture.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(steps('virtualMachines').network.subnetsApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "vmSizesApi",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/vmSizes?api-version=2023-03-01')]"
+                            }
+                        },
+                        {
+                            "name": "vmSize",
+                            "type": "Microsoft.Compute.SizeSelector",
+                            "label": "Virtual machine size",
+                            "toolTip": "Select the virtual machine ",
+                            "recommendedSizes": [
+                                "Standard_D4s_v4"
+                            ],
+                            "constraints": {},
+                            "options": {
+                                "hideDiskTypeFilter": false
+                            },
+                            "osPlatform": "Windows",
+                            "visible": true
+                        },
+                        {
+                            "name": "localAdminCredentials",
+                            "type": "Microsoft.Common.Section",
+                            "visible": true,
+                            "label": "Local administrator credential",
+                            "elements": [
+                                {
+                                    "name": "username",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Username",
+                                    "defaultValue": "",
+                                    "placeholder": "Example: xadmin",
+                                    "toolTip": "Input the username for the local administrator account.",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "",
+                                        "validationMessage": ""
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "password",
+                                    "type": "Microsoft.Common.PasswordBox",
+                                    "label": {
+                                        "password": "Password",
+                                        "confirmPassword": "Confirm Password"
+                                    },
+                                    "toolTip": "Input the password for the local administrator account.",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_!*<>()])(?=\\S+$).{12,123}$",
+                                        "validationMessage": "The value must be within 12 to 123 characters, be alphanumeric, and include 1 lower case character, 1 upper case character, 1 number, and 1 special character that is not '\\' or '-'."
+                                    },
+                                    "options": {
+                                        "hideConfirmation": false
+                                    },
+                                    "visible": true
+                                }
+                            ]
+                        },
+                        {
+                            "name": "hybridUseBenefit",
+                            "type": "Microsoft.Common.CheckBox",
+                            "label": "Enable hybrid use benefit",
+                            "defaultValue": false,
+                            "toolTip": "Enables the hybrid use benefit to reduce the cost of Azure virutal machines when the appropriate licensing and software assurance has been purchased."
+                        },
+                        {
+                            "name": "diskEncryptionSetSelector",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Select disk encryption set",
+                            "resourceType": "Microsoft.Compute/diskEncryptionSets",
+                            "options": {
+                                "filter": {
+                                    "subscription": "onBasics",
+                                    "location": "onBasics"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
                     "name": "customizations",
-                    "type": "Microsoft.Common.Section",
                     "label": "Customizations",
-                    "visible": true,
                     "elements": [
                         {
                             "name": "customSoftware",
@@ -457,7 +551,7 @@
                                                         "value": "text"
                                                     }
                                                 ],
-                                                "required": false 
+                                                "required": false
                                             }
                                         }
                                     }
@@ -547,7 +641,7 @@
                                     "visible": "[steps('customizations').office.installOffice]"
                                 },
                                 {
-                                    "name": "installOneDriveForBusiness",
+                                    "name": "installOneDrive",
                                     "type": "Microsoft.Common.OptionsGroup",
                                     "label": "Install One Dive For Business",
                                     "defaultValue": "false",
@@ -840,23 +934,202 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "automation",
+                    "label": "Build Automation",
+                    "elements": [
+                        {
+                            "name": "enable",
+                            "type": "Microsoft.Common.CheckBox",
+                            "label": "Enable Build Automation",
+                            "defaultValue": true,
+                            "toolTip": "Enables the automation of image builds using an Automation Account in a zero trust compliant configuration."
+                        },
+                        {
+                            "name": "automationAccount",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Automation account name",
+                            "toolTip": "Input the name for the automation account.",
+                            "visible": "[steps('automation').enable]",
+                            "placeholder": "Example: aa-image-d-eu",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-zA-Z][a-zA-Z0-9-]{4,48}[a-zA-Z0-9]$",
+                                "validationMessage": "The value must be 6 - 50 characters in length. The value must contain alphanumerics and hyphens, start with a letter, and end with an alphanumeric."
+                            }
+                        },
+                        {
+                            "name": "automationPrivateDnsZone",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Existing automation private DNS zone",
+                            "resourceType": "Microsoft.Network/privateDnsZones",
+                            "options": {}
+                        },
+                        {
+                            "name": "keyVault",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Key vault name",
+                            "toolTip": "Input the name for the key vault.",
+                            "visible": "[steps('automation').enable]",
+                            "placeholder": "Example: kv-image-d-eu",
+                            "constraints": {
+                                "required": true,
+                                "regex": "^(?!.*-{2}.*)([a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9])$",
+                                "validationMessage": "The value must be 3 - 24 characters in length. The value must contain alphanumerics and hyphens, start with a letter, and end with an alphanumeric."
+                            }
+                        },
+                        {
+                            "name": "keyVaultPrivateDnsZone",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "label": "Existing key vault private DNS zone",
+                            "resourceType": "Microsoft.Network/privateDnsZones",
+                            "options": {}
+                        },
+                        {
+                            "name": "hybridWorker",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Hybrid Worker",
+                            "visible": "[steps('automation').enable]",
+                            "elements": [
+                                {
+                                    "name": "name",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "label": "Virtual machine name",
+                                    "toolTip": "Input a custom name for the virtual machine.",
+                                    "placeholder": "Example: vmhwimagedeu",
+                                    "constraints": {
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "domainJoin",
+                                    "type": "Microsoft.Common.CheckBox",
+                                    "label": "Domain Join",
+                                    "defaultValue": true,
+                                    "toolTip": "Enables the automation of image builds using an Automation Account in a zero trust compliant configuration."
+                                },
+                                {
+                                    "name": "domainName",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "label": "Domain Name",
+                                    "toolTip": "Provide the domain name for Active Directory Domain Services.",
+                                    "placeholder": "Example: contoso.com",
+                                    "constraints": {
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "ouPath",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "label": "OU Path",
+                                    "toolTip": "Input the distinguished name of the desired organization unit for the AVD session hosts.",
+                                    "placeholder": "Example: OU=imaging,OU=avd,DC=contoso,DC=com",
+                                    "constraints": {
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "domainJoinUserPrincipalName",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Domain join user principal name",
+                                    "toolTip": "Enter the user principal name with domain join privileges.",
+                                    "placeholder": "Example: domainjoin@contoso.com",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "^[a-z0-9A-Z_.-]+@(?:[a-z0-9]+\\.)+[a-z]+$",
+                                        "validationMessage": "The value must be a valid user principal name."
+                                    }
+                                },
+                                {
+                                    "name": "domainJoinPassword",
+                                    "type": "Microsoft.Common.PasswordBox",
+                                    "label": {
+                                        "password": "Password"
+                                    },
+                                    "toolTip": "Enter a password that is alphanumeric, contains at least 12 characters, 1 letter, 1 number and 1 special character.",
+                                    "constraints": {
+                                        "required": true
+                                    },
+                                    "options": {
+                                        "hideConfirmation": true
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "monitoring",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Monitoring",
+                            "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                            "elements": [
+                                {
+                                    "name": "enable",
+                                    "type": "Microsoft.Common.CheckBox",
+                                    "visible": true,
+                                    "label": "Enable monitoring",
+                                    "defaultValue": false,
+                                    "toolTip": "Deploy the required resources to enable monitoring for the automation runbook."
+                                },
+                                {
+                                    "name": "logAnalyticsWorkspace",
+                                    "type": "Microsoft.Solutions.ResourceSelector",
+                                    "label": "Existing Log Analytics Workspace for Security",
+                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "resourceType": "Microsoft.OperationalInsights/workspaces",
+                                    "toolTip": "Select the log analytics workspace used for collecting security data for Sentinel or Defender for Cloud. This is required to multihome the Microsoft Monitoring Agent.",
+                                    "options": {}
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "tags",
+                    "label": "Tags",
+                    "elements": [
+                        {
+                            "name": "tags",
+                            "type": "Microsoft.Common.TagsByResource",
+                            "resources": [
+                                "Microsoft.Automation/automationAccounts",
+                                "Microsoft.Compute/galleries",
+                                "Microsoft.Compute/virtualMachines",
+                                "Microsoft.KeyVault/vaults",
+                                "Microsoft.ManagedIdentity/userAssignedIdentities",
+                                "Microsoft.Network/networkInterfaces",
+                                "Microsoft.Network/privateEndpoints",
+                                "Microsoft.Resources/templateSpecs"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         "outputs": {
             "parameters": {
-                "containerName": "[first(skip(split(steps('info').resources.container, '/'), 12))]",
+                "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
+                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.id, '')]",
+                "computeGalleryName": "[steps('destination').computeGalleryName]",
+                "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
-                "excludeFromLatest": "[steps('info').image.excludeFromLatest]",
-                "galleryName": "[steps('info').gallery.name]",
-                "galleryResourceGroup": "[first(skip(split(steps('info').gallery.id, '/'), 4))]",
-                "imageName": "[steps('info').image.name]",
-                "imageMajorVersion": "[steps('info').image.majorVersion]",
-                "imageMinorVersion": "[steps('info').image.minorVersion]",
-                "imageVmRg": "[steps('info').resources.resourceGroup]",
+                "diskEncryptionSetResourceId": "[steps('virtualMachines').diskEncryptionSetSelector.id]",
+                "domainJoinPassword": "[steps('automation').hybridWorker.domainJoinPassword]",
+                "domainJoinUserPrincipalName": "[steps('automation').hybridWorker.domainJoinUserPrincipalName]",
+                "domainName": "[if(steps('automation').enable, steps('automation').hybridWorker.domainName, '')]",
+                "enableBuildAutomation": "[steps('automation').enable]",
+                "excludeFromLatest": "[steps('destination').imageVersion.excludeFromLatest]",
+                "hybridUseBenefit": "[steps('virtualMachines').hybridUseBenefit]",
+                "hybridWorkerName": "[if(steps('automation').enable, steps('automation').hybridWorker.name, '')]",
+                "imageDefinitionNamePrefix": "[steps('destination').imageDefinitionNamePrefix]",
+                "imageMajorVersion": "[steps('destination').imageVersion.majorVersion]",
+                "imageMinorVersion": "[steps('destination').imageVersion.minorVersion]",
                 "installAccess": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installAccess,'false')]",
                 "installExcel": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installExcel,'false')]",
-                "installOneDriveForBusiness": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDriveForBusiness,'false')]",
+                "installOneDrive": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDrive,'false')]",
                 "installOneNote": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneNote,'false')]",
                 "installOutlook": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOutlook,'false')]",
                 "installPowerPoint": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installPowerPoint,'false')]",
@@ -867,27 +1140,30 @@
                 "installVirtualDesktopOptimizationTool": "[steps('customizations').office.installVirtualDesktopOptimizationTool]",
                 "installVisio": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installVisio,'false')]",
                 "installWord": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installWord,'false')]",
+                "keyVaultName": "[if(steps('automation').enable, steps('automation').keyVault, '')]",
+                "keyVaultPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').keyVaultPrivateDnsZone.id, '')]",
+                "localAdministratorPassword": "[steps('virtualMachines').localAdminCredentials.password]",
+                "localAdministratorUsername": "[steps('virtualMachines').localAdminCredentials.username]",
                 "location": "[steps('basics').scope.location.name]",
-                "managementVmRg": "[steps('info').resources.resourceGroup]",
-                "miName": "[steps('info').managedIdentity.name]",
-                "miResourceGroup": "[first(skip(split(steps('info').managedIdentity.id, '/'), 4))]",
-                "offer": "[steps('info').image.offer]",
-                "OsVersion": "[steps('info').image.sku]",
-                "publisher": "[steps('info').image.publisher]",
-                "saResourceGroup": "[first(skip(split(steps('info').resources.storageSelector.id, '/'), 4))]",
-                "sku": "[steps('info').image.sku]",
-                "storageAccountName": "[steps('info').resources.storageSelector.name]",
-                "subnetName": "[first(skip(split(steps('info').network.subnet, '/'), 10))]",
-                "TenantType": "[steps('info').TenantType]",
-                "virtualNetworkName": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 8))]",
-                "virtualNetworkResourceGroup": "[first(skip(split(steps('info').network.virtualNetwork, '/'), 4))]",
-                "vmSize": "[steps('info').image.vmSize]",
-                "vDotInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]",
-                "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
-                "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
-                "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
+                "logAnalyticsWorkspaceResourceId": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.logAnalyticsWorkspace.id, '')]",
+                "marketplaceImageOffer": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.offer, '')]",
+                "marketplaceImagePublisher": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.publisher, '')]",
+                "marketplaceImageSKU": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.sku, '')]",
                 "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]",
-                "replicaCount": "[steps('info').image.replicaCount]"
+                "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
+                "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
+                "replicaCount": "[steps('destination').imageVersion.replicaCount]",
+                "resourceGroupName": "[steps('basics').resourceGroup]",
+                "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
+                "sourceImageType": "[steps('source').type]",
+                "storageAccountResourceId": "[steps('storage').storageSelector.id]",
+                "subnetResourceId": "[steps('virtualMachines').network.subnet]",
+                "tags": "[steps('tags').tags]",
+                "teamsInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.teamsBlob.blobName,'')]",
+                "userAssignedIdentityName": "[steps('virtualMachines').userAssignedIdentityName]",
+                "vcRedistInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.vcRedistInstaller.blobName,'')]",
+                "vDOTInstaller": "[if(equals(steps('customizations').office.installVirtualDesktopOptimizationTool, true), steps('customizations').office.vDotBlob.blobName,'')]",
+                "virtualMachineSize": "[steps('virtualMachines').vmSize]"
             },
             "kind": "Subscription",
             "location": "[steps('basics').scope.location.name]",
