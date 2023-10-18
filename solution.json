@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "16838352359273361636"
+      "templateHash": "5149744612507600461"
     }
   },
   "parameters": {
@@ -19,7 +19,7 @@
     "automationAccountPrivateDnsZoneResourceId": {
       "type": "string"
     },
-    "computeGalleryImageVersionResourceId": {
+    "computeGalleryImageResourceId": {
       "type": "string",
       "defaultValue": ""
     },
@@ -207,7 +207,7 @@
     }
   },
   "variables": {
-    "imageDefinitionName": "[if(empty(parameters('computeGalleryImageVersionResourceId')), format('{0}-{1}', parameters('imageDefinitionNamePrefix'), parameters('marketplaceImageSKU')), format('{0}-{1}', parameters('imageDefinitionNamePrefix'), split(parameters('computeGalleryImageVersionResourceId'), '/')[10]))]",
+    "imageDefinitionName": "[if(empty(parameters('computeGalleryImageResourceId')), format('{0}-{1}', parameters('imageDefinitionNamePrefix'), parameters('marketplaceImageSKU')), format('{0}-{1}', parameters('imageDefinitionNamePrefix'), split(parameters('computeGalleryImageResourceId'), '/')[10]))]",
     "imageVirtualMachineName": "[take(format('vmimg-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
     "managementVirtualMachineName": "[if(empty(parameters('hybridWorkerName')), take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15), parameters('hybridWorkerName'))]",
     "storageAccountName": "[split(parameters('storageAccountResourceId'), '/')[8]]",
@@ -281,8 +281,8 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "computeGalleryImageVersionResourceId": {
-            "value": "[parameters('computeGalleryImageVersionResourceId')]"
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
           },
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
@@ -352,11 +352,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "1825271414178868426"
+              "templateHash": "12830517353889103225"
             }
           },
           "parameters": {
-            "computeGalleryImageVersionResourceId": {
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "computeGalleryName": {
@@ -923,8 +923,8 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "computeGalleryImageVersionResourceId": {
-                    "value": "[parameters('computeGalleryImageVersionResourceId')]"
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
                   },
                   "enableBuildAutomation": {
                     "value": "[parameters('enableBuildAutomation')]"
@@ -958,11 +958,11 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10217442894030954794"
+                      "templateHash": "7970580253373817368"
                     }
                   },
                   "parameters": {
-                    "computeGalleryImageVersionResourceId": {
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "computeGalleryName": {
@@ -1040,8 +1040,8 @@
                         ],
                         "hyperVGeneration": "V2",
                         "identifier": {
-                          "offer": "[if(empty(parameters('computeGalleryImageVersionResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageVersionResourceId'), '/')[2], split(parameters('computeGalleryImageVersionResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageVersionResourceId'), '/')[8], split(parameters('computeGalleryImageVersionResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
-                          "publisher": "[if(empty(parameters('computeGalleryImageVersionResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageVersionResourceId'), '/')[2], split(parameters('computeGalleryImageVersionResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageVersionResourceId'), '/')[8], split(parameters('computeGalleryImageVersionResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                          "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                          "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
                           "sku": "[parameters('imageDefinitionName')]"
                         },
                         "osState": "Generalized",
@@ -1294,8 +1294,8 @@
           "resourceGroupName": {
             "value": "[parameters('resourceGroupName')]"
           },
-          "computeGalleryImageVersionResourceId": {
-            "value": "[parameters('computeGalleryImageVersionResourceId')]"
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
           },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
@@ -1344,7 +1344,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16886127124303937002"
+              "templateHash": "3992976259481970520"
             }
           },
           "parameters": {
@@ -1483,7 +1483,7 @@
             "resourceGroupName": {
               "type": "string"
             },
-            "computeGalleryImageVersionResourceId": {
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "sourceImageType": {
@@ -1859,7 +1859,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "708346965756545784"
+                      "templateHash": "12949406376039561816"
                     }
                   },
                   "parameters": {
@@ -1881,7 +1881,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "12512317143080849060"
+                          "templateHash": "15034667187003391929"
                         }
                       },
                       "parameters": {
@@ -2005,7 +2005,7 @@
                           "type": "bool",
                           "defaultValue": false
                         },
-                        "computeGalleryImageVersionResourceId": {
+                        "computeGalleryImageResourceId": {
                           "type": "string",
                           "defaultValue": ""
                         },
@@ -2081,8 +2081,8 @@
                               "marketplaceImageSKU": {
                                 "value": "[[parameters('marketplaceImageSKU')]"
                               },
-                              "computeGalleryImageVersionResourceId": {
-                                "value": "[[parameters('computeGalleryImageVersionResourceId')]"
+                              "computeGalleryImageResourceId": {
+                                "value": "[[parameters('computeGalleryImageResourceId')]"
                               },
                               "sourceImageType": {
                                 "value": "[[parameters('sourceImageType')]"
@@ -2110,7 +2110,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "6406246710046680251"
+                                  "templateHash": "6293227186862642751"
                                 }
                               },
                               "parameters": {
@@ -2135,7 +2135,7 @@
                                 "marketplaceImageSKU": {
                                   "type": "string"
                                 },
-                                "computeGalleryImageVersionResourceId": {
+                                "computeGalleryImageResourceId": {
                                   "type": "string"
                                 },
                                 "sourceImageType": {
@@ -2158,7 +2158,7 @@
                                 }
                               },
                               "variables": {
-                                "imageReference": "[[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('computeGalleryImageVersionResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
+                                "imageReference": "[[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('id', parameters('computeGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
                               },
                               "resources": [
                                 {
@@ -3382,8 +3382,8 @@
                   "resourceGroupName": {
                     "value": "[parameters('resourceGroupName')]"
                   },
-                  "computeGalleryImageVersionResourceId": {
-                    "value": "[parameters('computeGalleryImageVersionResourceId')]"
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
                   },
                   "sourceImageType": {
                     "value": "[parameters('sourceImageType')]"
@@ -3432,7 +3432,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4577047010472563107"
+                      "templateHash": "8608255791275916434"
                     }
                   },
                   "parameters": {
@@ -3563,7 +3563,7 @@
                     "resourceGroupName": {
                       "type": "string"
                     },
-                    "computeGalleryImageVersionResourceId": {
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "sourceImageType": {
@@ -3707,7 +3707,7 @@
                       "officeInstaller": "[parameters('officeInstaller')]",
                       "replicaCount": "[string(parameters('replicaCount'))]",
                       "resourceGroupName": "[parameters('resourceGroupName')]",
-                      "computeGalleryImageVersionResourceId": "[parameters('computeGalleryImageVersionResourceId')]",
+                      "computeGalleryImageResourceId": "[parameters('computeGalleryImageResourceId')]",
                       "sourceImageType": "[parameters('sourceImageType')]",
                       "storageAccountName": "[parameters('storageAccountName')]",
                       "subnetResourceId": "[parameters('subnetResourceId')]",
@@ -4169,8 +4169,8 @@
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
           },
-          "computeGalleryImageVersionResourceId": {
-            "value": "[parameters('computeGalleryImageVersionResourceId')]"
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
           },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
@@ -4213,7 +4213,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12512317143080849060"
+              "templateHash": "15034667187003391929"
             }
           },
           "parameters": {
@@ -4337,7 +4337,7 @@
               "type": "bool",
               "defaultValue": false
             },
-            "computeGalleryImageVersionResourceId": {
+            "computeGalleryImageResourceId": {
               "type": "string",
               "defaultValue": ""
             },
@@ -4413,8 +4413,8 @@
                   "marketplaceImageSKU": {
                     "value": "[parameters('marketplaceImageSKU')]"
                   },
-                  "computeGalleryImageVersionResourceId": {
-                    "value": "[parameters('computeGalleryImageVersionResourceId')]"
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
                   },
                   "sourceImageType": {
                     "value": "[parameters('sourceImageType')]"
@@ -4442,7 +4442,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6406246710046680251"
+                      "templateHash": "6293227186862642751"
                     }
                   },
                   "parameters": {
@@ -4467,7 +4467,7 @@
                     "marketplaceImageSKU": {
                       "type": "string"
                     },
-                    "computeGalleryImageVersionResourceId": {
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "sourceImageType": {
@@ -4490,7 +4490,7 @@
                     }
                   },
                   "variables": {
-                    "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('computeGalleryImageVersionResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
+                    "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('id', parameters('computeGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
                   },
                   "resources": [
                     {

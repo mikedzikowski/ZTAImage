@@ -41,7 +41,7 @@ param officeInstaller string
 param oUPath string
 param replicaCount int
 param resourceGroupName string
-param computeGalleryImageVersionResourceId string
+param computeGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
 param subnetResourceId string
@@ -153,7 +153,7 @@ var parameters = {
   officeInstaller: officeInstaller
   replicaCount: string(replicaCount)
   resourceGroupName: resourceGroupName
-  computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
+  computeGalleryImageResourceId: computeGalleryImageResourceId
   sourceImageType: sourceImageType
   storageAccountName: storageAccountName
   subnetResourceId: subnetResourceId

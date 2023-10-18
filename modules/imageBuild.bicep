@@ -38,7 +38,7 @@ param msrdcwebrtcsvcInstaller string = ''
 param officeInstaller string = ''
 param replicaCount int
 param runbookExecution bool = false
-param computeGalleryImageVersionResourceId string = ''
+param computeGalleryImageResourceId string = ''
 param sourceImageType string
 param storageAccountName string
 param subnetResourceId string
@@ -70,7 +70,7 @@ module virtualMachine 'virtualMachine.bicep' = {
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     marketplaceImageSKU: marketplaceImageSKU
-    computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     subnetResourceId: subnetResourceId
     tags: tags

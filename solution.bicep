@@ -3,7 +3,7 @@ targetScope = 'subscription'
 param actionGroupName string = ''
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
-param computeGalleryImageVersionResourceId string = ''
+param computeGalleryImageResourceId string = ''
 param computeGalleryName string
 param containerName string
 param customizations array = []
@@ -64,7 +64,7 @@ param vcRedistInstaller string = ''
 param vDOTInstaller string = ''
 param virtualMachineSize string
 
-var imageDefinitionName = empty(computeGalleryImageVersionResourceId) ? '${imageDefinitionNamePrefix}-${marketplaceImageSKU}' : '${imageDefinitionNamePrefix}-${split(computeGalleryImageVersionResourceId, '/')[10]}'
+var imageDefinitionName = empty(computeGalleryImageResourceId) ? '${imageDefinitionNamePrefix}-${marketplaceImageSKU}' : '${imageDefinitionNamePrefix}-${split(computeGalleryImageResourceId, '/')[10]}'
 var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
 var managementVirtualMachineName = empty(hybridWorkerName) ? take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15) : hybridWorkerName
 var storageAccountName = split(storageAccountResourceId, '/')[8]
@@ -129,7 +129,7 @@ var timeZones = {
 module baseline 'modules/baseline.bicep' = {
   name: 'baseline-${deploymentNameSuffix}'
   params: {
-    computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
     containerName: containerName
     deploymentNameSuffix: deploymentNameSuffix
@@ -201,7 +201,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     oUPath: oUPath
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
-    computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     subnetResourceId: subnetResourceId
@@ -257,7 +257,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
     officeInstaller: officeInstaller
     replicaCount: replicaCount
-    computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     subnetResourceId: subnetResourceId

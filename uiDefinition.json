@@ -1173,7 +1173,7 @@
                 "actionGroupName": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.actionGroup, '')]",
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
                 "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.id, '')]",
-                "computeGalleryImageVersionResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), concat(steps('source').gallery.imageDefinition, '/versions/latest'), '')]",
+                "computeGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "computeGalleryName": "[steps('destination').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",

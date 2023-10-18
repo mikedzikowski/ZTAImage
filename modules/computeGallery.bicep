@@ -1,4 +1,4 @@
-param computeGalleryImageVersionResourceId string
+param computeGalleryImageResourceId string
 param computeGalleryName string
 param enableBuildAutomation bool
 param imageDefinitionName string
@@ -10,14 +10,14 @@ param userAssignedIdentityPrincipalId string
 
 var roleDefinitionId = 'b24988ac-6180-42a0-ab88-20f7382dd24c' // Contributor | https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor
 
-resource sourceComputeGallery 'Microsoft.Compute/galleries@2022-01-03' existing = if (!empty(computeGalleryImageVersionResourceId)) {
-  scope: resourceGroup(split(computeGalleryImageVersionResourceId, '/')[2], split(computeGalleryImageVersionResourceId, '/')[4])
-  name: split(computeGalleryImageVersionResourceId, '/')[8]
+resource sourceComputeGallery 'Microsoft.Compute/galleries@2022-01-03' existing = if (!empty(computeGalleryImageResourceId)) {
+  scope: resourceGroup(split(computeGalleryImageResourceId, '/')[2], split(computeGalleryImageResourceId, '/')[4])
+  name: split(computeGalleryImageResourceId, '/')[8]
 }
 
-resource sourceImageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' existing = if (!empty(computeGalleryImageVersionResourceId)) {
+resource sourceImageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' existing = if (!empty(computeGalleryImageResourceId)) {
   parent: sourceComputeGallery
-  name: split(computeGalleryImageVersionResourceId, '/')[10]
+  name: split(computeGalleryImageResourceId, '/')[10]
 }
 
 resource computeGallery 'Microsoft.Compute/galleries@2022-01-03' = {
@@ -59,8 +59,8 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
     ]
     hyperVGeneration: 'V2'
     identifier: {
-      offer: empty(computeGalleryImageVersionResourceId) ? marketplaceImageOffer : sourceImageDefinition.properties.identifier.offer
-      publisher: empty(computeGalleryImageVersionResourceId) ? marketplaceImagePublisher : sourceImageDefinition.properties.identifier.publisher
+      offer: empty(computeGalleryImageResourceId) ? marketplaceImageOffer : sourceImageDefinition.properties.identifier.offer
+      publisher: empty(computeGalleryImageResourceId) ? marketplaceImagePublisher : sourceImageDefinition.properties.identifier.publisher
       sku: imageDefinitionName
     }
     osState: 'Generalized'

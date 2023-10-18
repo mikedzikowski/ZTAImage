@@ -8,7 +8,7 @@
         "automationAccountPrivateDnsZoneResourceId": {
             "value": "" // TODO: Fill in parameter value
         },
-        "computeGalleryImageVersionResourceId": {
+        "computeGalleryImageResourceId": {
             "value": ""
         },
         "computeGalleryName": {

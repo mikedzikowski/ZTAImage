@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-param computeGalleryImageVersionResourceId string
+param computeGalleryImageResourceId string
 param computeGalleryName string
 param containerName string
 param deploymentNameSuffix string
@@ -82,7 +82,7 @@ module computeGallery 'computeGallery.bicep' = {
   name: 'gallery-image-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
-    computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     enableBuildAutomation: enableBuildAutomation
     imageDefinitionName: imageDefinitionName
     location: location
