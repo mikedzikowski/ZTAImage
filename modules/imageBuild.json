@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "17827590760725274255"
+      "templateHash": "12512317143080849060"
     }
   },
   "parameters": {
@@ -129,7 +129,7 @@
       "type": "bool",
       "defaultValue": false
     },
-    "sharedGalleryImageResourceId": {
+    "computeGalleryImageVersionResourceId": {
       "type": "string",
       "defaultValue": ""
     },
@@ -205,8 +205,8 @@
           "marketplaceImageSKU": {
             "value": "[parameters('marketplaceImageSKU')]"
           },
-          "sharedGalleryImageResourceId": {
-            "value": "[parameters('sharedGalleryImageResourceId')]"
+          "computeGalleryImageVersionResourceId": {
+            "value": "[parameters('computeGalleryImageVersionResourceId')]"
           },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
@@ -234,7 +234,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "3620191473620828702"
+              "templateHash": "6406246710046680251"
             }
           },
           "parameters": {
@@ -259,7 +259,7 @@
             "marketplaceImageSKU": {
               "type": "string"
             },
-            "sharedGalleryImageResourceId": {
+            "computeGalleryImageVersionResourceId": {
               "type": "string"
             },
             "sourceImageType": {
@@ -282,7 +282,7 @@
             }
           },
           "variables": {
-            "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('sharedGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
+            "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('computeGalleryImageVersionResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
           },
           "resources": [
             {

@@ -1,169 +1,168 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-      "automationAccountName": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "automationAccountPrivateDnsZoneResourceId": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "computeGalleryName": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "containerName": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "customizations": {
-          "value": []
-      },
-      "diskEncryptionSetResourceId": {
-          "value": ""
-      },
-      "deploymentNameSuffix": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "domainJoinPassword": {
-          "value": ""
-      },
-      "domainJoinUserPrincipalName": {
-          "value": ""
-      },
-      "domainName": {
-          "value": ""
-      },
-      "enableBuildAutomation": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "excludeFromLatest": {
-          "value": true
-      },
-      "hybridUseBenefit": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "hybridWorkerName": {
-          "value": ""
-      },
-      "imageDefinitionNamePrefix": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "imageMajorVersion": {
-          "value": 0 // TODO: Fill in parameter value
-      },
-      "imageMinorVersion": {
-          "value": 0 // TODO: Fill in parameter value
-      },
-      "installAccess": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installExcel": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installOneDrive": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installOneNote": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installOutlook": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installPowerPoint": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installProject": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installPublisher": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installSkypeForBusiness": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installTeams": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installVirtualDesktopOptimizationTool": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installVisio": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "installWord": {
-          "value": false // TODO: Fill in parameter value
-      },
-      "keyVaultName": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "keyVaultPrivateDnsZoneResourceId": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "localAdministratorPassword": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "localAdministratorUsername": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "location": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "logAnalyticsWorkspaceResourceId": {
-          "value": ""
-      },
-      "marketplaceImageOffer": {
-          "value": ""
-      },
-      "marketplaceImagePublisher": {
-          "value": ""
-      },
-      "marketplaceImageSKU": {
-          "value": ""
-      },
-      "msrdcwebrtcsvcInstaller": {
-          "value": ""
-      },
-      "officeInstaller": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "oUPath": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "replicaCount": {
-          "value": 0 // TODO: Fill in parameter value
-      },
-      "resourceGroupName": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "sharedGalleryImageResourceId": {
-          "value": ""
-      },
-      "sourceImageType": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "storageAccountResourceId": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "subnetResourceId": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "tags": {
-          "value": {}
-      },
-      "teamsInstaller": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "userAssignedIdentityName": {
-          "value": "" // TODO: Fill in parameter value
-      },
-      "vcRedistInstaller": {
-          "value": ""
-      },
-      "vDOTInstaller": {
-          "value": ""
-      },
-      "virtualMachineSize": {
-          "value": "" // TODO: Fill in parameter value
-      }
-    
-  }
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "automationAccountPrivateDnsZoneResourceId": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "computeGalleryImageVersionResourceId": {
+            "value": ""
+        },
+        "computeGalleryName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "containerName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "customizations": {
+            "value": []
+        },
+        "diskEncryptionSetResourceId": {
+            "value": ""
+        },
+        "deploymentNameSuffix": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "domainJoinPassword": {
+            "value": ""
+        },
+        "domainJoinUserPrincipalName": {
+            "value": ""
+        },
+        "domainName": {
+            "value": ""
+        },
+        "enableBuildAutomation": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "excludeFromLatest": {
+            "value": true
+        },
+        "hybridUseBenefit": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "hybridWorkerName": {
+            "value": ""
+        },
+        "imageDefinitionNamePrefix": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "imageMajorVersion": {
+            "value": 0 // TODO: Fill in parameter value
+        },
+        "imageMinorVersion": {
+            "value": 0 // TODO: Fill in parameter value
+        },
+        "installAccess": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installExcel": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installOneDrive": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installOneNote": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installOutlook": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installPowerPoint": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installProject": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installPublisher": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installSkypeForBusiness": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installTeams": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installVirtualDesktopOptimizationTool": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installVisio": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "installWord": {
+            "value": false // TODO: Fill in parameter value
+        },
+        "keyVaultName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "keyVaultPrivateDnsZoneResourceId": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "localAdministratorPassword": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "localAdministratorUsername": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "location": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "logAnalyticsWorkspaceResourceId": {
+            "value": ""
+        },
+        "marketplaceImageOffer": {
+            "value": ""
+        },
+        "marketplaceImagePublisher": {
+            "value": ""
+        },
+        "marketplaceImageSKU": {
+            "value": ""
+        },
+        "msrdcwebrtcsvcInstaller": {
+            "value": ""
+        },
+        "officeInstaller": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "oUPath": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "replicaCount": {
+            "value": 0 // TODO: Fill in parameter value
+        },
+        "resourceGroupName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "sourceImageType": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "storageAccountResourceId": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "subnetResourceId": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "tags": {
+            "value": {}
+        },
+        "teamsInstaller": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "userAssignedIdentityName": {
+            "value": "" // TODO: Fill in parameter value
+        },
+        "vcRedistInstaller": {
+            "value": ""
+        },
+        "vDOTInstaller": {
+            "value": ""
+        },
+        "virtualMachineSize": {
+            "value": "" // TODO: Fill in parameter value
+        }
+    }
 }

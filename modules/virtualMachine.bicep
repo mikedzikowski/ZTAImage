@@ -7,7 +7,7 @@ param location string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param marketplaceImageSKU string
-param sharedGalleryImageResourceId string
+param computeGalleryImageVersionResourceId string
 param sourceImageType string
 param subnetResourceId string
 param tags object
@@ -16,7 +16,7 @@ param virtualMachineName string
 param virtualMachineSize string
 
 var imageReference = sourceImageType == 'AzureComputeGallery' ? {
-  sharedGalleryImageId: sharedGalleryImageResourceId
+  sharedGalleryImageId: computeGalleryImageVersionResourceId
 } : {
   publisher: marketplaceImagePublisher
   offer: marketplaceImageOffer
