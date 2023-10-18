@@ -1,5 +1,6 @@
 targetScope = 'subscription'
 
+param actionGroupName string
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryResourceId string
@@ -7,6 +8,7 @@ param containerName string
 param customizations array
 param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
+param distributionGroup string
 @secure()
 param domainJoinPassword string
 param domainJoinUserPrincipalName string
@@ -119,12 +121,14 @@ module automationAccount 'automationAccount.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   name: 'automation-account-${deploymentNameSuffix}'
   params: {
+    actionGroupName: actionGroupName
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
     computeGalleryResourceId: computeGalleryResourceId
     containerName: containerName
     customizations: customizations
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    distributionGroup: distributionGroup
     domainJoinPassword: domainJoinPassword
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName

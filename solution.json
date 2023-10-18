@@ -5,10 +5,14 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "4943840231220956698"
+      "templateHash": "16092234285351729200"
     }
   },
   "parameters": {
+    "actionGroupName": {
+      "type": "string",
+      "defaultValue": ""
+    },
     "automationAccountName": {
       "type": "string"
     },
@@ -26,6 +30,10 @@
       "defaultValue": []
     },
     "diskEncryptionSetResourceId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "distributionGroup": {
       "type": "string",
       "defaultValue": ""
     },
@@ -1072,6 +1080,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "actionGroupName": {
+            "value": "[parameters('actionGroupName')]"
+          },
           "automationAccountName": {
             "value": "[parameters('automationAccountName')]"
           },
@@ -1092,6 +1103,9 @@
           },
           "diskEncryptionSetResourceId": {
             "value": "[parameters('diskEncryptionSetResourceId')]"
+          },
+          "distributionGroup": {
+            "value": "[parameters('distributionGroup')]"
           },
           "domainJoinPassword": {
             "value": "[parameters('domainJoinPassword')]"
@@ -1251,10 +1265,13 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14430618818632940482"
+              "templateHash": "14770801659323420481"
             }
           },
           "parameters": {
+            "actionGroupName": {
+              "type": "string"
+            },
             "automationAccountName": {
               "type": "string"
             },
@@ -1274,6 +1291,9 @@
               "type": "string"
             },
             "diskEncryptionSetResourceId": {
+              "type": "string"
+            },
+            "distributionGroup": {
               "type": "string"
             },
             "domainJoinPassword": {
@@ -3160,6 +3180,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "actionGroupName": {
+                    "value": "[parameters('actionGroupName')]"
+                  },
                   "automationAccountName": {
                     "value": "[parameters('automationAccountName')]"
                   },
@@ -3177,6 +3200,9 @@
                   },
                   "diskEncryptionSetResourceId": {
                     "value": "[parameters('diskEncryptionSetResourceId')]"
+                  },
+                  "distributionGroup": {
+                    "value": "[parameters('distributionGroup')]"
                   },
                   "domainJoinPassword": {
                     "value": "[parameters('domainJoinPassword')]"
@@ -3327,10 +3353,13 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "1105150678801490668"
+                      "templateHash": "5825530809578220128"
                     }
                   },
                   "parameters": {
+                    "actionGroupName": {
+                      "type": "string"
+                    },
                     "automationAccountName": {
                       "type": "string"
                     },
@@ -3347,6 +3376,9 @@
                       "type": "array"
                     },
                     "diskEncryptionSetResourceId": {
+                      "type": "string"
+                    },
+                    "distributionGroup": {
                       "type": "string"
                     },
                     "domainJoinPassword": {
@@ -3500,6 +3532,68 @@
                     }
                   },
                   "variables": {
+                    "alerts": [
+                      {
+                        "name": "Zero Trust Image Build - Failure",
+                        "description": "Sends an error alert when the runbook build fails.",
+                        "severity": 0,
+                        "evaluationFrequency": "PT5M",
+                        "windowSize": "PT5M",
+                        "criteria": {
+                          "allOf": [
+                            {
+                              "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build failed\"",
+                              "timeAggregation": "Count",
+                              "dimensions": [
+                                {
+                                  "name": "ResultDescription",
+                                  "operator": "Include",
+                                  "values": [
+                                    "*"
+                                  ]
+                                }
+                              ],
+                              "operator": "GreaterThanOrEqual",
+                              "threshold": 1,
+                              "failingPeriods": {
+                                "numberOfEvaluationPeriods": 1,
+                                "minFailingPeriodsToAlert": 1
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "name": "Zero Trust Image Build - Success",
+                        "description": "Sends an informational alert when the runbook build succeeds.",
+                        "severity": 3,
+                        "evaluationFrequency": "PT5M",
+                        "windowSize": "PT5M",
+                        "criteria": {
+                          "allOf": [
+                            {
+                              "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build succeeded\"",
+                              "timeAggregation": "Count",
+                              "dimensions": [
+                                {
+                                  "name": "ResultDescription",
+                                  "operator": "Include",
+                                  "values": [
+                                    "*"
+                                  ]
+                                }
+                              ],
+                              "operator": "GreaterThanOrEqual",
+                              "threshold": 1,
+                              "failingPeriods": {
+                                "numberOfEvaluationPeriods": 1,
+                                "minFailingPeriodsToAlert": 1
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
                     "parameters": {
                       "computeGalleryResourceId": "[parameters('computeGalleryResourceId')]",
                       "containerName": "[parameters('containerName')]",
@@ -3739,6 +3833,60 @@
                       },
                       "dependsOn": [
                         "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('distributionGroup'))))]",
+                      "type": "Microsoft.Insights/actionGroups",
+                      "apiVersion": "2022-06-01",
+                      "name": "[parameters('actionGroupName')]",
+                      "location": "global",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/actionGroups'), parameters('tags')['Microsoft.Insights/actionGroups'], createObject())]",
+                      "properties": {
+                        "emailReceivers": [
+                          {
+                            "emailAddress": "[parameters('distributionGroup')]",
+                            "name": "[parameters('distributionGroup')]",
+                            "useCommonAlertSchema": true
+                          }
+                        ],
+                        "enabled": true,
+                        "groupShortName": "AIB Builds"
+                      }
+                    },
+                    {
+                      "copy": {
+                        "name": "scheduledQueryRules",
+                        "count": "[length(range(0, length(variables('alerts'))))]"
+                      },
+                      "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('logAnalyticsWorkspaceResourceId'))))]",
+                      "type": "Microsoft.Insights/scheduledQueryRules",
+                      "apiVersion": "2022-06-15",
+                      "name": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
+                      "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/scheduledQueryRules'), parameters('tags')['Microsoft.Insights/scheduledQueryRules'], createObject())]",
+                      "kind": "LogAlert",
+                      "properties": {
+                        "actions": {
+                          "actionGroups": [
+                            "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+                          ]
+                        },
+                        "autoMitigate": false,
+                        "skipQueryValidation": false,
+                        "criteria": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].criteria]",
+                        "description": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].description]",
+                        "displayName": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
+                        "enabled": true,
+                        "evaluationFrequency": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].evaluationFrequency]",
+                        "severity": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].severity]",
+                        "windowSize": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].windowSize]",
+                        "scopes": [
+                          "[parameters('logAnalyticsWorkspaceResourceId')]"
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
                       ]
                     },
                     {

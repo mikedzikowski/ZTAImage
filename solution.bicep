@@ -1,11 +1,13 @@
 targetScope = 'subscription'
 
+param actionGroupName string = ''
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryName string
 param containerName string
 param customizations array = []
 param diskEncryptionSetResourceId string = ''
+param distributionGroup string = ''
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 @secure()
 param domainJoinPassword string = ''
@@ -151,6 +153,7 @@ module baseline 'modules/baseline.bicep' = {
 module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomation) {
   name: 'build-automation-${deploymentNameSuffix}'
   params: {
+    actionGroupName: actionGroupName
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
     computeGalleryResourceId: baseline.outputs.computeGalleryResourceId
@@ -158,6 +161,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     customizations: customizations
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    distributionGroup: distributionGroup
     domainJoinPassword: domainJoinPassword
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName

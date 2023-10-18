@@ -1082,6 +1082,33 @@
                                     "resourceType": "Microsoft.OperationalInsights/workspaces",
                                     "toolTip": "Select the log analytics workspace used for collecting security data for Sentinel or Defender for Cloud. This is required to multihome the Microsoft Monitoring Agent.",
                                     "options": {}
+                                },
+                                {
+                                    "name": "actionGroup",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Action Group",
+                                    "placeholder": "Example: ag-image-d-eu",
+                                    "defaultValue": "",
+                                    "toolTip": "Input the name for the action group.",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "",
+                                        "validationMessage": ""
+                                    },
+                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]"
+                                },
+                                {
+                                    "name": "distributionGroup",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "label": "Distribution group",
+                                    "toolTip": "Input the distribution group for receiving alerts on the build status.",
+                                    "placeholder": "Example: operations@contoso.com",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "^[a-z0-9A-Z_.-]+@(?:[a-z0-9]+\\.)+[a-z]+$",
+                                        "validationMessage": "The value must be a valid email address."
+                                    }
                                 }
                             ]
                         }
@@ -1098,6 +1125,8 @@
                                 "Microsoft.Automation/automationAccounts",
                                 "Microsoft.Compute/galleries",
                                 "Microsoft.Compute/virtualMachines",
+                                "Microsoft.Insights/actionGroups",
+                                "Microsoft.Insights/scheduledQueryRules",
                                 "Microsoft.KeyVault/vaults",
                                 "Microsoft.ManagedIdentity/userAssignedIdentities",
                                 "Microsoft.Network/networkInterfaces",
@@ -1111,12 +1140,14 @@
         },
         "outputs": {
             "parameters": {
+                "actionGroupName": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.actionGroup, '')]",
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
                 "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.id, '')]",
                 "computeGalleryName": "[steps('destination').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "diskEncryptionSetResourceId": "[steps('virtualMachines').diskEncryptionSetSelector.id]",
+                "distributionGroup": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.distributionGroup, '')]",
                 "domainJoinPassword": "[steps('automation').hybridWorker.domainJoinPassword]",
                 "domainJoinUserPrincipalName": "[steps('automation').hybridWorker.domainJoinUserPrincipalName]",
                 "domainName": "[if(steps('automation').enable, steps('automation').hybridWorker.domainName, '')]",
