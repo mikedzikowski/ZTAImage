@@ -46,7 +46,7 @@ param marketplaceImageOffer string = ''
 param marketplaceImagePublisher string = ''
 param marketplaceImageSKU string = ''
 param msrdcwebrtcsvcInstaller string = ''
-param officeInstaller string
+param officeInstaller string = ''
 param oUPath string
 param replicaCount int
 param resourceGroupName string
