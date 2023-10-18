@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "16092234285351729200"
+      "templateHash": "131009946952276867"
     }
   },
   "parameters": {
@@ -59,6 +59,10 @@
     "excludeFromLatest": {
       "type": "bool",
       "defaultValue": true
+    },
+    "exemptPolicyAssignmentIds": {
+      "type": "array",
+      "defaultValue": []
     },
     "hybridUseBenefit": {
       "type": "bool"
@@ -292,6 +296,9 @@
           "enableBuildAutomation": {
             "value": "[parameters('enableBuildAutomation')]"
           },
+          "exemptPolicyAssignmentIds": {
+            "value": "[parameters('exemptPolicyAssignmentIds')]"
+          },
           "hybridUseBenefit": {
             "value": "[parameters('hybridUseBenefit')]"
           },
@@ -342,7 +349,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4532227499815783287"
+              "templateHash": "16395267046142341780"
             }
           },
           "parameters": {
@@ -360,6 +367,9 @@
             },
             "enableBuildAutomation": {
               "type": "bool"
+            },
+            "exemptPolicyAssignmentIds": {
+              "type": "array"
             },
             "hybridUseBenefit": {
               "type": "bool"
@@ -1045,6 +1055,63 @@
               "dependsOn": [
                 "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
               ]
+            },
+            {
+              "copy": {
+                "name": "policyExemptions",
+                "count": "[length(range(0, length(parameters('exemptPolicyAssignmentIds'))))]"
+              },
+              "condition": "[greater(length(parameters('exemptPolicyAssignmentIds')), 0)]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('PolicyExemption_{0}', range(0, length(parameters('exemptPolicyAssignmentIds')))[copyIndex()])]",
+              "subscriptionId": "[parameters('subscriptionId')]",
+              "resourceGroup": "[parameters('resourceGroupName')]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "policyAssignmentId": {
+                    "value": "[parameters('exemptPolicyAssignmentIds')[range(0, length(parameters('exemptPolicyAssignmentIds')))[copyIndex()]]]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "18154501053895902975"
+                    }
+                  },
+                  "parameters": {
+                    "policyAssignmentId": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/policyExemptions",
+                      "apiVersion": "2022-07-01-preview",
+                      "name": "exempt-imaging-resource-group",
+                      "properties": {
+                        "assignmentScopeValidation": "Default",
+                        "description": "Exempts the imaging resource group to prevent issues with building images.",
+                        "displayName": "Imaging resource group",
+                        "exemptionCategory": "Mitigated",
+                        "expiresOn": null,
+                        "metadata": null,
+                        "policyAssignmentId": "[parameters('policyAssignmentId')]",
+                        "policyDefinitionReferenceIds": [],
+                        "resourceSelectors": []
+                      }
+                    }
+                  ]
+                }
+              }
             }
           ],
           "outputs": {

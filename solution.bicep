@@ -15,6 +15,7 @@ param domainJoinUserPrincipalName string = ''
 param domainName string = ''
 param enableBuildAutomation bool
 param excludeFromLatest bool = true
+param exemptPolicyAssignmentIds array = []
 param hybridUseBenefit bool
 param hybridWorkerName string = ''
 param imageDefinitionNamePrefix string
@@ -133,6 +134,7 @@ module baseline 'modules/baseline.bicep' = {
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     enableBuildAutomation: enableBuildAutomation
+    exemptPolicyAssignmentIds: exemptPolicyAssignmentIds
     hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     localAdministratorPassword: localAdministratorPassword
