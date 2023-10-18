@@ -1,3 +1,4 @@
+param computeGalleryImageVersionResourceId string
 param computeGalleryName string
 param enableBuildAutomation bool
 param imageDefinitionName string
@@ -8,6 +9,16 @@ param tags object
 param userAssignedIdentityPrincipalId string
 
 var roleDefinitionId = 'b24988ac-6180-42a0-ab88-20f7382dd24c' // Contributor | https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor
+
+resource sourceComputeGallery 'Microsoft.Compute/galleries@2022-01-03' existing = if (!empty(computeGalleryImageVersionResourceId)) {
+  scope: resourceGroup(split(computeGalleryImageVersionResourceId, '/')[2], split(computeGalleryImageVersionResourceId, '/')[4])
+  name: split(computeGalleryImageVersionResourceId, '/')[8]
+}
+
+resource sourceImageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' existing = if (!empty(computeGalleryImageVersionResourceId)) {
+  parent: sourceComputeGallery
+  name: split(computeGalleryImageVersionResourceId, '/')[10]
+}
 
 resource computeGallery 'Microsoft.Compute/galleries@2022-01-03' = {
   name: computeGalleryName
@@ -48,8 +59,8 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
     ]
     hyperVGeneration: 'V2'
     identifier: {
-      offer: marketplaceImageOffer
-      publisher: marketplaceImagePublisher
+      offer: empty(computeGalleryImageVersionResourceId) ? marketplaceImageOffer : sourceImageDefinition.properties.identifier.offer
+      publisher: empty(computeGalleryImageVersionResourceId) ? marketplaceImagePublisher : sourceImageDefinition.properties.identifier.publisher
       sku: imageDefinitionName
     }
     osState: 'Generalized'

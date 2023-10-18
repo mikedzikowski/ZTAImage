@@ -129,6 +129,7 @@ var timeZones = {
 module baseline 'modules/baseline.bicep' = {
   name: 'baseline-${deploymentNameSuffix}'
   params: {
+    computeGalleryImageVersionResourceId: computeGalleryImageVersionResourceId
     computeGalleryName: computeGalleryName
     containerName: containerName
     deploymentNameSuffix: deploymentNameSuffix
