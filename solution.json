@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5149744612507600461"
+      "templateHash": "7208206848624720187"
     }
   },
   "parameters": {
@@ -1344,7 +1344,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "3992976259481970520"
+              "templateHash": "14707501768537554170"
             }
           },
           "parameters": {
@@ -3432,7 +3432,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8608255791275916434"
+                      "templateHash": "4511405269696419105"
                     }
                   },
                   "parameters": {
@@ -3930,7 +3930,7 @@
                           }
                         ],
                         "enabled": true,
-                        "groupShortName": "AIB Builds"
+                        "groupShortName": "Image Builds"
                       }
                     },
                     {

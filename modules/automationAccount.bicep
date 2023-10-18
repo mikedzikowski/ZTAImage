@@ -403,7 +403,7 @@ resource actionGroup 'Microsoft.Insights/actionGroups@2022-06-01' = if (!empty(a
       }
     ]
     enabled: true
-    groupShortName: 'AIB Builds'
+    groupShortName: 'Image Builds'
   }
 }
 
