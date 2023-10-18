@@ -58,7 +58,7 @@ param sourceImageType string
 param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
-param teamsInstaller string
+param teamsInstaller string = ''
 param userAssignedIdentityName string
 param vcRedistInstaller string = ''
 param vDOTInstaller string = ''

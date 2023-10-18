@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9347757023589990067"
+      "templateHash": "5609356353644698049"
     }
   },
   "parameters": {
@@ -190,7 +190,8 @@
       "defaultValue": {}
     },
     "teamsInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "userAssignedIdentityName": {
       "type": "string"
