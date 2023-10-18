@@ -466,7 +466,7 @@
                             "name": "exemption",
                             "type": "Microsoft.Common.EditableGrid",
                             "ariaLabel": "Enter the policy IDs to exempt to prevent virtual machine extensions on the imaging virtual machines.",
-                            "label": "Policy IDs for Exemption",
+                            "label": "Policy Exemptions",
                             "constraints": {
                                 "width": "Full",
                                 "rows": {
@@ -478,7 +478,7 @@
                                 "columns": [
                                     {
                                         "id": "id",
-                                        "header": "Policy ID",
+                                        "header": "Policy Assignment Resource IDs for Exemption",
                                         "width": "1fr",
                                         "element": {
                                             "type": "Microsoft.Common.TextBox",
