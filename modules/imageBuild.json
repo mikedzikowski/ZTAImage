@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "15710188271038290557"
+      "templateHash": "2481811804148884613"
     }
   },
   "parameters": {
@@ -234,7 +234,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16499332907656346578"
+              "templateHash": "1117177687539183326"
             }
           },
           "parameters": {
@@ -332,9 +332,6 @@
                     "createOption": "FromImage",
                     "deleteOption": "Delete",
                     "managedDisk": {
-                      "diskEncryptionSet": {
-                        "id": "[parameters('diskEncryptionSetResourceId')]"
-                      },
                       "storageAccountType": "StandardSSD_LRS"
                     },
                     "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
@@ -356,7 +353,6 @@
                   }
                 },
                 "securityProfile": {
-                  "encryptionAtHost": true,
                   "uefiSettings": {
                     "secureBootEnabled": true,
                     "vTpmEnabled": true

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "3615013435435111234"
+      "templateHash": "9827033053651523055"
     }
   },
   "parameters": {
@@ -1339,7 +1339,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17609628406808782728"
+              "templateHash": "17821629674386056460"
             }
           },
           "parameters": {
@@ -1854,7 +1854,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10252187008434976447"
+                      "templateHash": "10649863604124505262"
                     }
                   },
                   "parameters": {
@@ -1876,7 +1876,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "15710188271038290557"
+                          "templateHash": "2481811804148884613"
                         }
                       },
                       "parameters": {
@@ -2105,7 +2105,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "16499332907656346578"
+                                  "templateHash": "1117177687539183326"
                                 }
                               },
                               "parameters": {
@@ -2203,9 +2203,6 @@
                                         "createOption": "FromImage",
                                         "deleteOption": "Delete",
                                         "managedDisk": {
-                                          "diskEncryptionSet": {
-                                            "id": "[[parameters('diskEncryptionSetResourceId')]"
-                                          },
                                           "storageAccountType": "StandardSSD_LRS"
                                         },
                                         "name": "[[format('disk-{0}', parameters('virtualMachineName'))]"
@@ -2227,7 +2224,6 @@
                                       }
                                     },
                                     "securityProfile": {
-                                      "encryptionAtHost": true,
                                       "uefiSettings": {
                                         "secureBootEnabled": true,
                                         "vTpmEnabled": true
@@ -4209,7 +4205,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "15710188271038290557"
+              "templateHash": "2481811804148884613"
             }
           },
           "parameters": {
@@ -4438,7 +4434,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "16499332907656346578"
+                      "templateHash": "1117177687539183326"
                     }
                   },
                   "parameters": {
@@ -4536,9 +4532,6 @@
                             "createOption": "FromImage",
                             "deleteOption": "Delete",
                             "managedDisk": {
-                              "diskEncryptionSet": {
-                                "id": "[parameters('diskEncryptionSetResourceId')]"
-                              },
                               "storageAccountType": "StandardSSD_LRS"
                             },
                             "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
@@ -4560,7 +4553,6 @@
                           }
                         },
                         "securityProfile": {
-                          "encryptionAtHost": true,
                           "uefiSettings": {
                             "secureBootEnabled": true,
                             "vTpmEnabled": true
