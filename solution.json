@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9281193932964502179"
+      "templateHash": "3530270562616028967"
     }
   },
   "parameters": {
@@ -1347,7 +1347,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14707501768537554170"
+              "templateHash": "15233716914943651415"
             }
           },
           "parameters": {
@@ -3435,7 +3435,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "4511405269696419105"
+                      "templateHash": "10412126828008981478"
                     }
                   },
                   "parameters": {
@@ -3616,7 +3616,7 @@
                   "variables": {
                     "alerts": [
                       {
-                        "name": "Zero Trust Image Build - Failure",
+                        "name": "[format('Zero Trust Image Build - Failure ({0})', parameters('automationAccountName'))]",
                         "description": "Sends an error alert when the runbook build fails.",
                         "severity": 0,
                         "evaluationFrequency": "PT5M",
@@ -3646,7 +3646,7 @@
                         }
                       },
                       {
-                        "name": "Zero Trust Image Build - Success",
+                        "name": "[format('Zero Trust Image Build - Success ({0})', parameters('automationAccountName'))]",
                         "description": "Sends an informational alert when the runbook build succeeds.",
                         "severity": 3,
                         "evaluationFrequency": "PT5M",

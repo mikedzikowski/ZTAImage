@@ -59,7 +59,7 @@ param virtualMachineSize string
 
 var alerts = [
   {
-    name: 'Zero Trust Image Build - Failure'
+    name: 'Zero Trust Image Build - Failure (${automationAccountName})'
     description: 'Sends an error alert when the runbook build fails.'
     severity: 0
     evaluationFrequency: 'PT5M'
@@ -89,7 +89,7 @@ var alerts = [
     }
   }
   {
-    name: 'Zero Trust Image Build - Success'
+    name: 'Zero Trust Image Build - Success (${automationAccountName})'
     description: 'Sends an informational alert when the runbook build succeeds.'
     severity: 3
     evaluationFrequency: 'PT5M'
