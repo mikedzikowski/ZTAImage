@@ -44,6 +44,7 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
   properties: {
     architecture: 'x64'
     features: [
+      /* Uncomment features when generally available
       {
         name: 'IsHibernateSupported'
         value: 'True'
@@ -52,6 +53,7 @@ resource imageDefinition 'Microsoft.Compute/galleries/images@2022-03-03' = {
         name: 'IsAcceleratedNetworkSupported'
         value: 'True'
       }
+      */
       {
         name: 'SecurityType'
         value: 'TrustedLaunch'
