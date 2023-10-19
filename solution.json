@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5609356353644698049"
+      "templateHash": "9281193932964502179"
     }
   },
   "parameters": {
@@ -354,7 +354,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "12830517353889103225"
+              "templateHash": "4339996950578293562"
             }
           },
           "parameters": {
@@ -727,7 +727,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6285206138697382202"
+                      "templateHash": "5655570687133758912"
                     }
                   },
                   "parameters": {
@@ -772,7 +772,7 @@
                     {
                       "type": "Microsoft.Network/networkInterfaces",
                       "apiVersion": "2023-04-01",
-                      "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+                      "name": "[format('nic-{0}', parameters('virtualMachineName'))]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
                       "properties": {
@@ -839,13 +839,14 @@
                               },
                               "storageAccountType": "Premium_LRS"
                             },
+                            "name": "[format('disk-{0}', parameters('virtualMachineName'))]",
                             "osType": "Windows"
                           }
                         },
                         "networkProfile": {
                           "networkInterfaces": [
                             {
-                              "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                               "properties": {
                                 "deleteOption": "Delete"
                               }
@@ -868,7 +869,7 @@
                         "licenseType": "[if(parameters('hybridUseBenefit'), 'Windows_Server', null())]"
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
                       ]
                     },
                     {
@@ -4215,7 +4216,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "15034667187003391929"
+              "templateHash": "15710188271038290557"
             }
           },
           "parameters": {
@@ -4444,7 +4445,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6293227186862642751"
+                      "templateHash": "16499332907656346578"
                     }
                   },
                   "parameters": {
@@ -4498,7 +4499,7 @@
                     {
                       "type": "Microsoft.Network/networkInterfaces",
                       "apiVersion": "2022-05-01",
-                      "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+                      "name": "[format('nic-{0}', parameters('virtualMachineName'))]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
                       "properties": {
@@ -4546,13 +4547,14 @@
                                 "id": "[parameters('diskEncryptionSetResourceId')]"
                               },
                               "storageAccountType": "StandardSSD_LRS"
-                            }
+                            },
+                            "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
                           }
                         },
                         "networkProfile": {
                           "networkInterfaces": [
                             {
-                              "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                               "properties": {
                                 "deleteOption": "Delete"
                               }
@@ -4574,7 +4576,7 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
                       ]
                     }
                   ],

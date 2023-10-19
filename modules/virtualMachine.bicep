@@ -25,7 +25,7 @@ var imageReference = sourceImageType == 'AzureComputeGallery' ? {
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
-  name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
+  name: 'nic-${virtualMachineName}'
   location: location
   tags: contains(tags, 'Microsoft.Network/networkInterfaces') ? tags['Microsoft.Network/networkInterfaces'] : {}
   properties: {
@@ -73,6 +73,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
           }
           storageAccountType: 'StandardSSD_LRS'
         }
+        name: 'disk-${virtualMachineName}'
       }
     }
     networkProfile: {

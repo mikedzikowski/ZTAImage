@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "15034667187003391929"
+      "templateHash": "15710188271038290557"
     }
   },
   "parameters": {
@@ -234,7 +234,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "6293227186862642751"
+              "templateHash": "16499332907656346578"
             }
           },
           "parameters": {
@@ -288,7 +288,7 @@
             {
               "type": "Microsoft.Network/networkInterfaces",
               "apiVersion": "2022-05-01",
-              "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+              "name": "[format('nic-{0}', parameters('virtualMachineName'))]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
               "properties": {
@@ -336,13 +336,14 @@
                         "id": "[parameters('diskEncryptionSetResourceId')]"
                       },
                       "storageAccountType": "StandardSSD_LRS"
-                    }
+                    },
+                    "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
                   }
                 },
                 "networkProfile": {
                   "networkInterfaces": [
                     {
-                      "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                       "properties": {
                         "deleteOption": "Delete"
                       }
@@ -364,7 +365,7 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
               ]
             }
           ],

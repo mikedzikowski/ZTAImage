@@ -14,7 +14,7 @@ param userAssignedIdentityResourceId string
 param virtualMachineName string
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
-  name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
+  name: 'nic-${virtualMachineName}'
   location: location
   tags: contains(tags, 'Microsoft.Network/networkInterfaces') ? tags['Microsoft.Network/networkInterfaces'] : {}
   properties: {
@@ -80,6 +80,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
           }
           storageAccountType: 'Premium_LRS'
         }
+        name: 'disk-${virtualMachineName}'
         osType: 'Windows'
       }
     }
