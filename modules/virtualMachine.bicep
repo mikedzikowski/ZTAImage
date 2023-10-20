@@ -68,11 +68,9 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         createOption: 'FromImage'
         deleteOption: 'Delete'
         managedDisk: {
-          /* Not supported yet: https://learn.microsoft.com/en-us/azure/virtual-machines/image-version-encryption#limitations
           diskEncryptionSet: {
             id: diskEncryptionSetResourceId
-          } 
-          */
+          }
           storageAccountType: 'StandardSSD_LRS'
         }
         name: 'disk-${virtualMachineName}'
@@ -94,7 +92,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       }
     }
     securityProfile: {
-      // encryptionAtHost: true
+      encryptionAtHost: true
       uefiSettings: {
         secureBootEnabled: true
         vTpmEnabled: true
