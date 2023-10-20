@@ -15,7 +15,7 @@ param domainJoinPassword string = ''
 param domainJoinUserPrincipalName string = ''
 param domainName string = ''
 param enableBuildAutomation bool
-param excludeFromLatest bool = true
+param excludeFromLatest bool = false
 param exemptPolicyAssignmentIds array = []
 param hybridUseBenefit bool
 param hybridWorkerName string = ''
@@ -169,6 +169,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName
     enableBuildAutomation: enableBuildAutomation
+    excludeFromLatest: excludeFromLatest
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion

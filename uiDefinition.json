@@ -232,7 +232,7 @@
                                     "name": "excludeFromLatest",
                                     "type": "Microsoft.Common.CheckBox",
                                     "label": "Exclude from latest",
-                                    "defaultValue": true,
+                                    "defaultValue": false,
                                     "toolTip": "Determines whether the image version will be the latest available version."
                                 },
                                 {

@@ -12,6 +12,7 @@ param domainJoinPassword string
 param domainJoinUserPrincipalName string
 param domainName string
 param enableBuildAutomation bool
+param excludeFromLatest bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -65,6 +66,7 @@ var parameters = {
   diskEncryptionSetResourceId: diskEncryptionSetResourceId
   enableBuildAutomation: string(enableBuildAutomation)
   environmentName: environment().name
+  excludeFromLatest: excludeFromLatest
   imageDefinitionName: imageDefinitionName
   imageMajorVersion: string(imageMajorVersion)
   imageMinorVersion: string(imageMinorVersion)

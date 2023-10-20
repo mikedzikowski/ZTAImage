@@ -72,7 +72,7 @@ try
 			containerName = $Values.containerName
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
 			enableBuildAutomation = if($Values.enableBuildAutomation -eq 'true'){$true}else{$false}
-			excludeFromLatest = $true
+			excludeFromLatest = $Values.excludeFromLatest
 			imageDefinitionName = $Values.imageDefinitionName
 			imageMajorVersion = [int]$Values.imageMajorVersion
 			imageMinorVersion = [int]$Values.imageMinorVersion

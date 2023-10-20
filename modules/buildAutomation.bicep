@@ -14,6 +14,7 @@ param domainJoinPassword string
 param domainJoinUserPrincipalName string
 param domainName string
 param enableBuildAutomation bool
+param excludeFromLatest bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -134,6 +135,7 @@ module automationAccount 'automationAccount.bicep' = {
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName
     enableBuildAutomation: enableBuildAutomation
+    excludeFromLatest: excludeFromLatest
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
