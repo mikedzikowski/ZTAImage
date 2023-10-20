@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "17827590760725274255"
+      "templateHash": "615852049285974432"
     }
   },
   "parameters": {
@@ -129,7 +129,7 @@
       "type": "bool",
       "defaultValue": false
     },
-    "sharedGalleryImageResourceId": {
+    "computeGalleryImageResourceId": {
       "type": "string",
       "defaultValue": ""
     },
@@ -205,8 +205,8 @@
           "marketplaceImageSKU": {
             "value": "[parameters('marketplaceImageSKU')]"
           },
-          "sharedGalleryImageResourceId": {
-            "value": "[parameters('sharedGalleryImageResourceId')]"
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
           },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
@@ -234,7 +234,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "3620191473620828702"
+              "templateHash": "1117177687539183326"
             }
           },
           "parameters": {
@@ -259,7 +259,7 @@
             "marketplaceImageSKU": {
               "type": "string"
             },
-            "sharedGalleryImageResourceId": {
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "sourceImageType": {
@@ -282,13 +282,13 @@
             }
           },
           "variables": {
-            "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('sharedGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
+            "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('id', parameters('computeGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
           },
           "resources": [
             {
               "type": "Microsoft.Network/networkInterfaces",
               "apiVersion": "2022-05-01",
-              "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+              "name": "[format('nic-{0}', parameters('virtualMachineName'))]",
               "location": "[parameters('location')]",
               "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
               "properties": {
@@ -332,17 +332,15 @@
                     "createOption": "FromImage",
                     "deleteOption": "Delete",
                     "managedDisk": {
-                      "diskEncryptionSet": {
-                        "id": "[parameters('diskEncryptionSetResourceId')]"
-                      },
                       "storageAccountType": "StandardSSD_LRS"
-                    }
+                    },
+                    "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
                   }
                 },
                 "networkProfile": {
                   "networkInterfaces": [
                     {
-                      "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                       "properties": {
                         "deleteOption": "Delete"
                       }
@@ -355,7 +353,6 @@
                   }
                 },
                 "securityProfile": {
-                  "encryptionAtHost": true,
                   "uefiSettings": {
                     "secureBootEnabled": true,
                     "vTpmEnabled": true
@@ -364,7 +361,7 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
               ]
             }
           ],
@@ -1135,7 +1132,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14621254000840471460"
+              "templateHash": "13189364925752939087"
             }
           },
           "parameters": {
@@ -1186,11 +1183,6 @@
                   "storageAccountType": "Standard_LRS",
                   "targetRegions": [
                     {
-                      "encryption": {
-                        "osDiskImage": {
-                          "diskEncryptionSetId": "[parameters('diskEncryptionSetResourceId')]"
-                        }
-                      },
                       "excludeFromLatest": "[parameters('excludeFromLatest')]",
                       "name": "[parameters('location')]",
                       "regionalReplicaCount": "[parameters('replicaCount')]",

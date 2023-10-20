@@ -1,5 +1,6 @@
 targetScope = 'subscription'
 
+param actionGroupName string
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryResourceId string
@@ -7,11 +8,13 @@ param containerName string
 param customizations array
 param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
+param distributionGroup string
 @secure()
 param domainJoinPassword string
 param domainJoinUserPrincipalName string
 param domainName string
 param enableBuildAutomation bool
+param excludeFromLatest bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -45,7 +48,7 @@ param officeInstaller string
 param oUPath string
 param replicaCount int
 param resourceGroupName string
-param sharedGalleryImageResourceId string
+param computeGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
 param subnetResourceId string
@@ -119,16 +122,20 @@ module automationAccount 'automationAccount.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   name: 'automation-account-${deploymentNameSuffix}'
   params: {
+    actionGroupName: actionGroupName
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
     computeGalleryResourceId: computeGalleryResourceId
     containerName: containerName
     customizations: customizations
+    deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    distributionGroup: distributionGroup
     domainJoinPassword: domainJoinPassword
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName
     enableBuildAutomation: enableBuildAutomation
+    excludeFromLatest: excludeFromLatest
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
@@ -158,7 +165,7 @@ module automationAccount 'automationAccount.bicep' = {
     oUPath: oUPath
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
-    sharedGalleryImageResourceId: sharedGalleryImageResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     subnetResourceId: subnetResourceId

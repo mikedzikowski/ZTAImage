@@ -5,15 +5,23 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "4943840231220956698"
+      "templateHash": "9692053483368499043"
     }
   },
   "parameters": {
+    "actionGroupName": {
+      "type": "string",
+      "defaultValue": ""
+    },
     "automationAccountName": {
       "type": "string"
     },
     "automationAccountPrivateDnsZoneResourceId": {
       "type": "string"
+    },
+    "computeGalleryImageResourceId": {
+      "type": "string",
+      "defaultValue": ""
     },
     "computeGalleryName": {
       "type": "string"
@@ -26,6 +34,10 @@
       "defaultValue": []
     },
     "diskEncryptionSetResourceId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "distributionGroup": {
       "type": "string",
       "defaultValue": ""
     },
@@ -51,6 +63,10 @@
     "excludeFromLatest": {
       "type": "bool",
       "defaultValue": true
+    },
+    "exemptPolicyAssignmentIds": {
+      "type": "array",
+      "defaultValue": []
     },
     "hybridUseBenefit": {
       "type": "bool"
@@ -144,7 +160,8 @@
       "defaultValue": ""
     },
     "officeInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "oUPath": {
       "type": "string"
@@ -154,10 +171,6 @@
     },
     "resourceGroupName": {
       "type": "string"
-    },
-    "sharedGalleryImageResourceId": {
-      "type": "string",
-      "defaultValue": ""
     },
     "sourceImageType": {
       "type": "string",
@@ -177,7 +190,8 @@
       "defaultValue": {}
     },
     "teamsInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "userAssignedIdentityName": {
       "type": "string"
@@ -195,7 +209,7 @@
     }
   },
   "variables": {
-    "imageDefinitionName": "[format('{0}-{1}', parameters('imageDefinitionNamePrefix'), parameters('marketplaceImageSKU'))]",
+    "imageDefinitionName": "[if(empty(parameters('computeGalleryImageResourceId')), format('{0}-{1}', parameters('imageDefinitionNamePrefix'), parameters('marketplaceImageSKU')), format('{0}-{1}', parameters('imageDefinitionNamePrefix'), split(parameters('computeGalleryImageResourceId'), '/')[10]))]",
     "imageVirtualMachineName": "[take(format('vmimg-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15)]",
     "managementVirtualMachineName": "[if(empty(parameters('hybridWorkerName')), take(format('vmmgt-{0}', uniqueString(parameters('deploymentNameSuffix'))), 15), parameters('hybridWorkerName'))]",
     "storageAccountName": "[split(parameters('storageAccountResourceId'), '/')[8]]",
@@ -269,6 +283,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
+          },
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
@@ -283,6 +300,9 @@
           },
           "enableBuildAutomation": {
             "value": "[parameters('enableBuildAutomation')]"
+          },
+          "exemptPolicyAssignmentIds": {
+            "value": "[parameters('exemptPolicyAssignmentIds')]"
           },
           "hybridUseBenefit": {
             "value": "[parameters('hybridUseBenefit')]"
@@ -334,10 +354,13 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "4532227499815783287"
+              "templateHash": "3354030166694391702"
             }
           },
           "parameters": {
+            "computeGalleryImageResourceId": {
+              "type": "string"
+            },
             "computeGalleryName": {
               "type": "string"
             },
@@ -352,6 +375,9 @@
             },
             "enableBuildAutomation": {
               "type": "bool"
+            },
+            "exemptPolicyAssignmentIds": {
+              "type": "array"
             },
             "hybridUseBenefit": {
               "type": "bool"
@@ -701,7 +727,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "6285206138697382202"
+                      "templateHash": "5655570687133758912"
                     }
                   },
                   "parameters": {
@@ -746,7 +772,7 @@
                     {
                       "type": "Microsoft.Network/networkInterfaces",
                       "apiVersion": "2023-04-01",
-                      "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+                      "name": "[format('nic-{0}', parameters('virtualMachineName'))]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
                       "properties": {
@@ -813,13 +839,14 @@
                               },
                               "storageAccountType": "Premium_LRS"
                             },
+                            "name": "[format('disk-{0}', parameters('virtualMachineName'))]",
                             "osType": "Windows"
                           }
                         },
                         "networkProfile": {
                           "networkInterfaces": [
                             {
-                              "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                               "properties": {
                                 "deleteOption": "Delete"
                               }
@@ -842,7 +869,7 @@
                         "licenseType": "[if(parameters('hybridUseBenefit'), 'Windows_Server', null())]"
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
                       ]
                     },
                     {
@@ -899,6 +926,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
+                  },
                   "enableBuildAutomation": {
                     "value": "[parameters('enableBuildAutomation')]"
                   },
@@ -931,10 +961,13 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "11493713703934912871"
+                      "templateHash": "16456686082024777523"
                     }
                   },
                   "parameters": {
+                    "computeGalleryImageResourceId": {
+                      "type": "string"
+                    },
                     "computeGalleryName": {
                       "type": "string"
                     },
@@ -996,22 +1029,14 @@
                         "architecture": "x64",
                         "features": [
                           {
-                            "name": "IsHibernateSupported",
-                            "value": "True"
-                          },
-                          {
-                            "name": "IsAcceleratedNetworkSupported",
-                            "value": "True"
-                          },
-                          {
                             "name": "SecurityType",
                             "value": "TrustedLaunch"
                           }
                         ],
                         "hyperVGeneration": "V2",
                         "identifier": {
-                          "offer": "[parameters('marketplaceImageOffer')]",
-                          "publisher": "[parameters('marketplaceImagePublisher')]",
+                          "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                          "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
                           "sku": "[parameters('imageDefinitionName')]"
                         },
                         "osState": "Generalized",
@@ -1037,6 +1062,63 @@
               "dependsOn": [
                 "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', parameters('subscriptionId'), parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('user-assigned-identity-{0}', parameters('deploymentNameSuffix')))]"
               ]
+            },
+            {
+              "copy": {
+                "name": "policyExemptions",
+                "count": "[length(range(0, length(parameters('exemptPolicyAssignmentIds'))))]"
+              },
+              "condition": "[greater(length(parameters('exemptPolicyAssignmentIds')), 0)]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('PolicyExemption_{0}', range(0, length(parameters('exemptPolicyAssignmentIds')))[copyIndex()])]",
+              "subscriptionId": "[parameters('subscriptionId')]",
+              "resourceGroup": "[parameters('resourceGroupName')]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "policyAssignmentId": {
+                    "value": "[parameters('exemptPolicyAssignmentIds')[range(0, length(parameters('exemptPolicyAssignmentIds')))[copyIndex()]]]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "18154501053895902975"
+                    }
+                  },
+                  "parameters": {
+                    "policyAssignmentId": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/policyExemptions",
+                      "apiVersion": "2022-07-01-preview",
+                      "name": "exempt-imaging-resource-group",
+                      "properties": {
+                        "assignmentScopeValidation": "Default",
+                        "description": "Exempts the imaging resource group to prevent issues with building images.",
+                        "displayName": "Imaging resource group",
+                        "exemptionCategory": "Mitigated",
+                        "expiresOn": null,
+                        "metadata": null,
+                        "policyAssignmentId": "[parameters('policyAssignmentId')]",
+                        "policyDefinitionReferenceIds": [],
+                        "resourceSelectors": []
+                      }
+                    }
+                  ]
+                }
+              }
             }
           ],
           "outputs": {
@@ -1072,6 +1154,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "actionGroupName": {
+            "value": "[parameters('actionGroupName')]"
+          },
           "automationAccountName": {
             "value": "[parameters('automationAccountName')]"
           },
@@ -1092,6 +1177,9 @@
           },
           "diskEncryptionSetResourceId": {
             "value": "[parameters('diskEncryptionSetResourceId')]"
+          },
+          "distributionGroup": {
+            "value": "[parameters('distributionGroup')]"
           },
           "domainJoinPassword": {
             "value": "[parameters('domainJoinPassword')]"
@@ -1201,8 +1289,8 @@
           "resourceGroupName": {
             "value": "[parameters('resourceGroupName')]"
           },
-          "sharedGalleryImageResourceId": {
-            "value": "[parameters('sharedGalleryImageResourceId')]"
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
           },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
@@ -1251,10 +1339,13 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "14430618818632940482"
+              "templateHash": "6016232800263681502"
             }
           },
           "parameters": {
+            "actionGroupName": {
+              "type": "string"
+            },
             "automationAccountName": {
               "type": "string"
             },
@@ -1274,6 +1365,9 @@
               "type": "string"
             },
             "diskEncryptionSetResourceId": {
+              "type": "string"
+            },
+            "distributionGroup": {
               "type": "string"
             },
             "domainJoinPassword": {
@@ -1384,7 +1478,7 @@
             "resourceGroupName": {
               "type": "string"
             },
-            "sharedGalleryImageResourceId": {
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "sourceImageType": {
@@ -1760,7 +1854,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "3143918698927002919"
+                      "templateHash": "9664435100690796390"
                     }
                   },
                   "parameters": {
@@ -1782,7 +1876,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "17827590760725274255"
+                          "templateHash": "615852049285974432"
                         }
                       },
                       "parameters": {
@@ -1906,7 +2000,7 @@
                           "type": "bool",
                           "defaultValue": false
                         },
-                        "sharedGalleryImageResourceId": {
+                        "computeGalleryImageResourceId": {
                           "type": "string",
                           "defaultValue": ""
                         },
@@ -1982,8 +2076,8 @@
                               "marketplaceImageSKU": {
                                 "value": "[[parameters('marketplaceImageSKU')]"
                               },
-                              "sharedGalleryImageResourceId": {
-                                "value": "[[parameters('sharedGalleryImageResourceId')]"
+                              "computeGalleryImageResourceId": {
+                                "value": "[[parameters('computeGalleryImageResourceId')]"
                               },
                               "sourceImageType": {
                                 "value": "[[parameters('sourceImageType')]"
@@ -2011,7 +2105,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "3620191473620828702"
+                                  "templateHash": "1117177687539183326"
                                 }
                               },
                               "parameters": {
@@ -2036,7 +2130,7 @@
                                 "marketplaceImageSKU": {
                                   "type": "string"
                                 },
-                                "sharedGalleryImageResourceId": {
+                                "computeGalleryImageResourceId": {
                                   "type": "string"
                                 },
                                 "sourceImageType": {
@@ -2059,13 +2153,13 @@
                                 }
                               },
                               "variables": {
-                                "imageReference": "[[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('sharedGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
+                                "imageReference": "[[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('id', parameters('computeGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
                               },
                               "resources": [
                                 {
                                   "type": "Microsoft.Network/networkInterfaces",
                                   "apiVersion": "2022-05-01",
-                                  "name": "[[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+                                  "name": "[[format('nic-{0}', parameters('virtualMachineName'))]",
                                   "location": "[[parameters('location')]",
                                   "tags": "[[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
                                   "properties": {
@@ -2109,17 +2203,15 @@
                                         "createOption": "FromImage",
                                         "deleteOption": "Delete",
                                         "managedDisk": {
-                                          "diskEncryptionSet": {
-                                            "id": "[[parameters('diskEncryptionSetResourceId')]"
-                                          },
                                           "storageAccountType": "StandardSSD_LRS"
-                                        }
+                                        },
+                                        "name": "[[format('disk-{0}', parameters('virtualMachineName'))]"
                                       }
                                     },
                                     "networkProfile": {
                                       "networkInterfaces": [
                                         {
-                                          "id": "[[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                                          "id": "[[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                                           "properties": {
                                             "deleteOption": "Delete"
                                           }
@@ -2132,7 +2224,6 @@
                                       }
                                     },
                                     "securityProfile": {
-                                      "encryptionAtHost": true,
                                       "uefiSettings": {
                                         "secureBootEnabled": true,
                                         "vTpmEnabled": true
@@ -2141,7 +2232,7 @@
                                     }
                                   },
                                   "dependsOn": [
-                                    "[[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                                    "[[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
                                   ]
                                 }
                               ],
@@ -2912,7 +3003,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "14621254000840471460"
+                                  "templateHash": "13189364925752939087"
                                 }
                               },
                               "parameters": {
@@ -2963,11 +3054,6 @@
                                       "storageAccountType": "Standard_LRS",
                                       "targetRegions": [
                                         {
-                                          "encryption": {
-                                            "osDiskImage": {
-                                              "diskEncryptionSetId": "[[parameters('diskEncryptionSetResourceId')]"
-                                            }
-                                          },
                                           "excludeFromLatest": "[[parameters('excludeFromLatest')]",
                                           "name": "[[parameters('location')]",
                                           "regionalReplicaCount": "[[parameters('replicaCount')]",
@@ -3160,6 +3246,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "actionGroupName": {
+                    "value": "[parameters('actionGroupName')]"
+                  },
                   "automationAccountName": {
                     "value": "[parameters('automationAccountName')]"
                   },
@@ -3175,8 +3264,14 @@
                   "customizations": {
                     "value": "[parameters('customizations')]"
                   },
+                  "deploymentNameSuffix": {
+                    "value": "[parameters('deploymentNameSuffix')]"
+                  },
                   "diskEncryptionSetResourceId": {
                     "value": "[parameters('diskEncryptionSetResourceId')]"
+                  },
+                  "distributionGroup": {
+                    "value": "[parameters('distributionGroup')]"
                   },
                   "domainJoinPassword": {
                     "value": "[parameters('domainJoinPassword')]"
@@ -3277,8 +3372,8 @@
                   "resourceGroupName": {
                     "value": "[parameters('resourceGroupName')]"
                   },
-                  "sharedGalleryImageResourceId": {
-                    "value": "[parameters('sharedGalleryImageResourceId')]"
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
                   },
                   "sourceImageType": {
                     "value": "[parameters('sourceImageType')]"
@@ -3327,10 +3422,13 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "1105150678801490668"
+                      "templateHash": "5409491122524872406"
                     }
                   },
                   "parameters": {
+                    "actionGroupName": {
+                      "type": "string"
+                    },
                     "automationAccountName": {
                       "type": "string"
                     },
@@ -3346,7 +3444,13 @@
                     "customizations": {
                       "type": "array"
                     },
+                    "deploymentNameSuffix": {
+                      "type": "string"
+                    },
                     "diskEncryptionSetResourceId": {
+                      "type": "string"
+                    },
+                    "distributionGroup": {
                       "type": "string"
                     },
                     "domainJoinPassword": {
@@ -3452,7 +3556,7 @@
                     "resourceGroupName": {
                       "type": "string"
                     },
-                    "sharedGalleryImageResourceId": {
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "sourceImageType": {
@@ -3534,7 +3638,7 @@
                       "officeInstaller": "[parameters('officeInstaller')]",
                       "replicaCount": "[string(parameters('replicaCount'))]",
                       "resourceGroupName": "[parameters('resourceGroupName')]",
-                      "sharedGalleryImageResourceId": "[parameters('sharedGalleryImageResourceId')]",
+                      "computeGalleryImageResourceId": "[parameters('computeGalleryImageResourceId')]",
                       "sourceImageType": "[parameters('sourceImageType')]",
                       "storageAccountName": "[parameters('storageAccountName')]",
                       "subnetResourceId": "[parameters('subnetResourceId')]",
@@ -3719,29 +3823,6 @@
                       ]
                     },
                     {
-                      "condition": "[not(empty(parameters('logAnalyticsWorkspaceResourceId')))]",
-                      "type": "Microsoft.Insights/diagnosticSettings",
-                      "apiVersion": "2017-05-01-preview",
-                      "scope": "[format('Microsoft.Automation/automationAccounts/{0}', parameters('automationAccountName'))]",
-                      "name": "[format('diag-{0}', parameters('automationAccountName'))]",
-                      "properties": {
-                        "logs": [
-                          {
-                            "category": "JobLogs",
-                            "enabled": true
-                          },
-                          {
-                            "category": "JobStreams",
-                            "enabled": true
-                          }
-                        ],
-                        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]"
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
-                      ]
-                    },
-                    {
                       "type": "Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups",
                       "apiVersion": "2022-08-08",
                       "name": "[format('{0}/{1}', parameters('automationAccountName'), 'Zero Trust Image Build Automation')]",
@@ -3809,6 +3890,211 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('managementVirtualMachineName'), 'HybridWorkerForWindows')]",
                         "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('managementVirtualMachineName'), 'runbook')]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(and(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), not(empty(parameters('distributionGroup')))), not(empty(parameters('actionGroupName'))))]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('monitoring-{0}', parameters('deploymentNameSuffix'))]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "actionGroupName": {
+                            "value": "[parameters('actionGroupName')]"
+                          },
+                          "automationAccountName": {
+                            "value": "[parameters('automationAccountName')]"
+                          },
+                          "distributionGroup": {
+                            "value": "[parameters('distributionGroup')]"
+                          },
+                          "location": {
+                            "value": "[parameters('location')]"
+                          },
+                          "logAnalyticsWorkspaceResourceId": {
+                            "value": "[parameters('logAnalyticsWorkspaceResourceId')]"
+                          },
+                          "tags": {
+                            "value": "[parameters('tags')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "7314287484133279597"
+                            }
+                          },
+                          "parameters": {
+                            "actionGroupName": {
+                              "type": "string"
+                            },
+                            "automationAccountName": {
+                              "type": "string"
+                            },
+                            "distributionGroup": {
+                              "type": "string"
+                            },
+                            "location": {
+                              "type": "string"
+                            },
+                            "logAnalyticsWorkspaceResourceId": {
+                              "type": "string"
+                            },
+                            "tags": {
+                              "type": "object"
+                            }
+                          },
+                          "variables": {
+                            "alerts": [
+                              {
+                                "name": "[format('Zero Trust Image Build - Failure ({0})', parameters('automationAccountName'))]",
+                                "description": "Sends an error alert when the runbook build fails.",
+                                "severity": 0,
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                  "allOf": [
+                                    {
+                                      "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build failed\"",
+                                      "timeAggregation": "Count",
+                                      "dimensions": [
+                                        {
+                                          "name": "ResultDescription",
+                                          "operator": "Include",
+                                          "values": [
+                                            "*"
+                                          ]
+                                        }
+                                      ],
+                                      "operator": "GreaterThanOrEqual",
+                                      "threshold": 1,
+                                      "failingPeriods": {
+                                        "numberOfEvaluationPeriods": 1,
+                                        "minFailingPeriodsToAlert": 1
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "[format('Zero Trust Image Build - Success ({0})', parameters('automationAccountName'))]",
+                                "description": "Sends an informational alert when the runbook build succeeds.",
+                                "severity": 3,
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                  "allOf": [
+                                    {
+                                      "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build succeeded\"",
+                                      "timeAggregation": "Count",
+                                      "dimensions": [
+                                        {
+                                          "name": "ResultDescription",
+                                          "operator": "Include",
+                                          "values": [
+                                            "*"
+                                          ]
+                                        }
+                                      ],
+                                      "operator": "GreaterThanOrEqual",
+                                      "threshold": 1,
+                                      "failingPeriods": {
+                                        "numberOfEvaluationPeriods": 1,
+                                        "minFailingPeriodsToAlert": 1
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Insights/diagnosticSettings",
+                              "apiVersion": "2017-05-01-preview",
+                              "scope": "[format('Microsoft.Automation/automationAccounts/{0}', parameters('automationAccountName'))]",
+                              "name": "[format('diag-{0}', parameters('automationAccountName'))]",
+                              "properties": {
+                                "logs": [
+                                  {
+                                    "category": "JobLogs",
+                                    "enabled": true
+                                  },
+                                  {
+                                    "category": "JobStreams",
+                                    "enabled": true
+                                  }
+                                ],
+                                "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]"
+                              }
+                            },
+                            {
+                              "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('distributionGroup'))))]",
+                              "type": "Microsoft.Insights/actionGroups",
+                              "apiVersion": "2022-06-01",
+                              "name": "[parameters('actionGroupName')]",
+                              "location": "global",
+                              "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/actionGroups'), parameters('tags')['Microsoft.Insights/actionGroups'], createObject())]",
+                              "properties": {
+                                "emailReceivers": [
+                                  {
+                                    "emailAddress": "[parameters('distributionGroup')]",
+                                    "name": "[parameters('distributionGroup')]",
+                                    "useCommonAlertSchema": true
+                                  }
+                                ],
+                                "enabled": true,
+                                "groupShortName": "Image Builds"
+                              }
+                            },
+                            {
+                              "copy": {
+                                "name": "scheduledQueryRules",
+                                "count": "[length(range(0, length(variables('alerts'))))]"
+                              },
+                              "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('logAnalyticsWorkspaceResourceId'))))]",
+                              "type": "Microsoft.Insights/scheduledQueryRules",
+                              "apiVersion": "2022-06-15",
+                              "name": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
+                              "location": "[parameters('location')]",
+                              "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/scheduledQueryRules'), parameters('tags')['Microsoft.Insights/scheduledQueryRules'], createObject())]",
+                              "kind": "LogAlert",
+                              "properties": {
+                                "actions": {
+                                  "actionGroups": [
+                                    "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+                                  ]
+                                },
+                                "autoMitigate": false,
+                                "skipQueryValidation": false,
+                                "criteria": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].criteria]",
+                                "description": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].description]",
+                                "displayName": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
+                                "enabled": true,
+                                "evaluationFrequency": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].evaluationFrequency]",
+                                "severity": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].severity]",
+                                "windowSize": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].windowSize]",
+                                "scopes": [
+                                  "[parameters('logAnalyticsWorkspaceResourceId')]"
+                                ]
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
                       ]
                     }
                   ]
@@ -3942,8 +4228,8 @@
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
           },
-          "sharedGalleryImageResourceId": {
-            "value": "[parameters('sharedGalleryImageResourceId')]"
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
           },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
@@ -3986,7 +4272,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17827590760725274255"
+              "templateHash": "615852049285974432"
             }
           },
           "parameters": {
@@ -4110,7 +4396,7 @@
               "type": "bool",
               "defaultValue": false
             },
-            "sharedGalleryImageResourceId": {
+            "computeGalleryImageResourceId": {
               "type": "string",
               "defaultValue": ""
             },
@@ -4186,8 +4472,8 @@
                   "marketplaceImageSKU": {
                     "value": "[parameters('marketplaceImageSKU')]"
                   },
-                  "sharedGalleryImageResourceId": {
-                    "value": "[parameters('sharedGalleryImageResourceId')]"
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
                   },
                   "sourceImageType": {
                     "value": "[parameters('sourceImageType')]"
@@ -4215,7 +4501,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "3620191473620828702"
+                      "templateHash": "1117177687539183326"
                     }
                   },
                   "parameters": {
@@ -4240,7 +4526,7 @@
                     "marketplaceImageSKU": {
                       "type": "string"
                     },
-                    "sharedGalleryImageResourceId": {
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "sourceImageType": {
@@ -4263,13 +4549,13 @@
                     }
                   },
                   "variables": {
-                    "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('sharedGalleryImageId', parameters('sharedGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
+                    "imageReference": "[if(equals(parameters('sourceImageType'), 'AzureComputeGallery'), createObject('id', parameters('computeGalleryImageResourceId')), createObject('publisher', parameters('marketplaceImagePublisher'), 'offer', parameters('marketplaceImageOffer'), 'sku', parameters('marketplaceImageSKU'), 'version', 'latest'))]"
                   },
                   "resources": [
                     {
                       "type": "Microsoft.Network/networkInterfaces",
                       "apiVersion": "2022-05-01",
-                      "name": "[take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15)]",
+                      "name": "[format('nic-{0}', parameters('virtualMachineName'))]",
                       "location": "[parameters('location')]",
                       "tags": "[if(contains(parameters('tags'), 'Microsoft.Network/networkInterfaces'), parameters('tags')['Microsoft.Network/networkInterfaces'], createObject())]",
                       "properties": {
@@ -4313,17 +4599,15 @@
                             "createOption": "FromImage",
                             "deleteOption": "Delete",
                             "managedDisk": {
-                              "diskEncryptionSet": {
-                                "id": "[parameters('diskEncryptionSetResourceId')]"
-                              },
                               "storageAccountType": "StandardSSD_LRS"
-                            }
+                            },
+                            "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
                           }
                         },
                         "networkProfile": {
                           "networkInterfaces": [
                             {
-                              "id": "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]",
+                              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]",
                               "properties": {
                                 "deleteOption": "Delete"
                               }
@@ -4336,7 +4620,6 @@
                           }
                         },
                         "securityProfile": {
-                          "encryptionAtHost": true,
                           "uefiSettings": {
                             "secureBootEnabled": true,
                             "vTpmEnabled": true
@@ -4345,7 +4628,7 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Network/networkInterfaces', take(format('{0}-nic-{1}', parameters('virtualMachineName'), uniqueString(parameters('virtualMachineName'))), 15))]"
+                        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('virtualMachineName')))]"
                       ]
                     }
                   ],
@@ -5116,7 +5399,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "14621254000840471460"
+                      "templateHash": "13189364925752939087"
                     }
                   },
                   "parameters": {
@@ -5167,11 +5450,6 @@
                           "storageAccountType": "Standard_LRS",
                           "targetRegions": [
                             {
-                              "encryption": {
-                                "osDiskImage": {
-                                  "diskEncryptionSetId": "[parameters('diskEncryptionSetResourceId')]"
-                                }
-                              },
                               "excludeFromLatest": "[parameters('excludeFromLatest')]",
                               "name": "[parameters('location')]",
                               "regionalReplicaCount": "[parameters('replicaCount')]",

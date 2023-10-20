@@ -7,7 +7,7 @@ param location string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param marketplaceImageSKU string
-param sharedGalleryImageResourceId string
+param computeGalleryImageResourceId string
 param sourceImageType string
 param subnetResourceId string
 param tags object
@@ -16,7 +16,7 @@ param virtualMachineName string
 param virtualMachineSize string
 
 var imageReference = sourceImageType == 'AzureComputeGallery' ? {
-  sharedGalleryImageId: sharedGalleryImageResourceId
+  id: computeGalleryImageResourceId
 } : {
   publisher: marketplaceImagePublisher
   offer: marketplaceImageOffer
@@ -25,7 +25,7 @@ var imageReference = sourceImageType == 'AzureComputeGallery' ? {
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-05-01' = {
-  name: take('${virtualMachineName}-nic-${uniqueString(virtualMachineName)}', 15)
+  name: 'nic-${virtualMachineName}'
   location: location
   tags: contains(tags, 'Microsoft.Network/networkInterfaces') ? tags['Microsoft.Network/networkInterfaces'] : {}
   properties: {
@@ -68,11 +68,14 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         createOption: 'FromImage'
         deleteOption: 'Delete'
         managedDisk: {
+          /* Not supported yet: https://learn.microsoft.com/en-us/azure/virtual-machines/image-version-encryption#limitations
           diskEncryptionSet: {
             id: diskEncryptionSetResourceId
           }
+          */
           storageAccountType: 'StandardSSD_LRS'
         }
+        name: 'disk-${virtualMachineName}'
       }
     }
     networkProfile: {
@@ -91,7 +94,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       }
     }
     securityProfile: {
-      encryptionAtHost: true
+      // encryptionAtHost: true
       uefiSettings: {
         secureBootEnabled: true
         vTpmEnabled: true

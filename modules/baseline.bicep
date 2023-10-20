@@ -1,10 +1,12 @@
 targetScope = 'subscription'
 
+param computeGalleryImageResourceId string
 param computeGalleryName string
 param containerName string
 param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool
+param exemptPolicyAssignmentIds array
 param hybridUseBenefit bool
 param imageDefinitionName string
 @secure()
@@ -80,6 +82,7 @@ module computeGallery 'computeGallery.bicep' = {
   name: 'gallery-image-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     enableBuildAutomation: enableBuildAutomation
     imageDefinitionName: imageDefinitionName
     location: location
@@ -90,6 +93,14 @@ module computeGallery 'computeGallery.bicep' = {
     userAssignedIdentityPrincipalId: userAssignedIdentity.outputs.principalId
   }
 }
+
+module policyExemptions 'exemption.bicep' = [for i in range(0, length(exemptPolicyAssignmentIds)): if (length(exemptPolicyAssignmentIds) > 0) {
+  name: 'PolicyExemption_${i}'
+  scope: resourceGroup(subscriptionId, resourceGroupName)
+  params: {
+    policyAssignmentId: exemptPolicyAssignmentIds[i]
+  }
+}]
 
 output computeGalleryResourceId string = computeGallery.outputs.computeGalleryResourceId
 output userAssignedIdentityClientId string = userAssignedIdentity.outputs.clientId

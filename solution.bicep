@@ -1,18 +1,22 @@
 targetScope = 'subscription'
 
+param actionGroupName string = ''
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
+param computeGalleryImageResourceId string = ''
 param computeGalleryName string
 param containerName string
 param customizations array = []
 param diskEncryptionSetResourceId string = ''
+param distributionGroup string = ''
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 @secure()
 param domainJoinPassword string = ''
 param domainJoinUserPrincipalName string = ''
 param domainName string = ''
 param enableBuildAutomation bool
-param excludeFromLatest bool = true
+param excludeFromLatest bool = false
+param exemptPolicyAssignmentIds array = []
 param hybridUseBenefit bool
 param hybridWorkerName string = ''
 param imageDefinitionNamePrefix string
@@ -42,11 +46,10 @@ param marketplaceImageOffer string = ''
 param marketplaceImagePublisher string = ''
 param marketplaceImageSKU string = ''
 param msrdcwebrtcsvcInstaller string = ''
-param officeInstaller string
+param officeInstaller string = ''
 param oUPath string
 param replicaCount int
 param resourceGroupName string
-param sharedGalleryImageResourceId string = ''
 @allowed([
   'AzureComputeGallery'
   'AzureMarketplace'
@@ -55,13 +58,13 @@ param sourceImageType string
 param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
-param teamsInstaller string
+param teamsInstaller string = ''
 param userAssignedIdentityName string
 param vcRedistInstaller string = ''
 param vDOTInstaller string = ''
 param virtualMachineSize string
 
-var imageDefinitionName = '${imageDefinitionNamePrefix}-${marketplaceImageSKU}'
+var imageDefinitionName = empty(computeGalleryImageResourceId) ? '${imageDefinitionNamePrefix}-${marketplaceImageSKU}' : '${imageDefinitionNamePrefix}-${split(computeGalleryImageResourceId, '/')[10]}'
 var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
 var managementVirtualMachineName = empty(hybridWorkerName) ? take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15) : hybridWorkerName
 var storageAccountName = split(storageAccountResourceId, '/')[8]
@@ -126,11 +129,13 @@ var timeZones = {
 module baseline 'modules/baseline.bicep' = {
   name: 'baseline-${deploymentNameSuffix}'
   params: {
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
     containerName: containerName
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     enableBuildAutomation: enableBuildAutomation
+    exemptPolicyAssignmentIds: exemptPolicyAssignmentIds
     hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     localAdministratorPassword: localAdministratorPassword
@@ -151,6 +156,7 @@ module baseline 'modules/baseline.bicep' = {
 module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomation) {
   name: 'build-automation-${deploymentNameSuffix}'
   params: {
+    actionGroupName: actionGroupName
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
     computeGalleryResourceId: baseline.outputs.computeGalleryResourceId
@@ -158,10 +164,12 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     customizations: customizations
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    distributionGroup: distributionGroup
     domainJoinPassword: domainJoinPassword
     domainJoinUserPrincipalName: domainJoinUserPrincipalName
     domainName: domainName
     enableBuildAutomation: enableBuildAutomation
+    excludeFromLatest: excludeFromLatest
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
@@ -194,7 +202,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     oUPath: oUPath
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
-    sharedGalleryImageResourceId: sharedGalleryImageResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     subnetResourceId: subnetResourceId
@@ -250,7 +258,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
     officeInstaller: officeInstaller
     replicaCount: replicaCount
-    sharedGalleryImageResourceId: sharedGalleryImageResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountName: storageAccountName
     subnetResourceId: subnetResourceId

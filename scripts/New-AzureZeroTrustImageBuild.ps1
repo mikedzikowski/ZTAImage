@@ -44,9 +44,9 @@ try
     {
         'AzureComputeGallery' {
 			# Set Variables
-			$SourceGalleryName = $Values.sharedGalleryImageResourceId.Split('/')[8]
-			$SourceGalleryResourceGroupName = $Values.sharedGalleryImageResourceId.Split('/')[4]
-			$SourceImageDefinitionName = $Values.sharedGalleryImageResourceId.Split('/')[10]
+			$SourceGalleryName = $Values.computeGalleryImageResourceId.Split('/')[8]
+			$SourceGalleryResourceGroupName = $Values.computeGalleryImageResourceId.Split('/')[4]
+			$SourceImageDefinitionName = $Values.computeGalleryImageResourceId.Split('/')[10]
 
             # Get the date of the latest image definition version
             $SourceImageVersionDate = (Get-AzGalleryImageVersion -ResourceGroupName $SourceGalleryResourceGroupName -GalleryName $SourceGalleryName -GalleryImageDefinitionName $SourceImageDefinitionName -DefaultProfile $AzureContext | Where-Object {$_.PublishingProfile.ExcludeFromLatest -eq $false -and $_.ProvisioningState -eq 'Succeeded'}).PublishingProfile.PublishedDate | Sort-Object | Select-Object -Last 1
@@ -72,7 +72,7 @@ try
 			containerName = $Values.containerName
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
 			enableBuildAutomation = if($Values.enableBuildAutomation -eq 'true'){$true}else{$false}
-			excludeFromLatest = $true
+			excludeFromLatest = $Values.excludeFromLatest
 			imageDefinitionName = $Values.imageDefinitionName
 			imageMajorVersion = [int]$Values.imageMajorVersion
 			imageMinorVersion = [int]$Values.imageMinorVersion
@@ -99,7 +99,7 @@ try
 			officeInstaller = $Values.officeInstaller
 			replicaCount = [int]$Values.replicaCount
 			runbookExecution = $true
-			sharedGalleryImageResourceId = $Values.sharedGalleryImageResourceId
+			computeGalleryImageResourceId = $Values.computeGalleryImageResourceId
 			sourceImageType = $Values.sourceImageType
 			storageAccountName = $Values.storageAccountName
 			subnetResourceId = $Values.subnetResourceId

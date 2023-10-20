@@ -1,14 +1,18 @@
+param actionGroupName string
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryResourceId string
 param containerName string
 param customizations array
+param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
+param distributionGroup string
 @secure()
 param domainJoinPassword string
 param domainJoinUserPrincipalName string
 param domainName string
 param enableBuildAutomation bool
+param excludeFromLatest bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -39,7 +43,7 @@ param officeInstaller string
 param oUPath string
 param replicaCount int
 param resourceGroupName string
-param sharedGalleryImageResourceId string
+param computeGalleryImageResourceId string
 param sourceImageType string
 param storageAccountName string
 param subnetResourceId string
@@ -62,6 +66,7 @@ var parameters = {
   diskEncryptionSetResourceId: diskEncryptionSetResourceId
   enableBuildAutomation: string(enableBuildAutomation)
   environmentName: environment().name
+  excludeFromLatest: excludeFromLatest
   imageDefinitionName: imageDefinitionName
   imageMajorVersion: string(imageMajorVersion)
   imageMinorVersion: string(imageMinorVersion)
@@ -89,7 +94,7 @@ var parameters = {
   officeInstaller: officeInstaller
   replicaCount: string(replicaCount)
   resourceGroupName: resourceGroupName
-  sharedGalleryImageResourceId: sharedGalleryImageResourceId
+  computeGalleryImageResourceId: computeGalleryImageResourceId
   sourceImageType: sourceImageType
   storageAccountName: storageAccountName
   subnetResourceId: subnetResourceId
@@ -308,21 +313,15 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
   ]
 }
 
-resource diagnostics 'Microsoft.Insights/diagnosticsettings@2017-05-01-preview' = if (!empty(logAnalyticsWorkspaceResourceId)) {
-  scope: automationAccount
-  name: 'diag-${automationAccount.name}'
-  properties: {
-    logs: [
-      {
-        category: 'JobLogs'
-        enabled: true
-      }
-      {
-        category: 'JobStreams'
-        enabled: true
-      }
-    ]
-    workspaceId: logAnalyticsWorkspaceResourceId
+module monitoring 'monitoring.bicep' = if (!empty(logAnalyticsWorkspaceResourceId) && !empty(distributionGroup) && !empty(actionGroupName)) {
+  name: 'monitoring-${deploymentNameSuffix}'
+  params: {
+    actionGroupName: actionGroupName
+    automationAccountName: automationAccount.name
+    distributionGroup: distributionGroup
+    location: location
+    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
+    tags: tags
   }
 }
 

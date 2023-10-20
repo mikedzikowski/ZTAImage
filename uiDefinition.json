@@ -232,7 +232,7 @@
                                     "name": "excludeFromLatest",
                                     "type": "Microsoft.Common.CheckBox",
                                     "label": "Exclude from latest",
-                                    "defaultValue": true,
+                                    "defaultValue": false,
                                     "toolTip": "Determines whether the image version will be the latest available version."
                                 },
                                 {
@@ -460,6 +460,36 @@
                                     "subscription": "onBasics",
                                     "location": "onBasics"
                                 }
+                            }
+                        },
+                        {
+                            "name": "exemption",
+                            "type": "Microsoft.Common.EditableGrid",
+                            "ariaLabel": "Enter the policy IDs to exempt to prevent virtual machine extensions on the imaging virtual machines.",
+                            "label": "Policy Exemptions",
+                            "constraints": {
+                                "width": "Full",
+                                "rows": {
+                                    "count": {
+                                        "min": 0,
+                                        "max": 100
+                                    }
+                                },
+                                "columns": [
+                                    {
+                                        "id": "id",
+                                        "header": "Policy Assignment Resource IDs for Exemption",
+                                        "width": "1fr",
+                                        "element": {
+                                            "type": "Microsoft.Common.TextBox",
+                                            "placeholder": "",
+                                            "constraints": {
+                                                "required": true,
+                                                "validations": []
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -1082,6 +1112,33 @@
                                     "resourceType": "Microsoft.OperationalInsights/workspaces",
                                     "toolTip": "Select the log analytics workspace used for collecting security data for Sentinel or Defender for Cloud. This is required to multihome the Microsoft Monitoring Agent.",
                                     "options": {}
+                                },
+                                {
+                                    "name": "actionGroup",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Action Group",
+                                    "placeholder": "Example: ag-image-d-eu",
+                                    "defaultValue": "",
+                                    "toolTip": "Input the name for the action group.",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "",
+                                        "validationMessage": ""
+                                    },
+                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]"
+                                },
+                                {
+                                    "name": "distributionGroup",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "label": "Distribution group",
+                                    "toolTip": "Input the distribution group for receiving alerts on the build status.",
+                                    "placeholder": "Example: operations@contoso.com",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "^[a-z0-9A-Z_.-]+@(?:[a-z0-9]+\\.)+[a-z]+$",
+                                        "validationMessage": "The value must be a valid email address."
+                                    }
                                 }
                             ]
                         }
@@ -1098,6 +1155,8 @@
                                 "Microsoft.Automation/automationAccounts",
                                 "Microsoft.Compute/galleries",
                                 "Microsoft.Compute/virtualMachines",
+                                "Microsoft.Insights/actionGroups",
+                                "Microsoft.Insights/scheduledQueryRules",
                                 "Microsoft.KeyVault/vaults",
                                 "Microsoft.ManagedIdentity/userAssignedIdentities",
                                 "Microsoft.Network/networkInterfaces",
@@ -1111,17 +1170,21 @@
         },
         "outputs": {
             "parameters": {
+                "actionGroupName": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.actionGroup, '')]",
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
                 "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.id, '')]",
+                "computeGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "computeGalleryName": "[steps('destination').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
                 "customizations": "[if(equals(steps('customizations').customSoftware, true), steps('customizations').customizations,'')]",
                 "diskEncryptionSetResourceId": "[steps('virtualMachines').diskEncryptionSetSelector.id]",
+                "distributionGroup": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.distributionGroup, '')]",
                 "domainJoinPassword": "[steps('automation').hybridWorker.domainJoinPassword]",
                 "domainJoinUserPrincipalName": "[steps('automation').hybridWorker.domainJoinUserPrincipalName]",
                 "domainName": "[if(steps('automation').enable, steps('automation').hybridWorker.domainName, '')]",
                 "enableBuildAutomation": "[steps('automation').enable]",
                 "excludeFromLatest": "[steps('destination').imageVersion.excludeFromLatest]",
+                "exemptPolicyAssignmentIds": "[map(steps('virtualMachines').exemption, (item) => item.id)]",
                 "hybridUseBenefit": "[steps('virtualMachines').hybridUseBenefit]",
                 "hybridWorkerName": "[if(steps('automation').enable, steps('automation').hybridWorker.name, '')]",
                 "imageDefinitionNamePrefix": "[steps('destination').imageDefinitionNamePrefix]",
@@ -1154,7 +1217,6 @@
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
                 "resourceGroupName": "[steps('basics').resourceGroup]",
-                "sharedGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",

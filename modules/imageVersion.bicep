@@ -31,11 +31,13 @@ resource imageVersion 'Microsoft.Compute/galleries/images/versions@2022-03-03' =
       storageAccountType: 'Standard_LRS'
       targetRegions: [
         {
+          /* Not supported yet: https://learn.microsoft.com/en-us/azure/virtual-machines/image-version-encryption#limitations
           encryption: {
             osDiskImage: {
               diskEncryptionSetId: diskEncryptionSetResourceId
             }
-          }
+          } 
+          */
           excludeFromLatest: excludeFromLatest
           name: location
           regionalReplicaCount: replicaCount
