@@ -127,6 +127,7 @@ module automationAccount 'automationAccount.bicep' = {
     computeGalleryResourceId: computeGalleryResourceId
     containerName: containerName
     customizations: customizations
+    deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     distributionGroup: distributionGroup
     domainJoinPassword: domainJoinPassword

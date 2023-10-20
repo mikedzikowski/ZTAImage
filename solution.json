@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9827033053651523055"
+      "templateHash": "16506272270273180343"
     }
   },
   "parameters": {
@@ -1339,7 +1339,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "17821629674386056460"
+              "templateHash": "7711186089133944739"
             }
           },
           "parameters": {
@@ -3269,6 +3269,9 @@
                   "customizations": {
                     "value": "[parameters('customizations')]"
                   },
+                  "deploymentNameSuffix": {
+                    "value": "[parameters('deploymentNameSuffix')]"
+                  },
                   "diskEncryptionSetResourceId": {
                     "value": "[parameters('diskEncryptionSetResourceId')]"
                   },
@@ -3424,7 +3427,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10412126828008981478"
+                      "templateHash": "5409491122524872406"
                     }
                   },
                   "parameters": {
@@ -3445,6 +3448,9 @@
                     },
                     "customizations": {
                       "type": "array"
+                    },
+                    "deploymentNameSuffix": {
+                      "type": "string"
                     },
                     "diskEncryptionSetResourceId": {
                       "type": "string"
@@ -3603,68 +3609,6 @@
                     }
                   },
                   "variables": {
-                    "alerts": [
-                      {
-                        "name": "[format('Zero Trust Image Build - Failure ({0})', parameters('automationAccountName'))]",
-                        "description": "Sends an error alert when the runbook build fails.",
-                        "severity": 0,
-                        "evaluationFrequency": "PT5M",
-                        "windowSize": "PT5M",
-                        "criteria": {
-                          "allOf": [
-                            {
-                              "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build failed\"",
-                              "timeAggregation": "Count",
-                              "dimensions": [
-                                {
-                                  "name": "ResultDescription",
-                                  "operator": "Include",
-                                  "values": [
-                                    "*"
-                                  ]
-                                }
-                              ],
-                              "operator": "GreaterThanOrEqual",
-                              "threshold": 1,
-                              "failingPeriods": {
-                                "numberOfEvaluationPeriods": 1,
-                                "minFailingPeriodsToAlert": 1
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        "name": "[format('Zero Trust Image Build - Success ({0})', parameters('automationAccountName'))]",
-                        "description": "Sends an informational alert when the runbook build succeeds.",
-                        "severity": 3,
-                        "evaluationFrequency": "PT5M",
-                        "windowSize": "PT5M",
-                        "criteria": {
-                          "allOf": [
-                            {
-                              "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build succeeded\"",
-                              "timeAggregation": "Count",
-                              "dimensions": [
-                                {
-                                  "name": "ResultDescription",
-                                  "operator": "Include",
-                                  "values": [
-                                    "*"
-                                  ]
-                                }
-                              ],
-                              "operator": "GreaterThanOrEqual",
-                              "threshold": 1,
-                              "failingPeriods": {
-                                "numberOfEvaluationPeriods": 1,
-                                "minFailingPeriodsToAlert": 1
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    ],
                     "parameters": {
                       "computeGalleryResourceId": "[parameters('computeGalleryResourceId')]",
                       "containerName": "[parameters('containerName')]",
@@ -3884,83 +3828,6 @@
                       ]
                     },
                     {
-                      "condition": "[not(empty(parameters('logAnalyticsWorkspaceResourceId')))]",
-                      "type": "Microsoft.Insights/diagnosticSettings",
-                      "apiVersion": "2017-05-01-preview",
-                      "scope": "[format('Microsoft.Automation/automationAccounts/{0}', parameters('automationAccountName'))]",
-                      "name": "[format('diag-{0}', parameters('automationAccountName'))]",
-                      "properties": {
-                        "logs": [
-                          {
-                            "category": "JobLogs",
-                            "enabled": true
-                          },
-                          {
-                            "category": "JobStreams",
-                            "enabled": true
-                          }
-                        ],
-                        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]"
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
-                      ]
-                    },
-                    {
-                      "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('distributionGroup'))))]",
-                      "type": "Microsoft.Insights/actionGroups",
-                      "apiVersion": "2022-06-01",
-                      "name": "[parameters('actionGroupName')]",
-                      "location": "global",
-                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/actionGroups'), parameters('tags')['Microsoft.Insights/actionGroups'], createObject())]",
-                      "properties": {
-                        "emailReceivers": [
-                          {
-                            "emailAddress": "[parameters('distributionGroup')]",
-                            "name": "[parameters('distributionGroup')]",
-                            "useCommonAlertSchema": true
-                          }
-                        ],
-                        "enabled": true,
-                        "groupShortName": "Image Builds"
-                      }
-                    },
-                    {
-                      "copy": {
-                        "name": "scheduledQueryRules",
-                        "count": "[length(range(0, length(variables('alerts'))))]"
-                      },
-                      "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('logAnalyticsWorkspaceResourceId'))))]",
-                      "type": "Microsoft.Insights/scheduledQueryRules",
-                      "apiVersion": "2022-06-15",
-                      "name": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
-                      "location": "[parameters('location')]",
-                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/scheduledQueryRules'), parameters('tags')['Microsoft.Insights/scheduledQueryRules'], createObject())]",
-                      "kind": "LogAlert",
-                      "properties": {
-                        "actions": {
-                          "actionGroups": [
-                            "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
-                          ]
-                        },
-                        "autoMitigate": false,
-                        "skipQueryValidation": false,
-                        "criteria": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].criteria]",
-                        "description": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].description]",
-                        "displayName": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
-                        "enabled": true,
-                        "evaluationFrequency": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].evaluationFrequency]",
-                        "severity": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].severity]",
-                        "windowSize": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].windowSize]",
-                        "scopes": [
-                          "[parameters('logAnalyticsWorkspaceResourceId')]"
-                        ]
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
-                      ]
-                    },
-                    {
                       "type": "Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups",
                       "apiVersion": "2022-08-08",
                       "name": "[format('{0}/{1}', parameters('automationAccountName'), 'Zero Trust Image Build Automation')]",
@@ -4028,6 +3895,211 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('managementVirtualMachineName'), 'HybridWorkerForWindows')]",
                         "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('managementVirtualMachineName'), 'runbook')]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(and(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), not(empty(parameters('distributionGroup')))), not(empty(parameters('actionGroupName'))))]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[format('monitoring-{0}', parameters('deploymentNameSuffix'))]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "actionGroupName": {
+                            "value": "[parameters('actionGroupName')]"
+                          },
+                          "automationAccountName": {
+                            "value": "[parameters('automationAccountName')]"
+                          },
+                          "distributionGroup": {
+                            "value": "[parameters('distributionGroup')]"
+                          },
+                          "location": {
+                            "value": "[parameters('location')]"
+                          },
+                          "logAnalyticsWorkspaceResourceId": {
+                            "value": "[parameters('logAnalyticsWorkspaceResourceId')]"
+                          },
+                          "tags": {
+                            "value": "[parameters('tags')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "7314287484133279597"
+                            }
+                          },
+                          "parameters": {
+                            "actionGroupName": {
+                              "type": "string"
+                            },
+                            "automationAccountName": {
+                              "type": "string"
+                            },
+                            "distributionGroup": {
+                              "type": "string"
+                            },
+                            "location": {
+                              "type": "string"
+                            },
+                            "logAnalyticsWorkspaceResourceId": {
+                              "type": "string"
+                            },
+                            "tags": {
+                              "type": "object"
+                            }
+                          },
+                          "variables": {
+                            "alerts": [
+                              {
+                                "name": "[format('Zero Trust Image Build - Failure ({0})', parameters('automationAccountName'))]",
+                                "description": "Sends an error alert when the runbook build fails.",
+                                "severity": 0,
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                  "allOf": [
+                                    {
+                                      "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build failed\"",
+                                      "timeAggregation": "Count",
+                                      "dimensions": [
+                                        {
+                                          "name": "ResultDescription",
+                                          "operator": "Include",
+                                          "values": [
+                                            "*"
+                                          ]
+                                        }
+                                      ],
+                                      "operator": "GreaterThanOrEqual",
+                                      "threshold": 1,
+                                      "failingPeriods": {
+                                        "numberOfEvaluationPeriods": 1,
+                                        "minFailingPeriodsToAlert": 1
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "[format('Zero Trust Image Build - Success ({0})', parameters('automationAccountName'))]",
+                                "description": "Sends an informational alert when the runbook build succeeds.",
+                                "severity": 3,
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                  "allOf": [
+                                    {
+                                      "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.AUTOMATION\"\n| where Category  == \"JobStreams\"\n| where ResultDescription has \"Image build succeeded\"",
+                                      "timeAggregation": "Count",
+                                      "dimensions": [
+                                        {
+                                          "name": "ResultDescription",
+                                          "operator": "Include",
+                                          "values": [
+                                            "*"
+                                          ]
+                                        }
+                                      ],
+                                      "operator": "GreaterThanOrEqual",
+                                      "threshold": 1,
+                                      "failingPeriods": {
+                                        "numberOfEvaluationPeriods": 1,
+                                        "minFailingPeriodsToAlert": 1
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Insights/diagnosticSettings",
+                              "apiVersion": "2017-05-01-preview",
+                              "scope": "[format('Microsoft.Automation/automationAccounts/{0}', parameters('automationAccountName'))]",
+                              "name": "[format('diag-{0}', parameters('automationAccountName'))]",
+                              "properties": {
+                                "logs": [
+                                  {
+                                    "category": "JobLogs",
+                                    "enabled": true
+                                  },
+                                  {
+                                    "category": "JobStreams",
+                                    "enabled": true
+                                  }
+                                ],
+                                "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]"
+                              }
+                            },
+                            {
+                              "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('distributionGroup'))))]",
+                              "type": "Microsoft.Insights/actionGroups",
+                              "apiVersion": "2022-06-01",
+                              "name": "[parameters('actionGroupName')]",
+                              "location": "global",
+                              "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/actionGroups'), parameters('tags')['Microsoft.Insights/actionGroups'], createObject())]",
+                              "properties": {
+                                "emailReceivers": [
+                                  {
+                                    "emailAddress": "[parameters('distributionGroup')]",
+                                    "name": "[parameters('distributionGroup')]",
+                                    "useCommonAlertSchema": true
+                                  }
+                                ],
+                                "enabled": true,
+                                "groupShortName": "Image Builds"
+                              }
+                            },
+                            {
+                              "copy": {
+                                "name": "scheduledQueryRules",
+                                "count": "[length(range(0, length(variables('alerts'))))]"
+                              },
+                              "condition": "[and(not(empty(parameters('actionGroupName'))), not(empty(parameters('logAnalyticsWorkspaceResourceId'))))]",
+                              "type": "Microsoft.Insights/scheduledQueryRules",
+                              "apiVersion": "2022-06-15",
+                              "name": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
+                              "location": "[parameters('location')]",
+                              "tags": "[if(contains(parameters('tags'), 'Microsoft.Insights/scheduledQueryRules'), parameters('tags')['Microsoft.Insights/scheduledQueryRules'], createObject())]",
+                              "kind": "LogAlert",
+                              "properties": {
+                                "actions": {
+                                  "actionGroups": [
+                                    "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+                                  ]
+                                },
+                                "autoMitigate": false,
+                                "skipQueryValidation": false,
+                                "criteria": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].criteria]",
+                                "description": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].description]",
+                                "displayName": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].name]",
+                                "enabled": true,
+                                "evaluationFrequency": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].evaluationFrequency]",
+                                "severity": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].severity]",
+                                "windowSize": "[variables('alerts')[range(0, length(variables('alerts')))[copyIndex()]].windowSize]",
+                                "scopes": [
+                                  "[parameters('logAnalyticsWorkspaceResourceId')]"
+                                ]
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
                       ]
                     }
                   ]

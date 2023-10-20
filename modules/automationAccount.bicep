@@ -4,6 +4,7 @@ param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryResourceId string
 param containerName string
 param customizations array
+param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
 param distributionGroup string
 @secure()
@@ -57,68 +58,6 @@ param vcRedistInstaller string
 param vDOTInstaller string
 param virtualMachineSize string
 
-var alerts = [
-  {
-    name: 'Zero Trust Image Build - Failure (${automationAccountName})'
-    description: 'Sends an error alert when the runbook build fails.'
-    severity: 0
-    evaluationFrequency: 'PT5M'
-    windowSize: 'PT5M'
-    criteria: {
-      allOf: [
-        {
-          query: 'AzureDiagnostics\n| where ResourceProvider == "MICROSOFT.AUTOMATION"\n| where Category  == "JobStreams"\n| where ResultDescription has "Image build failed"'
-          timeAggregation: 'Count'
-          dimensions: [
-            {
-              name: 'ResultDescription'
-              operator: 'Include'
-              values: [
-                '*'
-              ]
-            }
-          ]
-          operator: 'GreaterThanOrEqual'
-          threshold: 1
-          failingPeriods: {
-            numberOfEvaluationPeriods: 1
-            minFailingPeriodsToAlert: 1
-          }
-        }
-      ]
-    }
-  }
-  {
-    name: 'Zero Trust Image Build - Success (${automationAccountName})'
-    description: 'Sends an informational alert when the runbook build succeeds.'
-    severity: 3
-    evaluationFrequency: 'PT5M'
-    windowSize: 'PT5M'
-    criteria: {
-      allOf: [
-        {
-          query: 'AzureDiagnostics\n| where ResourceProvider == "MICROSOFT.AUTOMATION"\n| where Category  == "JobStreams"\n| where ResultDescription has "Image build succeeded"'
-          timeAggregation: 'Count'
-          dimensions: [
-            {
-              name: 'ResultDescription'
-              operator: 'Include'
-              values: [
-                '*'
-              ]
-            }
-          ]
-          operator: 'GreaterThanOrEqual'
-          threshold: 1
-          failingPeriods: {
-            numberOfEvaluationPeriods: 1
-            minFailingPeriodsToAlert: 1
-          }
-        }
-      ]
-    }
-  }
-]
 var parameters = {
   computeGalleryResourceId: computeGalleryResourceId
   containerName: containerName
@@ -372,66 +311,17 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2022-
   ]
 }
 
-resource diagnostics 'Microsoft.Insights/diagnosticsettings@2017-05-01-preview' = if (!empty(logAnalyticsWorkspaceResourceId)) {
-  scope: automationAccount
-  name: 'diag-${automationAccount.name}'
-  properties: {
-    logs: [
-      {
-        category: 'JobLogs'
-        enabled: true
-      }
-      {
-        category: 'JobStreams'
-        enabled: true
-      }
-    ]
-    workspaceId: logAnalyticsWorkspaceResourceId
+module monitoring 'monitoring.bicep' = if (!empty(logAnalyticsWorkspaceResourceId) && !empty(distributionGroup) && !empty(actionGroupName)) {
+  name: 'monitoring-${deploymentNameSuffix}'
+  params: {
+    actionGroupName: actionGroupName
+    automationAccountName: automationAccount.name
+    distributionGroup: distributionGroup
+    location: location
+    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
+    tags: tags
   }
 }
-
-resource actionGroup 'Microsoft.Insights/actionGroups@2022-06-01' = if (!empty(actionGroupName) && !empty(distributionGroup)) {
-  name: actionGroupName
-  location: 'global'
-  tags: contains(tags, 'Microsoft.Insights/actionGroups') ? tags['Microsoft.Insights/actionGroups'] : {}
-  properties: {
-    emailReceivers: [
-      {
-        emailAddress: distributionGroup
-        name: distributionGroup
-        useCommonAlertSchema: true
-      }
-    ]
-    enabled: true
-    groupShortName: 'Image Builds'
-  }
-}
-
-resource scheduledQueryRules 'Microsoft.Insights/scheduledQueryRules@2022-06-15' = [for i in range(0, length(alerts)): if (!empty(actionGroupName) && !empty(logAnalyticsWorkspaceResourceId)) {
-  name: alerts[i].name
-  location: location
-  tags: contains(tags, 'Microsoft.Insights/scheduledQueryRules') ? tags['Microsoft.Insights/scheduledQueryRules'] : {}
-  kind: 'LogAlert'
-  properties: {
-    actions: {
-      actionGroups: [
-        actionGroup.id
-      ]
-    }
-    autoMitigate: false
-    skipQueryValidation: false
-    criteria: alerts[i].criteria
-    description: alerts[i].description
-    displayName: alerts[i].name
-    enabled: true
-    evaluationFrequency: alerts[i].evaluationFrequency
-    severity: alerts[i].severity
-    windowSize: alerts[i].windowSize
-    scopes: [
-      logAnalyticsWorkspaceResourceId
-    ]
-  }
-}]
 
 resource hybridRunbookWorkerGroup 'Microsoft.Automation/automationAccounts/hybridRunbookWorkerGroups@2022-08-08' = {
   parent: automationAccount
