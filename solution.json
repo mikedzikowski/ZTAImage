@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "11013982598427208195"
+      "templateHash": "9692053483368499043"
     }
   },
   "parameters": {
@@ -1339,7 +1339,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "7711186089133944739"
+              "templateHash": "6016232800263681502"
             }
           },
           "parameters": {
@@ -1854,7 +1854,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10649863604124505262"
+                      "templateHash": "9664435100690796390"
                     }
                   },
                   "parameters": {
@@ -1876,7 +1876,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.22.6.54827",
-                          "templateHash": "2481811804148884613"
+                          "templateHash": "615852049285974432"
                         }
                       },
                       "parameters": {
@@ -3003,7 +3003,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.22.6.54827",
-                                  "templateHash": "14621254000840471460"
+                                  "templateHash": "13189364925752939087"
                                 }
                               },
                               "parameters": {
@@ -3054,11 +3054,6 @@
                                       "storageAccountType": "Standard_LRS",
                                       "targetRegions": [
                                         {
-                                          "encryption": {
-                                            "osDiskImage": {
-                                              "diskEncryptionSetId": "[[parameters('diskEncryptionSetResourceId')]"
-                                            }
-                                          },
                                           "excludeFromLatest": "[[parameters('excludeFromLatest')]",
                                           "name": "[[parameters('location')]",
                                           "regionalReplicaCount": "[[parameters('replicaCount')]",
@@ -4277,7 +4272,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "3147192132452641922"
+              "templateHash": "615852049285974432"
             }
           },
           "parameters": {
@@ -4506,7 +4501,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "16499332907656346578"
+                      "templateHash": "1117177687539183326"
                     }
                   },
                   "parameters": {
@@ -4604,9 +4599,6 @@
                             "createOption": "FromImage",
                             "deleteOption": "Delete",
                             "managedDisk": {
-                              "diskEncryptionSet": {
-                                "id": "[parameters('diskEncryptionSetResourceId')]"
-                              },
                               "storageAccountType": "StandardSSD_LRS"
                             },
                             "name": "[format('disk-{0}', parameters('virtualMachineName'))]"
@@ -4628,7 +4620,6 @@
                           }
                         },
                         "securityProfile": {
-                          "encryptionAtHost": true,
                           "uefiSettings": {
                             "secureBootEnabled": true,
                             "vTpmEnabled": true
