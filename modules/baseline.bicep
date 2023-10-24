@@ -94,7 +94,7 @@ module computeGallery 'computeGallery.bicep' = {
   }
 }
 
-module policyExemptions 'exemption.bicep' = [for i in range(0, length(exemptPolicyAssignmentIds)): if (length(exemptPolicyAssignmentIds) > 0) {
+module policyExemptions 'exemption.bicep' = [for i in range(0, length(exemptPolicyAssignmentIds)): if (!empty((exemptPolicyAssignmentIds)[0])) {
   name: 'PolicyExemption_${i}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {

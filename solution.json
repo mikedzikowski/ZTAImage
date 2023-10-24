@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "9692053483368499043"
+      "templateHash": "18421913419644800080"
     }
   },
   "parameters": {
@@ -62,7 +62,7 @@
     },
     "excludeFromLatest": {
       "type": "bool",
-      "defaultValue": true
+      "defaultValue": false
     },
     "exemptPolicyAssignmentIds": {
       "type": "array",
@@ -354,7 +354,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "3354030166694391702"
+              "templateHash": "854024004526595351"
             }
           },
           "parameters": {
@@ -1068,7 +1068,7 @@
                 "name": "policyExemptions",
                 "count": "[length(range(0, length(parameters('exemptPolicyAssignmentIds'))))]"
               },
-              "condition": "[greater(length(parameters('exemptPolicyAssignmentIds')), 0)]",
+              "condition": "[not(empty(parameters('exemptPolicyAssignmentIds')[0]))]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('PolicyExemption_{0}', range(0, length(parameters('exemptPolicyAssignmentIds')))[copyIndex()])]",
@@ -1192,6 +1192,9 @@
           },
           "enableBuildAutomation": {
             "value": "[parameters('enableBuildAutomation')]"
+          },
+          "excludeFromLatest": {
+            "value": "[parameters('excludeFromLatest')]"
           },
           "imageDefinitionName": {
             "value": "[variables('imageDefinitionName')]"
@@ -1339,7 +1342,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "6016232800263681502"
+              "templateHash": "14892838611372591679"
             }
           },
           "parameters": {
@@ -1380,6 +1383,9 @@
               "type": "string"
             },
             "enableBuildAutomation": {
+              "type": "bool"
+            },
+            "excludeFromLatest": {
               "type": "bool"
             },
             "imageDefinitionName": {
@@ -3285,6 +3291,9 @@
                   "enableBuildAutomation": {
                     "value": "[parameters('enableBuildAutomation')]"
                   },
+                  "excludeFromLatest": {
+                    "value": "[parameters('excludeFromLatest')]"
+                  },
                   "imageDefinitionName": {
                     "value": "[parameters('imageDefinitionName')]"
                   },
@@ -3422,7 +3431,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "5409491122524872406"
+                      "templateHash": "3086883450731086332"
                     }
                   },
                   "parameters": {
@@ -3463,6 +3472,9 @@
                       "type": "string"
                     },
                     "enableBuildAutomation": {
+                      "type": "bool"
+                    },
+                    "excludeFromLatest": {
                       "type": "bool"
                     },
                     "imageDefinitionName": {
@@ -3611,6 +3623,7 @@
                       "diskEncryptionSetResourceId": "[parameters('diskEncryptionSetResourceId')]",
                       "enableBuildAutomation": "[string(parameters('enableBuildAutomation'))]",
                       "environmentName": "[environment().name]",
+                      "excludeFromLatest": "[parameters('excludeFromLatest')]",
                       "imageDefinitionName": "[parameters('imageDefinitionName')]",
                       "imageMajorVersion": "[string(parameters('imageMajorVersion'))]",
                       "imageMinorVersion": "[string(parameters('imageMinorVersion'))]",
