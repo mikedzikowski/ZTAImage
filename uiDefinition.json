@@ -993,6 +993,7 @@
                             "name": "automationPrivateDnsZone",
                             "type": "Microsoft.Solutions.ResourceSelector",
                             "label": "Existing automation private DNS zone",
+                            "visible": "[steps('automation').enable]",
                             "resourceType": "Microsoft.Network/privateDnsZones",
                             "options": {}
                         },
@@ -1013,6 +1014,7 @@
                             "name": "keyVaultPrivateDnsZone",
                             "type": "Microsoft.Solutions.ResourceSelector",
                             "label": "Existing key vault private DNS zone",
+                            "visible": "[steps('automation').enable]",
                             "resourceType": "Microsoft.Network/privateDnsZones",
                             "options": {}
                         },
