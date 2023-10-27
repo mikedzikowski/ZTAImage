@@ -194,3 +194,5 @@ resource modules 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = {
     }
   }
 }
+
+output name string = virtualMachine.name

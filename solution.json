@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "669115534056080565"
+      "templateHash": "7038655750453179902"
     }
   },
   "parameters": {
@@ -1065,7 +1065,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "5490212426896208444"
+              "templateHash": "10820944962055805022"
             }
           },
           "parameters": {
@@ -3025,7 +3025,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "5655570687133758912"
+                      "templateHash": "2344797179775399092"
                     }
                   },
                   "parameters": {
@@ -3205,7 +3205,13 @@
                         "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
                       ]
                     }
-                  ]
+                  ],
+                  "outputs": {
+                    "name": {
+                      "type": "string",
+                      "value": "[parameters('virtualMachineName')]"
+                    }
+                  }
                 }
               }
             },
@@ -4257,7 +4263,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "7386621539901255764"
+              "templateHash": "4609743379804097171"
             }
           },
           "parameters": {
@@ -4492,7 +4498,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "5655570687133758912"
+                      "templateHash": "2344797179775399092"
                     }
                   },
                   "parameters": {
@@ -4672,7 +4678,13 @@
                         "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
                       ]
                     }
-                  ]
+                  ],
+                  "outputs": {
+                    "name": {
+                      "type": "string",
+                      "value": "[parameters('virtualMachineName')]"
+                    }
+                  }
                 }
               }
             },
@@ -5328,9 +5340,7 @@
                   "userAssignedIdentityClientId": {
                     "value": "[parameters('userAssignedIdentityClientId')]"
                   },
-                  "virtualMachineName": {
-                    "value": "[parameters('managementVirtualMachineName')]"
-                  }
+                  "virtualMachineName": "[if(parameters('enableBuildAutomation'), createObject('value', parameters('managementVirtualMachineName')), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), variables('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value))]"
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -5408,6 +5418,7 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', format('customizations-{0}', parameters('deploymentNameSuffix')))]",
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), variables('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
                 "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             },
@@ -5501,9 +5512,7 @@
                   "userAssignedIdentityClientId": {
                     "value": "[parameters('userAssignedIdentityClientId')]"
                   },
-                  "virtualMachineName": {
-                    "value": "[parameters('managementVirtualMachineName')]"
-                  }
+                  "virtualMachineName": "[if(parameters('enableBuildAutomation'), createObject('value', parameters('managementVirtualMachineName')), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), variables('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value))]"
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -5581,6 +5590,7 @@
                 }
               },
               "dependsOn": [
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), variables('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
                 "[resourceId('Microsoft.Resources/deployments', format('sysprep-vm-{0}', parameters('deploymentNameSuffix')))]",
                 "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
@@ -5731,9 +5741,7 @@
                   "userAssignedIdentityClientId": {
                     "value": "[parameters('userAssignedIdentityClientId')]"
                   },
-                  "virtualMachineName": {
-                    "value": "[parameters('managementVirtualMachineName')]"
-                  }
+                  "virtualMachineName": "[if(parameters('enableBuildAutomation'), createObject('value', parameters('managementVirtualMachineName')), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), variables('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value))]"
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -5820,6 +5828,7 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', format('image-version-{0}', parameters('deploymentNameSuffix')))]",
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('subscriptionId'), variables('resourceGroupName')), 'Microsoft.Resources/deployments', format('management-vm-{0}', parameters('deploymentNameSuffix')))]",
                 "[resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix')))]"
               ]
             }

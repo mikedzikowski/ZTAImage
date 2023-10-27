@@ -142,7 +142,7 @@ module restartVirtualMachine 'restartVirtualMachine.bicep' = {
     location: location
     tags: tags
     userAssignedIdentityClientId: userAssignedIdentityClientId
-    virtualMachineName: managementVirtualMachineName
+    virtualMachineName: enableBuildAutomation ? managementVirtualMachineName : managementVM.outputs.name
   }
   dependsOn: [
     addCustomizations
@@ -169,7 +169,7 @@ module generalizeVirtualMachine 'generalizeVirtualMachine.bicep' = {
     location: location
     tags: tags
     userAssignedIdentityClientId: userAssignedIdentityClientId
-    virtualMachineName: managementVirtualMachineName
+    virtualMachineName: enableBuildAutomation ? managementVirtualMachineName : managementVM.outputs.name
   }
   dependsOn: [
     sysprepVirtualMachine
@@ -202,7 +202,7 @@ module removeVirtualMachine 'removeVirtualMachine.bicep' = {
     location: location
     tags: tags
     userAssignedIdentityClientId: userAssignedIdentityClientId
-    virtualMachineName: managementVirtualMachineName
+    virtualMachineName: enableBuildAutomation ? managementVirtualMachineName : managementVM.outputs.name
   }
   dependsOn: [
     imageVersion
