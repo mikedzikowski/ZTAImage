@@ -2,23 +2,16 @@ targetScope = 'subscription'
 
 param computeGalleryImageResourceId string
 param computeGalleryName string
-param containerName string
 param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool
 param exemptPolicyAssignmentIds array
-param hybridUseBenefit bool
 param imageDefinitionName string
-@secure()
-param localAdministratorPassword string
-param localAdministratorUsername string
 param location string
-param managementVirtualMachineName string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param resourceGroupName string
 param storageAccountResourceId string
-param subnetResourceId string
 param subscriptionId string
 param tags object
 param userAssignedIdentityName string
@@ -59,25 +52,6 @@ module diskEncryptionSet 'diskEncryptionSet.bicep' = {
   }
 }
 
-module managementVM 'managementVM.bicep' = {
-  name: 'management-vm-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
-  params: {
-    containerName: containerName
-    diskEncryptionSetResourceId: diskEncryptionSetResourceId 
-    hybridUseBenefit: hybridUseBenefit
-    localAdministratorPassword: localAdministratorPassword
-    localAdministratorUsername: localAdministratorUsername
-    location: location
-    storageAccountName: split(storageAccountResourceId, '/')[8]
-    subnetResourceId: subnetResourceId
-    tags: tags
-    userAssignedIdentityPrincipalId: userAssignedIdentity.outputs.principalId 
-    userAssignedIdentityResourceId: userAssignedIdentity.outputs.resourceId
-    virtualMachineName: managementVirtualMachineName
-  }
-}
-
 module computeGallery 'computeGallery.bicep' = {
   name: 'gallery-image-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
@@ -94,7 +68,7 @@ module computeGallery 'computeGallery.bicep' = {
   }
 }
 
-module policyExemptions 'exemption.bicep' = [for i in range(0, length(exemptPolicyAssignmentIds)): if (length(exemptPolicyAssignmentIds) > 0) {
+module policyExemptions 'exemption.bicep' = [for i in range(0, length(exemptPolicyAssignmentIds)): if (!empty((exemptPolicyAssignmentIds)[0])) {
   name: 'PolicyExemption_${i}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {

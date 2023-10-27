@@ -67,7 +67,6 @@ param virtualMachineSize string
 var imageDefinitionName = empty(computeGalleryImageResourceId) ? '${imageDefinitionNamePrefix}-${marketplaceImageSKU}' : '${imageDefinitionNamePrefix}-${split(computeGalleryImageResourceId, '/')[10]}'
 var imageVirtualMachineName = take('vmimg-${uniqueString(deploymentNameSuffix)}', 15)
 var managementVirtualMachineName = empty(hybridWorkerName) ? take('vmmgt-${uniqueString(deploymentNameSuffix)}', 15) : hybridWorkerName
-var storageAccountName = split(storageAccountResourceId, '/')[8]
 var subscriptionId = subscription().subscriptionId
 var timeZones = {
   australiacentral: 'AUS Eastern Standard Time'
@@ -131,22 +130,16 @@ module baseline 'modules/baseline.bicep' = {
   params: {
     computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
-    containerName: containerName
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     enableBuildAutomation: enableBuildAutomation
     exemptPolicyAssignmentIds: exemptPolicyAssignmentIds
-    hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
-    localAdministratorPassword: localAdministratorPassword
-    localAdministratorUsername: localAdministratorUsername
     location: location
-    managementVirtualMachineName: managementVirtualMachineName
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     resourceGroupName: resourceGroupName
     storageAccountResourceId: storageAccountResourceId
-    subnetResourceId: subnetResourceId
     subscriptionId: subscriptionId
     tags: tags
     userAssignedIdentityName: userAssignedIdentityName
@@ -170,6 +163,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     domainName: domainName
     enableBuildAutomation: enableBuildAutomation
     excludeFromLatest: excludeFromLatest
+    hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
@@ -204,7 +198,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     resourceGroupName: resourceGroupName
     computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
-    storageAccountName: storageAccountName
+    storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
     subscriptionId: subscriptionId
     tags: tags
@@ -230,6 +224,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     enableBuildAutomation: enableBuildAutomation
     excludeFromLatest: excludeFromLatest
+    hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
@@ -260,7 +255,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     replicaCount: replicaCount
     computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
-    storageAccountName: storageAccountName
+    storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
     tags: tags
     teamsInstaller: teamsInstaller

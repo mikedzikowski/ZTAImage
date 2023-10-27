@@ -15,6 +15,7 @@ param domainJoinUserPrincipalName string
 param domainName string
 param enableBuildAutomation bool
 param excludeFromLatest bool
+param hybridUseBenefit bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -50,7 +51,7 @@ param replicaCount int
 param resourceGroupName string
 param computeGalleryImageResourceId string
 param sourceImageType string
-param storageAccountName string
+param storageAccountResourceId string
 param subnetResourceId string
 param subscriptionId string
 param tags object
@@ -62,6 +63,8 @@ param userAssignedIdentityResourceId string
 param vcRedistInstaller string
 param vDOTInstaller string
 param virtualMachineSize string
+
+var storageAccountName = split(storageAccountResourceId, '/')[8]
 
 resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
   name: guid(subscription().id, 'KeyVaultDeployAction')
@@ -118,6 +121,25 @@ module templateSpec 'templateSpec.bicep' = {
   }
 }
 
+module managementVM 'managementVM.bicep' = {
+  name: 'management-vm-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, resourceGroupName)
+  params: {
+    containerName: containerName
+    diskEncryptionSetResourceId: diskEncryptionSetResourceId 
+    hybridUseBenefit: hybridUseBenefit
+    localAdministratorPassword: localAdministratorPassword
+    localAdministratorUsername: localAdministratorUsername
+    location: location
+    storageAccountName: split(storageAccountResourceId, '/')[8]
+    subnetResourceId: subnetResourceId
+    tags: tags
+    userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId 
+    userAssignedIdentityResourceId: userAssignedIdentityResourceId
+    virtualMachineName: managementVirtualMachineName
+  }
+}
+
 module automationAccount 'automationAccount.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   name: 'automation-account-${deploymentNameSuffix}'
@@ -156,7 +178,7 @@ module automationAccount 'automationAccount.bicep' = {
     keyVaultName: keyVaultName
     location: location
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
-    managementVirtualMachineName: managementVirtualMachineName
+    managementVirtualMachineName: managementVM.outputs.name
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     marketplaceImageSKU: marketplaceImageSKU
