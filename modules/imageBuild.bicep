@@ -7,6 +7,7 @@ param deploymentNameSuffix string = utcNow('yyMMddHHs')
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool
 param excludeFromLatest bool
+param hybridUseBenefit bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -40,7 +41,7 @@ param replicaCount int
 param runbookExecution bool = false
 param computeGalleryImageResourceId string = ''
 param sourceImageType string
-param storageAccountName string
+param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
 param teamsInstaller string = ''
@@ -54,10 +55,31 @@ param virtualMachineSize string
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
 var imageSuffix = take(deploymentNameSuffix, 9)
 var resourceGroupName = resourceGroup().name
+var storageAccountName = split(storageAccountResourceId, '/')[8]
 var storageEndpoint = environment().suffixes.storage
+var subscriptionId = subscription().subscriptionId
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (runbookExecution) {
   name: keyVaultName
+}
+
+module managementVM 'managementVM.bicep' = if (!enableBuildAutomation) {
+  name: 'management-vm-${deploymentNameSuffix}'
+  scope: resourceGroup(subscriptionId, resourceGroupName)
+  params: {
+    containerName: containerName
+    diskEncryptionSetResourceId: diskEncryptionSetResourceId 
+    hybridUseBenefit: hybridUseBenefit
+    localAdministratorPassword: localAdministratorPassword
+    localAdministratorUsername: localAdministratorUsername
+    location: location
+    storageAccountName: split(storageAccountResourceId, '/')[8]
+    subnetResourceId: subnetResourceId
+    tags: tags
+    userAssignedIdentityPrincipalId: userAssignedIdentityPrincipalId 
+    userAssignedIdentityResourceId: userAssignedIdentityResourceId
+    virtualMachineName: managementVirtualMachineName
+  }
 }
 
 module virtualMachine 'virtualMachine.bicep' = {
