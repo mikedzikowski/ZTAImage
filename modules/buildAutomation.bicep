@@ -178,7 +178,7 @@ module automationAccount 'automationAccount.bicep' = {
     keyVaultName: keyVaultName
     location: location
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
-    managementVirtualMachineName: managementVirtualMachineName
+    managementVirtualMachineName: managementVM.outputs.name
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
     marketplaceImageSKU: marketplaceImageSKU
