@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "4609743379804097171"
+      "templateHash": "8646942063704308611"
     }
   },
   "parameters": {
@@ -1191,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "9392173561857844235"
+              "templateHash": "8596530865200791674"
             }
           },
           "parameters": {
@@ -1217,7 +1217,7 @@
                 "asyncExecution": true,
                 "parameters": [],
                 "source": {
-                  "script": "        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
+                  "script": "        Start-Sleep -Seconds 30\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
                 }
               }
             }
