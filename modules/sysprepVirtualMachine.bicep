@@ -19,6 +19,7 @@ resource sysprepVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@20
     parameters: []
     source: {
       script: '''
+        Start-Sleep -Seconds 30
         Start-Process -File "C:\Windows\System32\Sysprep\Sysprep.exe" -ArgumentList "/generalize /oobe /shutdown /mode:vm"
       '''
     }
