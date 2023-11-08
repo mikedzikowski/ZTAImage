@@ -1027,7 +1027,7 @@
                                 {
                                     "name": "name",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "visible": true,
                                     "label": "Virtual machine name",
                                     "toolTip": "Input a custom name for the virtual machine.",
                                     "placeholder": "Example: vmhwimagedeu",
@@ -1096,7 +1096,7 @@
                             "name": "monitoring",
                             "type": "Microsoft.Common.Section",
                             "label": "Monitoring",
-                            "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                            "visible": true,
                             "elements": [
                                 {
                                     "name": "enable",
@@ -1110,7 +1110,7 @@
                                     "name": "logAnalyticsWorkspace",
                                     "type": "Microsoft.Solutions.ResourceSelector",
                                     "label": "Existing Log Analytics Workspace for Security",
-                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "visible": "[steps('automation').monitoring.enable]",
                                     "resourceType": "Microsoft.OperationalInsights/workspaces",
                                     "toolTip": "Select the log analytics workspace used for collecting security data for Sentinel or Defender for Cloud. This is required to multihome the Microsoft Monitoring Agent.",
                                     "options": {}
@@ -1127,12 +1127,12 @@
                                         "regex": "",
                                         "validationMessage": ""
                                     },
-                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]"
+                                    "visible": "[steps('automation').monitoring.enable]"
                                 },
                                 {
                                     "name": "distributionGroup",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "visible": "[steps('automation').monitoring.enable]",
                                     "label": "Distribution group",
                                     "toolTip": "Input the distribution group for receiving alerts on the build status.",
                                     "placeholder": "Example: operations@contoso.com",
