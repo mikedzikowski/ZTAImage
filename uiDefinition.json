@@ -972,7 +972,7 @@
                         {
                             "name": "enable",
                             "type": "Microsoft.Common.CheckBox",
-                            "label": "Enable Build Automation",
+                            "label": "Enable build automation",
                             "defaultValue": true,
                             "toolTip": "Enables the automation of image builds using an Automation Account in a zero trust compliant configuration."
                         },
@@ -990,14 +990,6 @@
                             }
                         },
                         {
-                            "name": "automationPrivateDnsZone",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Existing automation private DNS zone",
-                            "visible": "[steps('automation').enable]",
-                            "resourceType": "Microsoft.Network/privateDnsZones",
-                            "options": {}
-                        },
-                        {
                             "name": "keyVault",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Key vault name",
@@ -1011,12 +1003,51 @@
                             }
                         },
                         {
-                            "name": "keyVaultPrivateDnsZone",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "label": "Existing key vault private DNS zone",
+                            "name": "privateDnsZones",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Private DNS zones",
                             "visible": "[steps('automation').enable]",
-                            "resourceType": "Microsoft.Network/privateDnsZones",
-                            "options": {}
+                            "elements": [
+                                {
+                                    "name": "subscription",
+                                    "visible": true,
+                                    "type": "Microsoft.Common.SubscriptionSelector"
+                                },
+                                {
+                                    "name": "api",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat('/subscriptions/', steps('automation').privateDnsZones.subscription.subscriptionId, '/providers/Microsoft.Network/privateDnsZones?api-version=2018-09-01')]"
+                                    }
+                                },
+                                {
+                                    "name": "automationAccount",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Automation account",
+                                    "defaultValue": "",
+                                    "multiLine": true,
+                                    "toolTip": "Select the existing Private DNS Zone for Azure Automation.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(filter(steps('automation').privateDnsZones.api.value, (item) => contains(item.name, 'privatelink.azure-automation.')), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
+                                },
+                                {
+                                    "name": "keyVault",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Key vault",
+                                    "defaultValue": "",
+                                    "multiLine": true,
+                                    "toolTip": "Select the existing Private DNS Zone for Key Vaults.",
+                                    "constraints": {
+                                        "required": true,
+                                        "allowedValues": "[map(filter(steps('automation').privateDnsZones.api.value, (item) => contains(item.name, 'privatelink.vaultcore.')), (item) => parse(concat('{\"label\":\"', item.name, '\",\"description\":\"Resource group: ', first(skip(split(item.id, '/'), 4)), '\",\"value\":\"', item.id, '\"}')))]"
+                                    }
+                                }
+                            ]
                         },
                         {
                             "name": "hybridWorker",
@@ -1027,7 +1058,7 @@
                                 {
                                     "name": "name",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "visible": true,
                                     "label": "Virtual machine name",
                                     "toolTip": "Input a custom name for the virtual machine.",
                                     "placeholder": "Example: vmhwimagedeu",
@@ -1045,7 +1076,7 @@
                                 {
                                     "name": "domainName",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "visible": "[steps('automation').hybridWorker.domainJoin]",
                                     "label": "Domain Name",
                                     "toolTip": "Provide the domain name for Active Directory Domain Services.",
                                     "placeholder": "Example: contoso.com",
@@ -1056,7 +1087,7 @@
                                 {
                                     "name": "ouPath",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                                    "visible": "[steps('automation').hybridWorker.domainJoin]",
                                     "label": "OU Path",
                                     "toolTip": "Input the distinguished name of the desired organization unit for the AVD session hosts.",
                                     "placeholder": "Example: OU=imaging,OU=avd,DC=contoso,DC=com",
@@ -1068,6 +1099,7 @@
                                     "name": "domainJoinUserPrincipalName",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Domain join user principal name",
+                                    "visible": "[steps('automation').hybridWorker.domainJoin]",
                                     "toolTip": "Enter the user principal name with domain join privileges.",
                                     "placeholder": "Example: domainjoin@contoso.com",
                                     "constraints": {
@@ -1080,8 +1112,9 @@
                                     "name": "domainJoinPassword",
                                     "type": "Microsoft.Common.PasswordBox",
                                     "label": {
-                                        "password": "Password"
+                                        "password": "Domain join password"
                                     },
+                                    "visible": "[steps('automation').hybridWorker.domainJoin]",
                                     "toolTip": "Enter a password that is alphanumeric, contains at least 12 characters, 1 letter, 1 number and 1 special character.",
                                     "constraints": {
                                         "required": true
@@ -1096,7 +1129,7 @@
                             "name": "monitoring",
                             "type": "Microsoft.Common.Section",
                             "label": "Monitoring",
-                            "visible": "[and(steps('automation').hybridWorker.domainJoin, steps('automation').enable)]",
+                            "visible": "[steps('automation').enable]",
                             "elements": [
                                 {
                                     "name": "enable",
@@ -1109,10 +1142,10 @@
                                 {
                                     "name": "logAnalyticsWorkspace",
                                     "type": "Microsoft.Solutions.ResourceSelector",
-                                    "label": "Existing Log Analytics Workspace for Security",
-                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "label": "Existing log analytics workspace",
+                                    "visible": "[steps('automation').monitoring.enable]",
                                     "resourceType": "Microsoft.OperationalInsights/workspaces",
-                                    "toolTip": "Select the log analytics workspace used for collecting security data for Sentinel or Defender for Cloud. This is required to multihome the Microsoft Monitoring Agent.",
+                                    "toolTip": "Select the log analytics workspace to capture runbook log output.",
                                     "options": {}
                                 },
                                 {
@@ -1127,12 +1160,12 @@
                                         "regex": "",
                                         "validationMessage": ""
                                     },
-                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]"
+                                    "visible": "[steps('automation').monitoring.enable]"
                                 },
                                 {
                                     "name": "distributionGroup",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('automation').enable, steps('automation').monitoring.enable)]",
+                                    "visible": "[steps('automation').monitoring.enable]",
                                     "label": "Distribution group",
                                     "toolTip": "Input the distribution group for receiving alerts on the build status.",
                                     "placeholder": "Example: operations@contoso.com",
@@ -1174,7 +1207,7 @@
             "parameters": {
                 "actionGroupName": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.actionGroup, '')]",
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
-                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').automationPrivateDnsZone.id, '')]",
+                "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZones.automationAccount, '')]",
                 "computeGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
                 "computeGalleryName": "[steps('destination').computeGalleryName]",
                 "containerName": "[first(skip(split(steps('storage').container, '/'), 12))]",
@@ -1206,7 +1239,7 @@
                 "installVisio": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installVisio,'false')]",
                 "installWord": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installWord,'false')]",
                 "keyVaultName": "[if(steps('automation').enable, steps('automation').keyVault, '')]",
-                "keyVaultPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').keyVaultPrivateDnsZone.id, '')]",
+                "keyVaultPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZones.keyVault, '')]",
                 "localAdministratorPassword": "[steps('virtualMachines').localAdminCredentials.password]",
                 "localAdministratorUsername": "[steps('virtualMachines').localAdminCredentials.username]",
                 "location": "[steps('basics').scope.location.name]",
