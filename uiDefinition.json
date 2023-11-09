@@ -964,7 +964,7 @@
                                 {
                                     "name": "installArcGisPro",
                                     "type": "Microsoft.Common.OptionsGroup",
-                                    "label": "Install ArcGisPro",
+                                    "label": "Install ArcGis Pro",
                                     "defaultValue": "false",
                                     "toolTip": "Select True to install ArcGisPro",
                                     "constraints": {
