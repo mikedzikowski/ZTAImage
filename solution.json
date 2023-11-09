@@ -4,11 +4,15 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.22.6.54827",
-      "templateHash": "3312159984011929572"
+      "version": "0.23.1.45101",
+      "templateHash": "15090139805270873222"
     }
   },
   "parameters": {
+    "arcGisProInstaller": {
+      "type": "string",
+      "defaultValue": ""
+    },
     "actionGroupName": {
       "type": "string",
       "defaultValue": ""
@@ -85,6 +89,9 @@
       "type": "int"
     },
     "installAccess": {
+      "type": "bool"
+    },
+    "installArcGisPro": {
       "type": "bool"
     },
     "installExcel": {
@@ -334,8 +341,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.22.6.54827",
-              "templateHash": "15287860248509354729"
+              "version": "0.23.1.45101",
+              "templateHash": "13842961593942362553"
             }
           },
           "parameters": {
@@ -414,8 +421,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "12009146397615380410"
+                      "version": "0.23.1.45101",
+                      "templateHash": "7509213980401697834"
                     }
                   },
                   "parameters": {
@@ -477,8 +484,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "10884621428754475631"
+                      "version": "0.23.1.45101",
+                      "templateHash": "6723251068600901255"
                     }
                   },
                   "parameters": {
@@ -541,8 +548,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "12960746169763418225"
+                      "version": "0.23.1.45101",
+                      "templateHash": "6066625483046035261"
                     }
                   },
                   "parameters": {
@@ -600,8 +607,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "4012582573559935033"
+                      "version": "0.23.1.45101",
+                      "templateHash": "232318668447629435"
                     }
                   },
                   "parameters": {
@@ -680,8 +687,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "16456686082024777523"
+                      "version": "0.23.1.45101",
+                      "templateHash": "15474719498090188133"
                     }
                   },
                   "parameters": {
@@ -810,8 +817,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "18154501053895902975"
+                      "version": "0.23.1.45101",
+                      "templateHash": "17745412693819631257"
                     }
                   },
                   "parameters": {
@@ -1064,8 +1071,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.22.6.54827",
-              "templateHash": "7376996776882834757"
+              "version": "0.23.1.45101",
+              "templateHash": "12745716154044665775"
             }
           },
           "parameters": {
@@ -1301,8 +1308,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "14936926749409693547"
+                      "version": "0.23.1.45101",
+                      "templateHash": "6008613429063413622"
                     }
                   },
                   "parameters": {
@@ -1384,8 +1391,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "1238600401673501859"
+                      "version": "0.23.1.45101",
+                      "templateHash": "13011862520975547343"
                     }
                   },
                   "parameters": {
@@ -1588,8 +1595,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "5273041715190483202"
+                      "version": "0.23.1.45101",
+                      "templateHash": "2721493047383994325"
                     }
                   },
                   "parameters": {
@@ -1610,8 +1617,8 @@
                       "metadata": {
                         "_generator": {
                           "name": "bicep",
-                          "version": "0.22.6.54827",
-                          "templateHash": "8646942063704308611"
+                          "version": "0.23.1.45101",
+                          "templateHash": "6533624142397381880"
                         }
                       },
                       "parameters": {
@@ -1845,8 +1852,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "2344797179775399092"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "8820205774480521076"
                                 }
                               },
                               "parameters": {
@@ -2091,8 +2098,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "1117177687539183326"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "12018655233659210692"
                                 }
                               },
                               "parameters": {
@@ -2331,8 +2338,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "5212977892119735880"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "678564250357125178"
                                 }
                               },
                               "parameters": {
@@ -2696,8 +2703,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "5601333789074973372"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "17226869118757649079"
                                 }
                               },
                               "parameters": {
@@ -2796,8 +2803,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "8596530865200791674"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "12930548717891217137"
                                 }
                               },
                               "parameters": {
@@ -2868,8 +2875,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "15500540794576473624"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "13646192547375535656"
                                 }
                               },
                               "parameters": {
@@ -2987,8 +2994,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "13189364925752939087"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "866487267444344457"
                                 }
                               },
                               "parameters": {
@@ -3097,8 +3104,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.22.6.54827",
-                                  "templateHash": "17264141109660054381"
+                                  "version": "0.23.1.45101",
+                                  "templateHash": "2585342901489447118"
                                 }
                               },
                               "parameters": {
@@ -3273,8 +3280,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "2344797179775399092"
+                      "version": "0.23.1.45101",
+                      "templateHash": "8820205774480521076"
                     }
                   },
                   "parameters": {
@@ -3654,8 +3661,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "3086883450731086332"
+                      "version": "0.23.1.45101",
+                      "templateHash": "16855390474146822246"
                     }
                   },
                   "parameters": {
@@ -4165,8 +4172,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.22.6.54827",
-                              "templateHash": "7314287484133279597"
+                              "version": "0.23.1.45101",
+                              "templateHash": "1301495534470230952"
                             }
                           },
                           "parameters": {
@@ -4361,6 +4368,12 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "arcGisProInstaller": {
+            "value": "[parameters('arcGisProInstaller')]"
+          },
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
+          },
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
@@ -4399,6 +4412,9 @@
           },
           "installAccess": {
             "value": "[parameters('installAccess')]"
+          },
+          "installArcGisPro": {
+            "value": "[parameters('installArcGisPro')]"
           },
           "installExcel": {
             "value": "[parameters('installExcel')]"
@@ -4469,9 +4485,6 @@
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
           },
-          "computeGalleryImageResourceId": {
-            "value": "[parameters('computeGalleryImageResourceId')]"
-          },
           "sourceImageType": {
             "value": "[parameters('sourceImageType')]"
           },
@@ -4512,11 +4525,14 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.22.6.54827",
-              "templateHash": "8646942063704308611"
+              "version": "0.23.1.45101",
+              "templateHash": "7290191779775838537"
             }
           },
           "parameters": {
+            "arcGisProInstaller": {
+              "type": "string"
+            },
             "computeGalleryName": {
               "type": "string"
             },
@@ -4556,6 +4572,9 @@
               "type": "string"
             },
             "installAccess": {
+              "type": "bool"
+            },
+            "installArcGisPro": {
               "type": "bool"
             },
             "installExcel": {
@@ -4747,8 +4766,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "2344797179775399092"
+                      "version": "0.23.1.45101",
+                      "templateHash": "8820205774480521076"
                     }
                   },
                   "parameters": {
@@ -4993,8 +5012,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "1117177687539183326"
+                      "version": "0.23.1.45101",
+                      "templateHash": "12018655233659210692"
                     }
                   },
                   "parameters": {
@@ -5148,8 +5167,8 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "location": {
-                    "value": "[parameters('location')]"
+                  "arcGisProInstaller": {
+                    "value": "[parameters('arcGisProInstaller')]"
                   },
                   "containerName": {
                     "value": "[parameters('containerName')]"
@@ -5159,6 +5178,9 @@
                   },
                   "installAccess": {
                     "value": "[parameters('installAccess')]"
+                  },
+                  "installArcGisPro": {
+                    "value": "[parameters('installArcGisPro')]"
                   },
                   "installExcel": {
                     "value": "[parameters('installExcel')]"
@@ -5196,6 +5218,15 @@
                   "installWord": {
                     "value": "[parameters('installWord')]"
                   },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "msrdcwebrtcsvcInstaller": {
+                    "value": "[parameters('msrdcwebrtcsvcInstaller')]"
+                  },
+                  "officeInstaller": {
+                    "value": "[parameters('officeInstaller')]"
+                  },
                   "storageAccountName": {
                     "value": "[variables('storageAccountName')]"
                   },
@@ -5205,26 +5236,20 @@
                   "tags": {
                     "value": "[parameters('tags')]"
                   },
+                  "teamsInstaller": {
+                    "value": "[parameters('teamsInstaller')]"
+                  },
                   "userAssignedIdentityObjectId": {
                     "value": "[parameters('userAssignedIdentityPrincipalId')]"
                   },
-                  "virtualMachineName": {
-                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
+                  "vcRedistInstaller": {
+                    "value": "[parameters('vcRedistInstaller')]"
                   },
                   "vDotInstaller": {
                     "value": "[parameters('vDOTInstaller')]"
                   },
-                  "officeInstaller": {
-                    "value": "[parameters('officeInstaller')]"
-                  },
-                  "msrdcwebrtcsvcInstaller": {
-                    "value": "[parameters('msrdcwebrtcsvcInstaller')]"
-                  },
-                  "teamsInstaller": {
-                    "value": "[parameters('teamsInstaller')]"
-                  },
-                  "vcRedistInstaller": {
-                    "value": "[parameters('vcRedistInstaller')]"
+                  "virtualMachineName": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', format('image-vm-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.name.value]"
                   }
                 },
                 "template": {
@@ -5233,11 +5258,14 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "5212977892119735880"
+                      "version": "0.23.1.45101",
+                      "templateHash": "4484209235332058834"
                     }
                   },
                   "parameters": {
+                    "arcGisProInstaller": {
+                      "type": "string"
+                    },
                     "containerName": {
                       "type": "string"
                     },
@@ -5245,6 +5273,9 @@
                       "type": "array"
                     },
                     "installAccess": {
+                      "type": "bool"
+                    },
+                    "installArcGisPro": {
                       "type": "bool"
                     },
                     "installExcel": {
@@ -5378,7 +5409,7 @@
                           }
                         ],
                         "source": {
-                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Installer,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname -Force -Recurse \r\n        }\r\n      "
+                          "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Installer,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname -Force -Recurse\r\n        }\r\n      "
                         }
                       }
                     },
@@ -5557,6 +5588,47 @@
                         "applications",
                         "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'office')]"
                       ]
+                    },
+                    {
+                      "condition": "[parameters('installArcGisPro')]",
+                      "type": "Microsoft.Compute/virtualMachines/runCommands",
+                      "apiVersion": "2023-03-01",
+                      "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'arcGisPro')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/virtualMachines'), parameters('tags')['Microsoft.Compute/virtualMachines'], createObject())]",
+                      "properties": {
+                        "treatFailureAsDeploymentFailure": true,
+                        "asyncExecution": false,
+                        "parameters": [
+                          {
+                            "name": "UserAssignedIdentityObjectId",
+                            "value": "[parameters('userAssignedIdentityObjectId')]"
+                          },
+                          {
+                            "name": "StorageAccountName",
+                            "value": "[parameters('storageAccountName')]"
+                          },
+                          {
+                            "name": "ContainerName",
+                            "value": "[parameters('containerName')]"
+                          },
+                          {
+                            "name": "StorageEndpoint",
+                            "value": "[parameters('storageEndpoint')]"
+                          },
+                          {
+                            "name": "BlobName",
+                            "value": "[parameters('arcGisProInstaller')]"
+                          }
+                        ],
+                        "source": {
+                          "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      if ($winDesktopRuntime ){\r\n          Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n      }\r\n      \r\n      # Install ArcGis Pro\r\n      $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n      Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      \r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n      "
+                        }
+                      },
+                      "dependsOn": [
+                        "applications",
+                        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'office')]"
+                      ]
                     }
                   ]
                 }
@@ -5598,8 +5670,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "5601333789074973372"
+                      "version": "0.23.1.45101",
+                      "templateHash": "17226869118757649079"
                     }
                   },
                   "parameters": {
@@ -5698,8 +5770,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "8596530865200791674"
+                      "version": "0.23.1.45101",
+                      "templateHash": "12930548717891217137"
                     }
                   },
                   "parameters": {
@@ -5770,8 +5842,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "15500540794576473624"
+                      "version": "0.23.1.45101",
+                      "templateHash": "13646192547375535656"
                     }
                   },
                   "parameters": {
@@ -5889,8 +5961,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "13189364925752939087"
+                      "version": "0.23.1.45101",
+                      "templateHash": "866487267444344457"
                     }
                   },
                   "parameters": {
@@ -5999,8 +6071,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.22.6.54827",
-                      "templateHash": "17264141109660054381"
+                      "version": "0.23.1.45101",
+                      "templateHash": "2585342901489447118"
                     }
                   },
                   "parameters": {

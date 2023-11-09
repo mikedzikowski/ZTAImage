@@ -1,8 +1,10 @@
 targetScope = 'resourceGroup'
 
+param arcGisProInstaller string
 param containerName string
 param customizations array
 param installAccess bool
+param installArcGisPro bool
 param installExcel bool
 param installOneDrive bool
 param installOneNote bool
@@ -26,6 +28,7 @@ param userAssignedIdentityObjectId string
 param vcRedistInstaller string
 param vDotInstaller string
 param virtualMachineName string
+
 
 var installAccessVar = '${installAccess}installAccess'
 var installers = customizations
@@ -143,7 +146,7 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         {
           Set-Location -Path $env:windir\temp\$Installer\Files
           Expand-Archive -Path $env:windir\temp\$Installer\Files\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
-          Remove-Item -Path .\$Blobname -Force -Recurse 
+          Remove-Item -Path .\$Blobname -Force -Recurse
         }
       '''
     }
@@ -489,6 +492,86 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (
       $PerMachineConfiguration = if(($Sku).Contains("multi") -eq "true"){"ALLUSER=1"}else{""}
       Start-Process -FilePath msiexec.exe -Args "/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1" -Wait -PassThru | Out-Null
       Write-Host "Installed Teams"
+      '''
+    }
+  }
+  dependsOn: [
+    applications
+    office
+  ]
+}
+
+resource argGisPro 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (installArcGisPro) {
+  parent: virtualMachine
+  name: 'arcGisPro'
+  location: location
+  tags: contains(tags, 'Microsoft.Compute/virtualMachines') ? tags['Microsoft.Compute/virtualMachines'] : {}
+  properties: {
+    treatFailureAsDeploymentFailure: true
+    asyncExecution: false
+    parameters: [
+      {
+        name: 'UserAssignedIdentityObjectId'
+        value: userAssignedIdentityObjectId
+      }
+      {
+        name: 'StorageAccountName'
+        value: storageAccountName
+      }
+      {
+        name: 'ContainerName'
+        value: containerName
+      }
+      {
+        name: 'StorageEndpoint'
+        value: storageEndpoint
+      }
+      {
+        name: 'BlobName'
+        value: arcGisProInstaller
+      }
+    ]
+    source: {
+      script: '''
+      param(
+        [string]$UserAssignedIdentityObjectId,
+        [string]$StorageAccountName,
+        [string]$ContainerName,
+        [string]$StorageEndpoint,
+        [string]$BlobName
+      )
+      $ErrorActionPreference = 'Stop'
+      $WarningPreference = 'SilentlyContinue'
+      $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
+      $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
+      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+      # Retrieve Files
+      New-Item -Path $env:windir\temp -Name arcgis -ItemType "directory" -Force
+      $ZIP = "$env:windir\temp\arcgispro.zip"
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ZIP
+      Start-Sleep -Seconds 30
+      Set-Location -Path $env:windir\temp
+      Unblock-File -Path $ZIP
+      Expand-Archive -LiteralPath $ZIP -DestinationPath "$env:windir\temp\arcgis" -Force
+
+      # Install Arcgis
+      $arcGisProMsi = (Get-ChildItem "$env:windir\temp\arcgis\" -Recurse | where {$_.Name -eq "ArcGisPro.msi"})
+      $arcGisProMsp = (Get-ChildItem "$env:windir\temp\arcgis" -Recurse | where {$_.Extension -eq ".msp"})
+      $winDesktopRuntime = (Get-ChildItem "$env:windir\temp\arcgis\" -Recurse | where {$_.Name -like "windowsdesktop-runtime-*"})
+
+      # If found Install Windows Desktop Runtime Pre-Req
+      if ($winDesktopRuntime ){
+          Start-Process -FilePath "$($winDesktopRuntime.Directory.FullName)\$winDesktopRuntime" -ArgumentList "/install /quiet /norestart" -Wait -NoNewWindow -PassThru
+      }
+      
+      # Install ArcGis Pro
+      $arcGisProArguments = "/i $($arcGisProMsi.Directory.FullName)\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart"
+      Start-Process "msiexec.exe" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru
+      
+      # If MSP is found, patch ArcGisPro with MSP file
+      if($arcGisProMsp){
+          Start-Process "msiexec.exe" -ArgumentList "/p $($arcGisProMsp.Directory.FullName)\$arcGisProMsp /qn" -Wait -NoNewWindow -PassThru
+      }
       '''
     }
   }

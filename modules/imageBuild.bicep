@@ -1,5 +1,6 @@
 targetScope = 'resourceGroup'
 
+param arcGisProInstaller string
 param computeGalleryName string
 param containerName string
 param customizations array = []
@@ -13,6 +14,7 @@ param imageMajorVersion int
 param imageMinorVersion int
 param imageVirtualMachineName string
 param installAccess bool
+param installArcGisPro bool
 param installExcel bool
 param installOneDrive bool
 param installOneNote bool
@@ -105,10 +107,11 @@ module virtualMachine 'virtualMachine.bicep' = {
 module addCustomizations 'customizations.bicep' = {
   name: 'customizations-${deploymentNameSuffix}'
   params: {
-    location: location
+    arcGisProInstaller: arcGisProInstaller
     containerName: containerName
     customizations: customizations
     installAccess: installAccess
+    installArcGisPro: installArcGisPro
     installExcel: installExcel
     installOneDrive: installOneDrive
     installOneNote: installOneNote
@@ -121,16 +124,17 @@ module addCustomizations 'customizations.bicep' = {
     installVirtualDesktopOptimizationTool: installVirtualDesktopOptimizationTool
     installVisio: installVisio
     installWord: installWord
+    location: location
+    msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
+    officeInstaller: officeInstaller
     storageAccountName: storageAccountName
     storageEndpoint: storageEndpoint
     tags: tags
-    userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
-    virtualMachineName: virtualMachine.outputs.name
-    vDotInstaller: vDOTInstaller
-    officeInstaller: officeInstaller
-    msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
     teamsInstaller: teamsInstaller
+    userAssignedIdentityObjectId: userAssignedIdentityPrincipalId
     vcRedistInstaller: vcRedistInstaller
+    vDotInstaller: vDOTInstaller
+    virtualMachineName: virtualMachine.outputs.name
   }
 }
 

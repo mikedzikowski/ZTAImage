@@ -1,5 +1,6 @@
 targetScope = 'subscription'
 
+param arcGisProInstaller string = ''
 param actionGroupName string = ''
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
@@ -23,6 +24,7 @@ param imageDefinitionNamePrefix string
 param imageMajorVersion int
 param imageMinorVersion int
 param installAccess bool
+param installArcGisPro bool
 param installExcel bool
 param installOneDrive bool
 param installOneNote bool
@@ -217,6 +219,8 @@ module imageBuild 'modules/imageBuild.bicep' = {
   name: 'image-build-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
+    arcGisProInstaller: arcGisProInstaller
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
     containerName: containerName
     customizations: customizations
@@ -230,6 +234,7 @@ module imageBuild 'modules/imageBuild.bicep' = {
     imageMinorVersion: imageMinorVersion
     imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
+    installArcGisPro: installArcGisPro
     installExcel: installExcel
     installOneDrive: installOneDrive
     installOneNote: installOneNote
@@ -253,7 +258,6 @@ module imageBuild 'modules/imageBuild.bicep' = {
     msrdcwebrtcsvcInstaller: msrdcwebrtcsvcInstaller
     officeInstaller: officeInstaller
     replicaCount: replicaCount
-    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
