@@ -1241,7 +1241,6 @@
         "outputs": {
             "parameters": {
                 "actionGroupName": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.actionGroup, '')]",
-                "arcGisProInstaller": "[if(equals(steps('customizations').office.installArcGisPro, true), steps('customizations').office.arcGisBlob.blobName,'')]",
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
                 "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZones.automationAccount, '')]",
                 "computeGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
@@ -1262,7 +1261,6 @@
                 "imageMajorVersion": "[steps('destination').imageVersion.majorVersion]",
                 "imageMinorVersion": "[steps('destination').imageVersion.minorVersion]",
                 "installAccess": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installAccess,'false')]",
-                "installArcGisPro": "[if(equals(steps('customizations').office.installArcGisPro, true), steps('customizations').office.installArcGisPro,'false')]",
                 "installExcel": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installExcel,'false')]",
                 "installOneDrive": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDrive,'false')]",
                 "installOneNote": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneNote,'false')]",
