@@ -960,6 +960,41 @@
                                             "zip"
                                         ]
                                     }
+                                },
+                                {
+                                    "name": "installArcGisPro",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Install ArcGis Pro",
+                                    "defaultValue": "false",
+                                    "toolTip": "Select True to install ArcGisPro",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": false
+                                            }
+                                        ],
+                                        "required": true
+                                    }
+                                },
+                                {
+                                    "name": "arcGisBlob",
+                                    "type": "Microsoft.Storage.StorageBlobSelector",
+                                    "visible": "[steps('customizations').office.installArcGisPro]",
+                                    "toolTip": "Select arcgis blob",
+                                    "label": "arcgispro (.zip)",
+                                    "options": {
+                                        "text": "Select Package"
+                                    },
+                                    "constraints": {
+                                        "allowedFileExtensions": [
+                                            "zip"
+                                        ]
+                                    }
                                 }
                             ]
                         }

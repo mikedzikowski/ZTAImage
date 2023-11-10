@@ -1,3 +1,4 @@
+param arcGisProInstaller string
 param actionGroupName string
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
@@ -18,6 +19,7 @@ param imageMajorVersion int
 param imageMinorVersion int
 param imageVirtualMachineName string
 param installAccess bool
+param installArcGisPro bool
 param installExcel bool
 param installOneDrive bool
 param installOneNote bool
@@ -60,6 +62,7 @@ param vDOTInstaller string
 param virtualMachineSize string
 
 var parameters = {
+  arcGisProInstaller: arcGisProInstaller
   computeGalleryResourceId: computeGalleryResourceId
   containerName: containerName
   customizations: string(customizations)
@@ -72,6 +75,7 @@ var parameters = {
   imageMinorVersion: string(imageMinorVersion)
   imageVirtualMachineName: imageVirtualMachineName
   installAccess: string(installAccess)
+  installArcGisPro: string(installArcGisPro)
   installExcel: string(installExcel)
   InstallOneDrive: string(installOneDrive)
   installOneNote: string(installOneNote)

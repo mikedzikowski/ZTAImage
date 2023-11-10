@@ -1,6 +1,7 @@
 targetScope = 'subscription'
 
 param actionGroupName string
+param arcGisProInstaller string
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
 param computeGalleryResourceId string
@@ -21,6 +22,7 @@ param imageMajorVersion int
 param imageMinorVersion int
 param imageVirtualMachineName string
 param installAccess bool
+param installArcGisPro bool
 param installExcel bool
 param installOneDrive bool
 param installOneNote bool
@@ -144,6 +146,7 @@ module automationAccount 'automationAccount.bicep' = {
   scope: resourceGroup(subscriptionId, resourceGroupName)
   name: 'automation-account-${deploymentNameSuffix}'
   params: {
+    arcGisProInstaller: arcGisProInstaller
     actionGroupName: actionGroupName
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
@@ -163,6 +166,7 @@ module automationAccount 'automationAccount.bicep' = {
     imageMinorVersion: imageMinorVersion
     imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
+    installArcGisPro: installArcGisPro
     installExcel: installExcel
     installOneDrive: installOneDrive
     installOneNote: installOneNote
