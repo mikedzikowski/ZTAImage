@@ -152,8 +152,10 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
   name: 'build-automation-${deploymentNameSuffix}'
   params: {
     actionGroupName: actionGroupName
+    arcGisProInstaller: arcGisProInstaller
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryResourceId: baseline.outputs.computeGalleryResourceId
     containerName: containerName
     customizations: customizations
@@ -171,6 +173,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     imageMinorVersion: imageMinorVersion
     imageVirtualMachineName: imageVirtualMachineName
     installAccess: installAccess
+    installArcGisPro: installArcGisPro
     installExcel: installExcel
     installOneDrive: installOneDrive
     installOneNote: installOneNote
@@ -198,7 +201,6 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     oUPath: oUPath
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
-    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
     storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
