@@ -48,6 +48,7 @@ param marketplaceImageOffer string = ''
 param marketplaceImagePublisher string = ''
 param marketplaceImageSKU string = ''
 param msrdcwebrtcsvcInstaller string = ''
+param existingResourceGroup bool = false
 param officeInstaller string = ''
 param oUPath string
 param replicaCount int
@@ -127,6 +128,13 @@ var timeZones = {
   westus3: 'Mountain Standard Time'
 }
 
+resource rg 'Microsoft.Resources/resourceGroups@2019-05-01' = if (!existingResourceGroup) {
+  name: resourceGroupName
+  location: location
+  tags: tags
+}
+
+
 module baseline 'modules/baseline.bicep' = {
   name: 'baseline-${deploymentNameSuffix}'
   params: {
@@ -140,7 +148,7 @@ module baseline 'modules/baseline.bicep' = {
     location: location
     marketplaceImageOffer: marketplaceImageOffer
     marketplaceImagePublisher: marketplaceImagePublisher
-    resourceGroupName: resourceGroupName
+    resourceGroupName: existingResourceGroup ? resourceGroupName : rg.name
     storageAccountResourceId: storageAccountResourceId
     subscriptionId: subscriptionId
     tags: tags
@@ -200,7 +208,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
     officeInstaller: officeInstaller
     oUPath: oUPath
     replicaCount: replicaCount
-    resourceGroupName: resourceGroupName
+    resourceGroupName: existingResourceGroup ? resourceGroupName : rg.name
     sourceImageType: sourceImageType
     storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
@@ -219,7 +227,7 @@ module buildAutomation 'modules/buildAutomation.bicep' = if (enableBuildAutomati
 
 module imageBuild 'modules/imageBuild.bicep' = {
   name: 'image-build-${deploymentNameSuffix}'
-  scope: resourceGroup(subscriptionId, resourceGroupName)
+  scope: resourceGroup(subscriptionId, (existingResourceGroup ? rg.name : resourceGroupName))
   params: {
     arcGisProInstaller: arcGisProInstaller
     computeGalleryImageResourceId: computeGalleryImageResourceId

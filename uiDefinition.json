@@ -23,9 +23,71 @@
 						"type": "Microsoft.Common.ResourceScope",
 						"location": {
 							"resourceTypes": []
-						},
-						"resourceTypeMetadata": []
-					}
+						}
+					},
+                    {
+                        "name": "ResourceGroupApi",
+                        "visible": false,
+                        "type": "Microsoft.Solutions.ArmApiControl",
+                        "defaultValue": "",
+                        "request": {
+                            "method": "GET",
+                            "path": "[concat(steps('basics').scope.subscription.id, '/resourceGroups?api-version=2021-04-01')]"
+                        }
+                    },
+                    {
+                        "name": "newOrExistingResourceGroup",
+                        "type": "Microsoft.Common.OptionsGroup",
+                        "label": "Use an existing resource group",
+                        "defaultValue": "false",
+                        "toolTip": "",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "True",
+                                    "value": true
+                                },
+                                {
+                                    "label": "False",
+                                    "value": false
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "existingResourceGroup",
+                        "label": "Existing resource group",
+                        "type": "Microsoft.Common.DropDown",
+                        "defaultValue": "",
+                        "toolTip": "Select the existing resource group to target",
+                        "multiselect": false,
+                        "selectAll": false,
+                        "filter": true,
+                        "visible": "[equals(steps('basics').newOrExistingResourceGroup, true)]",
+                        "filterPlaceholder": "Filter items ...",
+                        "multiLine": true,
+                        "constraints": {
+                            "allowedValues": "[map(steps('basics').ResourceGroupApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                            "required": true
+                        }
+                      },
+                      {
+                        "name": "newResourceGroup",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "New resource group name",
+                        "defaultValue": "",
+                        "toolTip": "New resource group name",
+                        "placeholder": "",
+                        "multiLine": false,
+                        "constraints": {
+                          "required": true,
+                          "validations": [
+                          ]
+                        },
+                        "visible": "[equals(steps('basics').newOrExistingResourceGroup, false)]"
+                      }
                     ]
                 },
                 {
@@ -1218,6 +1280,7 @@
         "outputs": {
             "parameters": {
                 "actionGroupName": "[if(and(steps('automation').enable, steps('automation').monitoring.enable), steps('automation').monitoring.actionGroup, '')]",
+                "arcGisProInstaller": "[if(equals(steps('customizations').office.installArcGisPro, true), steps('customizations').office.arcGisBlob.blobName,'')]",
                 "automationAccountName": "[if(steps('automation').enable, steps('automation').automationAccount, '')]",
                 "automationAccountPrivateDnsZoneResourceId": "[if(steps('automation').enable, steps('automation').privateDnsZones.automationAccount, '')]",
                 "computeGalleryImageResourceId": "[if(equals(steps('source').type, 'AzureComputeGallery'), steps('source').gallery.imageDefinition, '')]",
@@ -1238,6 +1301,7 @@
                 "imageMajorVersion": "[steps('destination').imageVersion.majorVersion]",
                 "imageMinorVersion": "[steps('destination').imageVersion.minorVersion]",
                 "installAccess": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installAccess,'false')]",
+                "installArcGisPro": "[if(equals(steps('customizations').office.installArcGisPro, true), steps('customizations').office.installArcGisPro,'false')]",
                 "installExcel": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installExcel,'false')]",
                 "installOneDrive": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneDrive,'false')]",
                 "installOneNote": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.installOneNote,'false')]",
@@ -1260,10 +1324,11 @@
                 "marketplaceImagePublisher": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.publisher, '')]",
                 "marketplaceImageSKU": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.sku, '')]",
                 "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]",
+                "existingResourceGroup": "[steps('basics').newOrExistingResourceGroup]",
                 "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
-                "resourceGroupName": "[steps('basics').scope.resourceGroup.name]",
+                "resourceGroupName": "[if(equals(steps('basics').newOrExistingResourceGroup, true), steps('basics').existingResourceGroup ,steps('basics').newResourceGroup)]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",

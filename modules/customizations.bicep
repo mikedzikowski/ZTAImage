@@ -29,7 +29,6 @@ param vcRedistInstaller string
 param vDotInstaller string
 param virtualMachineName string
 
-
 var installAccessVar = '${installAccess}installAccess'
 var installers = customizations
 var installExcelVar = '${installExcel}installWord'
@@ -560,18 +559,33 @@ resource argGisPro 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = 
       $winDesktopRuntime = (Get-ChildItem "$env:windir\temp\arcgis\" -Recurse | where {$_.Name -like "windowsdesktop-runtime-*"})
 
       # If found Install Windows Desktop Runtime Pre-Req
-      if ($winDesktopRuntime ){
-          Start-Process -FilePath "$($winDesktopRuntime.Directory.FullName)\$winDesktopRuntime" -ArgumentList "/install /quiet /norestart" -Wait -NoNewWindow -PassThru
+      try {
+        if ($winDesktopRuntime ){
+            Start-Process -FilePath "$($winDesktopRuntime.Directory.FullName)\$winDesktopRuntime" -ArgumentList "/install /quiet /norestart" -Wait -NoNewWindow -PassThru
+        }
       }
-      
-      # Install ArcGis Pro
-      $arcGisProArguments = "/i $($arcGisProMsi.Directory.FullName)\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart"
-      Start-Process "msiexec.exe" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru
-      
+      catch {
+        Write-Output "Please validate all software requirements are included with the ArcGIS Pro Zip"
+      }
+
+      try {
+        # Install ArcGis Pro
+        $arcGisProArguments = "/i $($arcGisProMsi.Directory.FullName)\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart"
+        Start-Process "msiexec.exe" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru
+      }
+      catch {
+        Write-Output "Please validate all software requirements are included with the ArcGIS Pro Zip"
+      }
+
+      try {
       # If MSP is found, patch ArcGisPro with MSP file
       if($arcGisProMsp){
           Start-Process "msiexec.exe" -ArgumentList "/p $($arcGisProMsp.Directory.FullName)\$arcGisProMsp /qn" -Wait -NoNewWindow -PassThru
       }
+    }
+    catch {
+      Write-Output "Please validate all software requirements are included with the ArcGIS Pro Zip"
+    }
       '''
     }
   }
