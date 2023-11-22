@@ -36,7 +36,7 @@
                         }
                     },
                     {
-                        "name": "newOrExistingResourceGroup",
+                        "name": "existingResourceGroup",
                         "type": "Microsoft.Common.OptionsGroup",
                         "label": "Use an existing resource group",
                         "defaultValue": "false",
@@ -57,7 +57,7 @@
                         "visible": true
                     },
                     {
-                        "name": "existingResourceGroup",
+                        "name": "existingResourceGroupName",
                         "label": "Existing resource group",
                         "type": "Microsoft.Common.DropDown",
                         "defaultValue": "",
@@ -65,7 +65,7 @@
                         "multiselect": false,
                         "selectAll": false,
                         "filter": true,
-                        "visible": "[equals(steps('basics').newOrExistingResourceGroup, true)]",
+                        "visible": "[equals(steps('basics').existingResourceGroup, true)]",
                         "filterPlaceholder": "Filter items ...",
                         "multiLine": true,
                         "constraints": {
@@ -86,7 +86,7 @@
                           "validations": [
                           ]
                         },
-                        "visible": "[equals(steps('basics').newOrExistingResourceGroup, false)]"
+                        "visible": "[equals(steps('basics').existingResourceGroup, false)]"
                       }
                     ]
                 },
@@ -1324,11 +1324,11 @@
                 "marketplaceImagePublisher": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.publisher, '')]",
                 "marketplaceImageSKU": "[if(equals(steps('source').type, 'AzureMarketplace'), steps('source').marketplace.sku, '')]",
                 "msrdcwebrtcsvcInstaller": "[if(equals(steps('customizations').office.installTeams, true), steps('customizations').office.msrdcwebrtcsvcInstaller.blobName,'')]",
-                "existingResourceGroup": "[steps('basics').newOrExistingResourceGroup]",
+                "existingResourceGroup": "[steps('basics').existingResourceGroup]",
                 "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
-                "resourceGroupName": "[if(equals(steps('basics').newOrExistingResourceGroup, true), steps('basics').existingResourceGroup ,steps('basics').newResourceGroup)]",
+                "resourceGroupName": "[if(equals(steps('basics').existingResourceGroup, true), steps('basics').existingResourceGroup ,steps('basics').newResourceGroup)]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",
