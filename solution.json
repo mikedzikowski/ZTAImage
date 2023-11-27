@@ -5,218 +5,399 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "2891080410543400962"
+      "templateHash": "12866838618228867702"
     }
   },
   "parameters": {
     "arcGisProInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the ArcGIS Pro installer in Azure Blobs."
+      }
     },
     "actionGroupName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The name for the action group resource."
+      }
     },
     "automationAccountName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name for the automation account resource."
+      }
     },
     "automationAccountPrivateDnsZoneResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The private DNS zone resource ID for the automation account resource."
+      }
     },
     "computeGalleryImageResourceId": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource ID of the compute gallery image."
+      }
     },
     "computeGalleryName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the compute gallery resource."
+      }
     },
     "containerName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the container in the storage account where the installer files are located."
+      }
     },
     "customizations": {
       "type": "array",
-      "defaultValue": []
+      "defaultValue": [],
+      "metadata": {
+        "description": "The array of customizations to apply to the image."
+      }
     },
     "diskEncryptionSetResourceId": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource ID of the disk encryption set to use for the management virtual machine."
+      }
     },
     "distributionGroup": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The distribution group for email notifications."
+      }
     },
     "deploymentNameSuffix": {
       "type": "string",
-      "defaultValue": "[utcNow('yyMMddHHs')]"
+      "defaultValue": "[utcNow('yyMMddHHs')]",
+      "metadata": {
+        "description": "The suffix to append to deployment names."
+      }
     },
     "domainJoinPassword": {
       "type": "securestring",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The password for the domain join account."
+      }
     },
     "domainJoinUserPrincipalName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The user principal name for the domain join account."
+      }
     },
     "domainName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The domain name to join."
+      }
     },
     "enableBuildAutomation": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to enable build automation."
+      }
     },
     "excludeFromLatest": {
       "type": "bool",
-      "defaultValue": true
+      "defaultValue": true,
+      "metadata": {
+        "description": "Determines whether to exclude the image from the latest version."
+      }
     },
     "exemptPolicyAssignmentIds": {
       "type": "array",
-      "defaultValue": []
+      "defaultValue": [],
+      "metadata": {
+        "description": "The array of policy assignment IDs to exempt to prevent issues with the build process."
+      }
     },
     "hybridUseBenefit": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to use the hybrid use benefit."
+      }
     },
     "hybridWorkerName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The name of the hybrid worker (virtual machine) if using build automation."
+      }
     },
     "imageDefinitionNamePrefix": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name prefix for the image definition resource."
+      }
     },
     "imageMajorVersion": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "The major version for the name of the image version resource."
+      }
     },
     "imageMinorVersion": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "The minor version for the name of the image version resource."
+      }
     },
     "installAccess": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Access."
+      }
     },
     "installArcGisPro": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install ArcGIS Pro."
+      }
     },
     "installExcel": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Excel."
+      }
     },
     "installOneDrive": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install OneDrive."
+      }
     },
     "installOneNote": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install OneNote."
+      }
     },
     "installOutlook": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Outlook."
+      }
     },
     "installPowerPoint": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install PowerPoint."
+      }
     },
     "installProject": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Project."
+      }
     },
     "installPublisher": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Publisher."
+      }
     },
     "installSkypeForBusiness": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Skype for Business."
+      }
     },
     "installTeams": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Teams."
+      }
     },
     "installVirtualDesktopOptimizationTool": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install the Virtual Desktop Optimization Tool."
+      }
     },
     "installVisio": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Visio."
+      }
     },
     "installWord": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Word."
+      }
     },
     "keyVaultName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the key vault resource."
+      }
     },
     "keyVaultPrivateDnsZoneResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The private DNS zone resource ID for the key vault resource."
+      }
     },
     "localAdministratorPassword": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the local administrator account."
+      }
     },
     "localAdministratorUsername": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The username for the local administrator account."
+      }
     },
     "location": {
       "type": "string",
-      "defaultValue": "[deployment().location]"
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "description": "The location for the resources."
+      }
     },
     "logAnalyticsWorkspaceResourceId": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource ID of the log analytics workspace if using build automation and desired."
+      }
     },
     "marketplaceImageOffer": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The marketplace image offer."
+      }
     },
     "marketplaceImagePublisher": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The marketplace image publisher."
+      }
     },
     "marketplaceImageSKU": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The marketplace image SKU."
+      }
     },
     "msrdcwebrtcsvcInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the msrdcwebrtcsvc installer in Azure Blobs."
+      }
     },
     "existingResourceGroup": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": false,
+      "metadata": {
+        "description": "Determines whether to use an existing resource group."
+      }
     },
     "officeInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the Office installer in Azure Blobs."
+      }
     },
     "oUPath": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The distinguished name of the organizational unit to join."
+      }
     },
     "replicaCount": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "The count of replicas for the image version resource."
+      }
     },
     "resourceGroupName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the resource group."
+      }
     },
     "sourceImageType": {
       "type": "string",
       "allowedValues": [
         "AzureComputeGallery",
         "AzureMarketplace"
-      ]
+      ],
+      "metadata": {
+        "description": "The type of source image."
+      }
     },
     "storageAccountResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the storage account where the installers and scripts are stored in Azure Blobs."
+      }
     },
     "subnetResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the subnet where the virtual machines will be deployed."
+      }
     },
     "tags": {
       "type": "object",
-      "defaultValue": {}
+      "defaultValue": {},
+      "metadata": {
+        "description": "The key value pairs of meta data to apply to the resources."
+      }
     },
     "teamsInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the Teams installer in Azure Blobs."
+      }
     },
     "userAssignedIdentityName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the user assigned identity resource."
+      }
     },
     "vcRedistInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the vcRedist installer in Azure Blobs."
+      }
     },
     "vDOTInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the vDOT installer in Azure Blobs."
+      }
     },
     "virtualMachineSize": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The size of the image virtual machine."
+      }
     }
   },
   "variables": {

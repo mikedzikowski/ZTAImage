@@ -1,70 +1,189 @@
 targetScope = 'subscription'
 
+@description('The file name of the ArcGIS Pro installer in Azure Blobs.')
 param arcGisProInstaller string = ''
+
+@description('The name for the action group resource.')
 param actionGroupName string = ''
+
+@description('The name for the automation account resource.')
 param automationAccountName string
+
+@description('The private DNS zone resource ID for the automation account resource.')
 param automationAccountPrivateDnsZoneResourceId string
+
+@description('The resource ID of the compute gallery image.')
 param computeGalleryImageResourceId string = ''
+
+@description('The name of the compute gallery resource.')
 param computeGalleryName string
+
+@description('The name of the container in the storage account where the installer files are located.')
 param containerName string
+
+@description('The array of customizations to apply to the image.')
 param customizations array = []
+
+@description('The resource ID of the disk encryption set to use for the management virtual machine.')
 param diskEncryptionSetResourceId string = ''
+
+@description('The distribution group for email notifications.')
 param distributionGroup string = ''
+
+@description('The suffix to append to deployment names.')
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
+
 @secure()
+@description('The password for the domain join account.')
 param domainJoinPassword string = ''
+
+@description('The user principal name for the domain join account.')
 param domainJoinUserPrincipalName string = ''
+
+@description('The domain name to join.')
 param domainName string = ''
+
+@description('Determines whether to enable build automation.')
 param enableBuildAutomation bool
+
+@description('Determines whether to exclude the image from the latest version.')
 param excludeFromLatest bool = true
+
+@description('The array of policy assignment IDs to exempt to prevent issues with the build process.')
 param exemptPolicyAssignmentIds array = []
+
+@description('Determines whether to use the hybrid use benefit.')
 param hybridUseBenefit bool
+
+@description('The name of the hybrid worker (virtual machine) if using build automation.')
 param hybridWorkerName string = ''
+
+@description('The name prefix for the image definition resource.')
 param imageDefinitionNamePrefix string
+
+@description('The major version for the name of the image version resource.')
 param imageMajorVersion int
+
+@description('The minor version for the name of the image version resource.')
 param imageMinorVersion int
+
+@description('Determines whether to install Access.')
 param installAccess bool
+
+@description('Determines whether to install ArcGIS Pro.')
 param installArcGisPro bool
+
+@description('Determines whether to install Excel.')
 param installExcel bool
+
+@description('Determines whether to install OneDrive.')
 param installOneDrive bool
+
+@description('Determines whether to install OneNote.')
 param installOneNote bool
+
+@description('Determines whether to install Outlook.')
 param installOutlook bool
+
+@description('Determines whether to install PowerPoint.')
 param installPowerPoint bool
+
+@description('Determines whether to install Project.')
 param installProject bool
+
+@description('Determines whether to install Publisher.')
 param installPublisher bool
+
+@description('Determines whether to install Skype for Business.')
 param installSkypeForBusiness bool
+
+@description('Determines whether to install Teams.')
 param installTeams bool
+
+@description('Determines whether to install the Virtual Desktop Optimization Tool.')
 param installVirtualDesktopOptimizationTool bool
+
+@description('Determines whether to install Visio.')
 param installVisio bool
+
+@description('Determines whether to install Word.')
 param installWord bool
+
+@description('The name of the key vault resource.')
 param keyVaultName string
+
+@description('The private DNS zone resource ID for the key vault resource.')
 param keyVaultPrivateDnsZoneResourceId string
+
 @secure()
+@description('The password for the local administrator account.')
 param localAdministratorPassword string
+
+@description('The username for the local administrator account.')
 param localAdministratorUsername string
+
+@description('The location for the resources.')
 param location string = deployment().location
+
+@description('The resource ID of the log analytics workspace if using build automation and desired.')
 param logAnalyticsWorkspaceResourceId string = ''
+
+@description('The marketplace image offer.')
 param marketplaceImageOffer string = ''
+
+@description('The marketplace image publisher.')
 param marketplaceImagePublisher string = ''
+
+@description('The marketplace image SKU.')
 param marketplaceImageSKU string = ''
+
+@description('The file name of the msrdcwebrtcsvc installer in Azure Blobs.')
 param msrdcwebrtcsvcInstaller string = ''
+
+@description('Determines whether to use an existing resource group.')
 param existingResourceGroup bool = false
+
+@description('The file name of the Office installer in Azure Blobs.')
 param officeInstaller string = ''
-param oUPath string
+
+@description('The distinguished name of the organizational unit to join.')
+param oUPath string = ''
+
+@description('The count of replicas for the image version resource.')
 param replicaCount int
+
+@description('The name of the resource group.')
 param resourceGroupName string
+
 @allowed([
   'AzureComputeGallery'
   'AzureMarketplace'
 ])
+@description('The type of source image.')
 param sourceImageType string
+
+@description('The resource ID of the storage account where the installers and scripts are stored in Azure Blobs.')
 param storageAccountResourceId string
+
+@description('The resource ID of the subnet where the virtual machines will be deployed.')
 param subnetResourceId string
+
+@description('The key value pairs of meta data to apply to the resources.')
 param tags object = {}
+
+@description('The file name of the Teams installer in Azure Blobs.')
 param teamsInstaller string = ''
+
+@description('The name of the user assigned identity resource.')
 param userAssignedIdentityName string
+
+@description('The file name of the vcRedist installer in Azure Blobs.')
 param vcRedistInstaller string = ''
+
+@description('The file name of the vDOT installer in Azure Blobs.')
 param vDOTInstaller string = ''
+
+@description('The size of the image virtual machine.')
 param virtualMachineSize string
 
 var imageDefinitionName = empty(computeGalleryImageResourceId) ? '${imageDefinitionNamePrefix}-${marketplaceImageSKU}' : '${imageDefinitionNamePrefix}-${split(computeGalleryImageResourceId, '/')[10]}'
