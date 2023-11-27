@@ -123,44 +123,50 @@
                             "elements": [
                                 {
                                     "name": "publisher",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Image Publisher",
-                                    "defaultValue": "MicrosoftWindowsDesktop",
-                                    "visible": true,
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "label": "Publisher",
+                                    "defaultValue": "Microsoft Windows Desktop",
+                                    "toolTip": "Select the desired marketplace image publisher.",
                                     "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "Microsoft Windows Desktop",
+                                                "value": "MicrosoftWindowsDesktop"
+                                            },
+                                            {
+                                                "label": "Microsoft Windows Server",
+                                                "value": "MicrosoftWindowsServer"
+                                            }
+                                        ],
                                         "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "offersApi",
+                                    "type": "Microsoft.Solutions.ArmApiControl",
+                                    "request": {
+                                        "method": "GET",
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/', steps('source').marketplace.publisher, '/artifacttypes/vmimage/offers?api-version=2023-07-01')]"
                                     }
                                 },
                                 {
                                     "name": "offer",
                                     "type": "Microsoft.Common.DropDown",
                                     "label": "Offer",
-                                    "defaultValue": "Windows 11",
+                                    "defaultValue": "",
                                     "toolTip": "Select the desired marketplace image offer.",
                                     "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "Office 365",
-                                                "value": "office-365"
-                                            },
-                                            {
-                                                "label": "Windows 10",
-                                                "value": "Windows-10"
-                                            },
-                                            {
-                                                "label": "Windows 11",
-                                                "value": "windows-11"
-                                            }
-                                        ],
+                                        "allowedValues": "[map(steps('source').marketplace.offersApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
                                         "required": true
                                     }
                                 },
                                 {
-                                    "name": "skuApi",
+                                    "name": "skusApi",
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
                                         "method": "GET",
-                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/MicrosoftWindowsDesktop/artifacttypes/vmimage/offers/', steps('source').marketplace.offer, '/skus?api-version=2022-08-01')]"
+                                        "path": "[concat(steps('basics').scope.subscription.id, '/providers/Microsoft.Compute/locations/', steps('basics').scope.location.name, '/publishers/', steps('source').marketplace.publisher, '/artifacttypes/vmimage/offers/', steps('source').marketplace.offer, '/skus?api-version=2023-07-01')]"
                                     }
                                 },
                                 {
@@ -170,7 +176,7 @@
                                     "defaultValue": "win11-22h2-avd",
                                     "toolTip": "Select the desired marketplace image SKU.",
                                     "constraints": {
-                                        "allowedValues": "[map(steps('source').marketplace.skuApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                                        "allowedValues": "[map(steps('source').marketplace.skusApi, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
                                         "required": true
                                     }
                                 }
