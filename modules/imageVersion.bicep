@@ -38,7 +38,6 @@ resource imageVersion 'Microsoft.Compute/galleries/images/versions@2022-03-03' =
             }
           } 
           */
-          excludeFromLatest: excludeFromLatest
           name: location
           regionalReplicaCount: replicaCount
           storageAccountType: 'Standard_LRS'
