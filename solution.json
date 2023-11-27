@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "9305792103647743727"
+      "templateHash": "10909808740198047128"
     }
   },
   "parameters": {
@@ -352,7 +352,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "13842961593942362553"
+              "templateHash": "18168377176206486327"
             }
           },
           "parameters": {
@@ -663,23 +663,11 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "computeGalleryImageResourceId": {
-                    "value": "[parameters('computeGalleryImageResourceId')]"
-                  },
                   "enableBuildAutomation": {
                     "value": "[parameters('enableBuildAutomation')]"
                   },
-                  "imageDefinitionName": {
-                    "value": "[parameters('imageDefinitionName')]"
-                  },
                   "location": {
                     "value": "[parameters('location')]"
-                  },
-                  "marketplaceImageOffer": {
-                    "value": "[parameters('marketplaceImageOffer')]"
-                  },
-                  "marketplaceImagePublisher": {
-                    "value": "[parameters('marketplaceImagePublisher')]"
                   },
                   "computeGalleryName": {
                     "value": "[parameters('computeGalleryName')]"
@@ -698,29 +686,17 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "15474719498090188133"
+                      "templateHash": "7729223795303614524"
                     }
                   },
                   "parameters": {
-                    "computeGalleryImageResourceId": {
-                      "type": "string"
-                    },
                     "computeGalleryName": {
                       "type": "string"
                     },
                     "enableBuildAutomation": {
                       "type": "bool"
                     },
-                    "imageDefinitionName": {
-                      "type": "string"
-                    },
                     "location": {
-                      "type": "string"
-                    },
-                    "marketplaceImageOffer": {
-                      "type": "string"
-                    },
-                    "marketplaceImagePublisher": {
                       "type": "string"
                     },
                     "tags": {
@@ -755,43 +731,12 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
                       ]
-                    },
-                    {
-                      "type": "Microsoft.Compute/galleries/images",
-                      "apiVersion": "2022-03-03",
-                      "name": "[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
-                      "location": "[parameters('location')]",
-                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
-                      "properties": {
-                        "architecture": "x64",
-                        "features": [
-                          {
-                            "name": "SecurityType",
-                            "value": "TrustedLaunch"
-                          }
-                        ],
-                        "hyperVGeneration": "V2",
-                        "identifier": {
-                          "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
-                          "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
-                          "sku": "[parameters('imageDefinitionName')]"
-                        },
-                        "osState": "Generalized",
-                        "osType": "Windows"
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
-                      ]
                     }
                   ],
                   "outputs": {
                     "computeGalleryResourceId": {
                       "type": "string",
                       "value": "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
-                    },
-                    "imageDefinitionName": {
-                      "type": "string",
-                      "value": "[parameters('imageDefinitionName')]"
                     }
                   }
                 }
@@ -1089,7 +1034,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "4141223239311521606"
+              "templateHash": "12222579082036727440"
             }
           },
           "parameters": {
@@ -1619,7 +1564,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "12649618445046264448"
+                      "templateHash": "8635932428727942474"
                     }
                   },
                   "parameters": {
@@ -1641,7 +1586,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.23.1.45101",
-                          "templateHash": "1199594505037172373"
+                          "templateHash": "8391971390859372986"
                         }
                       },
                       "parameters": {
@@ -3042,6 +2987,9 @@
                             },
                             "mode": "Incremental",
                             "parameters": {
+                              "computeGalleryImageResourceId": {
+                                "value": "[[parameters('computeGalleryImageResourceId')]"
+                              },
                               "computeGalleryName": {
                                 "value": "[[parameters('computeGalleryName')]"
                               },
@@ -3063,6 +3011,12 @@
                               "location": {
                                 "value": "[[parameters('location')]"
                               },
+                              "marketplaceImageOffer": {
+                                "value": "[[parameters('marketplaceImageOffer')]"
+                              },
+                              "marketplaceImagePublisher": {
+                                "value": "[[parameters('marketplaceImagePublisher')]"
+                              },
                               "replicaCount": {
                                 "value": "[[parameters('replicaCount')]"
                               },
@@ -3077,7 +3031,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.23.1.45101",
-                                  "templateHash": "11141607620333465962"
+                                  "templateHash": "10489448698817055639"
                                 }
                               },
                               "parameters": {
@@ -3086,6 +3040,9 @@
                                   "defaultValue": true
                                 },
                                 "computeGalleryName": {
+                                  "type": "string"
+                                },
+                                "computeGalleryImageResourceId": {
                                   "type": "string"
                                 },
                                 "diskEncryptionSetResourceId": {
@@ -3106,6 +3063,12 @@
                                 "location": {
                                   "type": "string"
                                 },
+                                "marketplaceImageOffer": {
+                                  "type": "string"
+                                },
+                                "marketplaceImagePublisher": {
+                                  "type": "string"
+                                },
                                 "replicaCount": {
                                   "type": "int"
                                 },
@@ -3114,6 +3077,30 @@
                                 }
                               },
                               "resources": [
+                                {
+                                  "type": "Microsoft.Compute/galleries/images",
+                                  "apiVersion": "2022-03-03",
+                                  "name": "[[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
+                                  "location": "[[parameters('location')]",
+                                  "tags": "[[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
+                                  "properties": {
+                                    "architecture": "x64",
+                                    "features": [
+                                      {
+                                        "name": "SecurityType",
+                                        "value": "TrustedLaunch"
+                                      }
+                                    ],
+                                    "hyperVGeneration": "V2",
+                                    "identifier": {
+                                      "offer": "[[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                                      "publisher": "[[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                                      "sku": "[[parameters('imageDefinitionName')]"
+                                    },
+                                    "osState": "Generalized",
+                                    "osType": "Windows"
+                                  }
+                                },
                                 {
                                   "type": "Microsoft.Compute/galleries/images/versions",
                                   "apiVersion": "2022-03-03",
@@ -3142,7 +3129,10 @@
                                         "id": "[[parameters('imageVirtualMachineResourceId')]"
                                       }
                                     }
-                                  }
+                                  },
+                                  "dependsOn": [
+                                    "[[resourceId('Microsoft.Compute/galleries/images', parameters('computeGalleryName'), parameters('imageDefinitionName'))]"
+                                  ]
                                 }
                               ]
                             }
@@ -4622,7 +4612,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "1199594505037172373"
+              "templateHash": "8391971390859372986"
             }
           },
           "parameters": {
@@ -6023,6 +6013,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
+                  },
                   "computeGalleryName": {
                     "value": "[parameters('computeGalleryName')]"
                   },
@@ -6044,6 +6037,12 @@
                   "location": {
                     "value": "[parameters('location')]"
                   },
+                  "marketplaceImageOffer": {
+                    "value": "[parameters('marketplaceImageOffer')]"
+                  },
+                  "marketplaceImagePublisher": {
+                    "value": "[parameters('marketplaceImagePublisher')]"
+                  },
                   "replicaCount": {
                     "value": "[parameters('replicaCount')]"
                   },
@@ -6058,7 +6057,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "11141607620333465962"
+                      "templateHash": "10489448698817055639"
                     }
                   },
                   "parameters": {
@@ -6067,6 +6066,9 @@
                       "defaultValue": true
                     },
                     "computeGalleryName": {
+                      "type": "string"
+                    },
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "diskEncryptionSetResourceId": {
@@ -6087,6 +6089,12 @@
                     "location": {
                       "type": "string"
                     },
+                    "marketplaceImageOffer": {
+                      "type": "string"
+                    },
+                    "marketplaceImagePublisher": {
+                      "type": "string"
+                    },
                     "replicaCount": {
                       "type": "int"
                     },
@@ -6095,6 +6103,30 @@
                     }
                   },
                   "resources": [
+                    {
+                      "type": "Microsoft.Compute/galleries/images",
+                      "apiVersion": "2022-03-03",
+                      "name": "[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
+                      "properties": {
+                        "architecture": "x64",
+                        "features": [
+                          {
+                            "name": "SecurityType",
+                            "value": "TrustedLaunch"
+                          }
+                        ],
+                        "hyperVGeneration": "V2",
+                        "identifier": {
+                          "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                          "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                          "sku": "[parameters('imageDefinitionName')]"
+                        },
+                        "osState": "Generalized",
+                        "osType": "Windows"
+                      }
+                    },
                     {
                       "type": "Microsoft.Compute/galleries/images/versions",
                       "apiVersion": "2022-03-03",
@@ -6123,7 +6155,10 @@
                             "id": "[parameters('imageVirtualMachineResourceId')]"
                           }
                         }
-                      }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Compute/galleries/images', parameters('computeGalleryName'), parameters('imageDefinitionName'))]"
+                      ]
                     }
                   ]
                 }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "1199594505037172373"
+      "templateHash": "8391971390859372986"
     }
   },
   "parameters": {
@@ -1406,6 +1406,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
+          },
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
@@ -1427,6 +1430,12 @@
           "location": {
             "value": "[parameters('location')]"
           },
+          "marketplaceImageOffer": {
+            "value": "[parameters('marketplaceImageOffer')]"
+          },
+          "marketplaceImagePublisher": {
+            "value": "[parameters('marketplaceImagePublisher')]"
+          },
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
           },
@@ -1441,7 +1450,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "11141607620333465962"
+              "templateHash": "10489448698817055639"
             }
           },
           "parameters": {
@@ -1450,6 +1459,9 @@
               "defaultValue": true
             },
             "computeGalleryName": {
+              "type": "string"
+            },
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "diskEncryptionSetResourceId": {
@@ -1470,6 +1482,12 @@
             "location": {
               "type": "string"
             },
+            "marketplaceImageOffer": {
+              "type": "string"
+            },
+            "marketplaceImagePublisher": {
+              "type": "string"
+            },
             "replicaCount": {
               "type": "int"
             },
@@ -1478,6 +1496,30 @@
             }
           },
           "resources": [
+            {
+              "type": "Microsoft.Compute/galleries/images",
+              "apiVersion": "2022-03-03",
+              "name": "[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
+              "properties": {
+                "architecture": "x64",
+                "features": [
+                  {
+                    "name": "SecurityType",
+                    "value": "TrustedLaunch"
+                  }
+                ],
+                "hyperVGeneration": "V2",
+                "identifier": {
+                  "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                  "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                  "sku": "[parameters('imageDefinitionName')]"
+                },
+                "osState": "Generalized",
+                "osType": "Windows"
+              }
+            },
             {
               "type": "Microsoft.Compute/galleries/images/versions",
               "apiVersion": "2022-03-03",
@@ -1506,7 +1548,10 @@
                     "id": "[parameters('imageVirtualMachineResourceId')]"
                   }
                 }
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/galleries/images', parameters('computeGalleryName'), parameters('imageDefinitionName'))]"
+              ]
             }
           ]
         }

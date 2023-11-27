@@ -183,6 +183,7 @@ module generalizeVirtualMachine 'generalizeVirtualMachine.bicep' = {
 module imageVersion 'imageVersion.bicep' = {
   name: 'image-version-${deploymentNameSuffix}'
   params: {
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     excludeFromLatest: excludeFromLatest
@@ -190,6 +191,8 @@ module imageVersion 'imageVersion.bicep' = {
     imageVersionNumber: autoImageVersion
     imageVirtualMachineResourceId: virtualMachine.outputs.resourceId
     location: location
+    marketplaceImageOffer: marketplaceImageOffer
+    marketplaceImagePublisher: marketplaceImagePublisher
     replicaCount: replicaCount
     tags: tags
   }
