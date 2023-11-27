@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "8391971390859372986"
+      "templateHash": "12335721332191006129"
     }
   },
   "parameters": {
@@ -1250,7 +1250,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "12930548717891217137"
+              "templateHash": "18065835533900027286"
             }
           },
           "parameters": {
@@ -1276,7 +1276,7 @@
                 "asyncExecution": true,
                 "parameters": [],
                 "source": {
-                  "script": "        Start-Sleep -Seconds 30\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
+                  "script": "        Start-Sleep -Seconds 30\r\n        Remove-Item -LiteralPath 'C:\\Windows\\Panther' -Force -Recurse -ErrorAction SilentlyContinue\r\n        Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\cdrom' -Name 'Start' -Value 1\r\n        Start-Process -File 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe' -ArgumentList '/generalize /oobe /shutdown /mode:vm'\r\n      "
                 }
               }
             }
