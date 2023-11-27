@@ -16,7 +16,7 @@ param domainJoinPassword string = ''
 param domainJoinUserPrincipalName string = ''
 param domainName string = ''
 param enableBuildAutomation bool
-param excludeFromLatest bool = false
+param excludeFromLatest bool = true
 param exemptPolicyAssignmentIds array = []
 param hybridUseBenefit bool
 param hybridWorkerName string = ''

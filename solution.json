@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "14677310556433655852"
+      "templateHash": "9305792103647743727"
     }
   },
   "parameters": {
@@ -66,7 +66,7 @@
     },
     "excludeFromLatest": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": true
     },
     "exemptPolicyAssignmentIds": {
       "type": "array",
