@@ -2,6 +2,7 @@ param arcGisProInstaller string
 param actionGroupName string
 param automationAccountName string
 param automationAccountPrivateDnsZoneResourceId string
+param computeGalleryImageResourceId string
 param computeGalleryResourceId string
 param containerName string
 param customizations array
@@ -14,6 +15,7 @@ param domainJoinUserPrincipalName string
 param domainName string
 param enableBuildAutomation bool
 param excludeFromLatest bool
+param hybridUseBenefit bool
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -45,9 +47,8 @@ param officeInstaller string
 param oUPath string
 param replicaCount int
 param resourceGroupName string
-param computeGalleryImageResourceId string
 param sourceImageType string
-param storageAccountName string
+param storageAccountResourceId string
 param subnetResourceId string
 param tags object
 param teamsInstaller string
@@ -70,6 +71,7 @@ var parameters = {
   enableBuildAutomation: string(enableBuildAutomation)
   environmentName: environment().name
   excludeFromLatest: excludeFromLatest
+  hybridUseBenefit: hybridUseBenefit
   imageDefinitionName: imageDefinitionName
   imageMajorVersion: string(imageMajorVersion)
   imageMinorVersion: string(imageMinorVersion)
@@ -100,7 +102,7 @@ var parameters = {
   resourceGroupName: resourceGroupName
   computeGalleryImageResourceId: computeGalleryImageResourceId
   sourceImageType: sourceImageType
-  storageAccountName: storageAccountName
+  storageAccountResourceId: storageAccountResourceId
   subnetResourceId: subnetResourceId
   subscriptionId: subscriptionId
   tags: string(tags)
@@ -211,7 +213,7 @@ resource runCommand 'Microsoft.Compute/virtualMachines/runCommands@2023-07-01' =
       }
       {
         name: 'StorageAccountName'
-        value: storageAccountName
+        value: split(storageAccountResourceId, '/')[8]
       }
       {
         name: 'StorageEndpoint'

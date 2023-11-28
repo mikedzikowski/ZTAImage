@@ -66,8 +66,6 @@ param vcRedistInstaller string
 param vDOTInstaller string
 param virtualMachineSize string
 
-var storageAccountName = split(storageAccountResourceId, '/')[8]
-
 resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
   name: guid(subscription().id, 'KeyVaultDeployAction')
   properties: {
@@ -150,6 +148,7 @@ module automationAccount 'automationAccount.bicep' = {
     actionGroupName: actionGroupName
     automationAccountName: automationAccountName
     automationAccountPrivateDnsZoneResourceId: automationAccountPrivateDnsZoneResourceId
+    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryResourceId: computeGalleryResourceId
     containerName: containerName
     customizations: customizations
@@ -161,6 +160,7 @@ module automationAccount 'automationAccount.bicep' = {
     domainName: domainName
     enableBuildAutomation: enableBuildAutomation
     excludeFromLatest: excludeFromLatest
+    hybridUseBenefit: hybridUseBenefit
     imageDefinitionName: imageDefinitionName
     imageMajorVersion: imageMajorVersion
     imageMinorVersion: imageMinorVersion
@@ -191,9 +191,8 @@ module automationAccount 'automationAccount.bicep' = {
     oUPath: oUPath
     replicaCount: replicaCount
     resourceGroupName: resourceGroupName
-    computeGalleryImageResourceId: computeGalleryImageResourceId
     sourceImageType: sourceImageType
-    storageAccountName: storageAccountName
+    storageAccountResourceId: storageAccountResourceId
     subnetResourceId: subnetResourceId
     tags: tags
     teamsInstaller: teamsInstaller

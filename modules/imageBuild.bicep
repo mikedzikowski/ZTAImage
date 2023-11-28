@@ -1,14 +1,15 @@
 targetScope = 'resourceGroup'
 
 param arcGisProInstaller string
+param computeGalleryImageResourceId string
 param computeGalleryName string
 param containerName string
-param customizations array = []
+param customizations array
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool
 param excludeFromLatest bool
-param hybridUseBenefit bool
+param hybridUseBenefit bool = false
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
@@ -27,31 +28,30 @@ param installTeams bool
 param installVirtualDesktopOptimizationTool bool
 param installVisio bool
 param installWord bool
-param keyVaultName string = ''
+param keyVaultName string
 @secure()
 param localAdministratorPassword string = ''
 @secure()
 param localAdministratorUsername string = ''
 param location string = resourceGroup().location
 param managementVirtualMachineName string
-param marketplaceImageOffer string = ''
-param marketplaceImagePublisher string = ''
-param marketplaceImageSKU string = ''
-param msrdcwebrtcsvcInstaller string = ''
-param officeInstaller string = ''
+param marketplaceImageOffer string
+param marketplaceImagePublisher string
+param marketplaceImageSKU string
+param msrdcwebrtcsvcInstaller string
+param officeInstaller string
 param replicaCount int
 param runbookExecution bool = false
-param computeGalleryImageResourceId string = ''
 param sourceImageType string
 param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
-param teamsInstaller string = ''
+param teamsInstaller string
 param userAssignedIdentityClientId string
 param userAssignedIdentityPrincipalId string
 param userAssignedIdentityResourceId string
-param vcRedistInstaller string = ''
-param vDOTInstaller string = ''
+param vcRedistInstaller string
+param vDOTInstaller string
 param virtualMachineSize string
 
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'

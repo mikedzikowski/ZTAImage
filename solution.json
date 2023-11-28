@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "12866838618228867702"
+      "templateHash": "17474374863199825037"
     }
   },
   "parameters": {
@@ -1215,7 +1215,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "825940512311059857"
+              "templateHash": "8856987320648697377"
             }
           },
           "parameters": {
@@ -1408,9 +1408,6 @@
             "virtualMachineSize": {
               "type": "string"
             }
-          },
-          "variables": {
-            "storageAccountName": "[split(parameters('storageAccountResourceId'), '/')[8]]"
           },
           "resources": [
             {
@@ -1745,7 +1742,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "10194190675379359498"
+                      "templateHash": "15496792277358199101"
                     }
                   },
                   "parameters": {
@@ -1767,11 +1764,14 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.23.1.45101",
-                          "templateHash": "12335721332191006129"
+                          "templateHash": "17939616616989403186"
                         }
                       },
                       "parameters": {
                         "arcGisProInstaller": {
+                          "type": "string"
+                        },
+                        "computeGalleryImageResourceId": {
                           "type": "string"
                         },
                         "computeGalleryName": {
@@ -1781,8 +1781,7 @@
                           "type": "string"
                         },
                         "customizations": {
-                          "type": "array",
-                          "defaultValue": []
+                          "type": "array"
                         },
                         "deploymentNameSuffix": {
                           "type": "string",
@@ -1798,7 +1797,8 @@
                           "type": "bool"
                         },
                         "hybridUseBenefit": {
-                          "type": "bool"
+                          "type": "bool",
+                          "defaultValue": false
                         },
                         "imageDefinitionName": {
                           "type": "string"
@@ -1855,8 +1855,7 @@
                           "type": "bool"
                         },
                         "keyVaultName": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "localAdministratorPassword": {
                           "type": "securestring",
@@ -1874,24 +1873,19 @@
                           "type": "string"
                         },
                         "marketplaceImageOffer": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "marketplaceImagePublisher": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "marketplaceImageSKU": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "msrdcwebrtcsvcInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "officeInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "replicaCount": {
                           "type": "int"
@@ -1899,10 +1893,6 @@
                         "runbookExecution": {
                           "type": "bool",
                           "defaultValue": false
-                        },
-                        "computeGalleryImageResourceId": {
-                          "type": "string",
-                          "defaultValue": ""
                         },
                         "sourceImageType": {
                           "type": "string"
@@ -1918,8 +1908,7 @@
                           "defaultValue": {}
                         },
                         "teamsInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "userAssignedIdentityClientId": {
                           "type": "string"
@@ -1931,12 +1920,10 @@
                           "type": "string"
                         },
                         "vcRedistInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "vDOTInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "virtualMachineSize": {
                           "type": "string"
@@ -3747,6 +3734,9 @@
                   "automationAccountPrivateDnsZoneResourceId": {
                     "value": "[parameters('automationAccountPrivateDnsZoneResourceId')]"
                   },
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
+                  },
                   "computeGalleryResourceId": {
                     "value": "[parameters('computeGalleryResourceId')]"
                   },
@@ -3779,6 +3769,9 @@
                   },
                   "excludeFromLatest": {
                     "value": "[parameters('excludeFromLatest')]"
+                  },
+                  "hybridUseBenefit": {
+                    "value": "[parameters('hybridUseBenefit')]"
                   },
                   "imageDefinitionName": {
                     "value": "[parameters('imageDefinitionName')]"
@@ -3870,14 +3863,11 @@
                   "resourceGroupName": {
                     "value": "[parameters('resourceGroupName')]"
                   },
-                  "computeGalleryImageResourceId": {
-                    "value": "[parameters('computeGalleryImageResourceId')]"
-                  },
                   "sourceImageType": {
                     "value": "[parameters('sourceImageType')]"
                   },
-                  "storageAccountName": {
-                    "value": "[variables('storageAccountName')]"
+                  "storageAccountResourceId": {
+                    "value": "[parameters('storageAccountResourceId')]"
                   },
                   "subnetResourceId": {
                     "value": "[parameters('subnetResourceId')]"
@@ -3920,7 +3910,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "11773766989873420876"
+                      "templateHash": "3126020249196509944"
                     }
                   },
                   "parameters": {
@@ -3934,6 +3924,9 @@
                       "type": "string"
                     },
                     "automationAccountPrivateDnsZoneResourceId": {
+                      "type": "string"
+                    },
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "computeGalleryResourceId": {
@@ -3967,6 +3960,9 @@
                       "type": "bool"
                     },
                     "excludeFromLatest": {
+                      "type": "bool"
+                    },
+                    "hybridUseBenefit": {
                       "type": "bool"
                     },
                     "imageDefinitionName": {
@@ -4063,13 +4059,10 @@
                     "resourceGroupName": {
                       "type": "string"
                     },
-                    "computeGalleryImageResourceId": {
-                      "type": "string"
-                    },
                     "sourceImageType": {
                       "type": "string"
                     },
-                    "storageAccountName": {
+                    "storageAccountResourceId": {
                       "type": "string"
                     },
                     "subnetResourceId": {
@@ -4120,6 +4113,7 @@
                       "enableBuildAutomation": "[string(parameters('enableBuildAutomation'))]",
                       "environmentName": "[environment().name]",
                       "excludeFromLatest": "[parameters('excludeFromLatest')]",
+                      "hybridUseBenefit": "[parameters('hybridUseBenefit')]",
                       "imageDefinitionName": "[parameters('imageDefinitionName')]",
                       "imageMajorVersion": "[string(parameters('imageMajorVersion'))]",
                       "imageMinorVersion": "[string(parameters('imageMinorVersion'))]",
@@ -4150,7 +4144,7 @@
                       "resourceGroupName": "[parameters('resourceGroupName')]",
                       "computeGalleryImageResourceId": "[parameters('computeGalleryImageResourceId')]",
                       "sourceImageType": "[parameters('sourceImageType')]",
-                      "storageAccountName": "[parameters('storageAccountName')]",
+                      "storageAccountResourceId": "[parameters('storageAccountResourceId')]",
                       "subnetResourceId": "[parameters('subnetResourceId')]",
                       "subscriptionId": "[variables('subscriptionId')]",
                       "tags": "[string(parameters('tags'))]",
@@ -4267,7 +4261,7 @@
                           },
                           {
                             "name": "StorageAccountName",
-                            "value": "[parameters('storageAccountName')]"
+                            "value": "[split(parameters('storageAccountResourceId'), '/')[8]]"
                           },
                           {
                             "name": "StorageEndpoint",
@@ -4793,11 +4787,14 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "12335721332191006129"
+              "templateHash": "17939616616989403186"
             }
           },
           "parameters": {
             "arcGisProInstaller": {
+              "type": "string"
+            },
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "computeGalleryName": {
@@ -4807,8 +4804,7 @@
               "type": "string"
             },
             "customizations": {
-              "type": "array",
-              "defaultValue": []
+              "type": "array"
             },
             "deploymentNameSuffix": {
               "type": "string",
@@ -4824,7 +4820,8 @@
               "type": "bool"
             },
             "hybridUseBenefit": {
-              "type": "bool"
+              "type": "bool",
+              "defaultValue": false
             },
             "imageDefinitionName": {
               "type": "string"
@@ -4881,8 +4878,7 @@
               "type": "bool"
             },
             "keyVaultName": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "localAdministratorPassword": {
               "type": "securestring",
@@ -4900,24 +4896,19 @@
               "type": "string"
             },
             "marketplaceImageOffer": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "marketplaceImagePublisher": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "marketplaceImageSKU": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "msrdcwebrtcsvcInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "officeInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "replicaCount": {
               "type": "int"
@@ -4925,10 +4916,6 @@
             "runbookExecution": {
               "type": "bool",
               "defaultValue": false
-            },
-            "computeGalleryImageResourceId": {
-              "type": "string",
-              "defaultValue": ""
             },
             "sourceImageType": {
               "type": "string"
@@ -4944,8 +4931,7 @@
               "defaultValue": {}
             },
             "teamsInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "userAssignedIdentityClientId": {
               "type": "string"
@@ -4957,12 +4943,10 @@
               "type": "string"
             },
             "vcRedistInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "vDOTInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "virtualMachineSize": {
               "type": "string"
