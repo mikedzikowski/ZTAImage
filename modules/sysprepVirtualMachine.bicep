@@ -20,7 +20,9 @@ resource sysprepVirtualMachine 'Microsoft.Compute/virtualMachines/runCommands@20
     source: {
       script: '''
         Start-Sleep -Seconds 30
-        Start-Process -File "C:\Windows\System32\Sysprep\Sysprep.exe" -ArgumentList "/generalize /oobe /shutdown /mode:vm"
+        Remove-Item -LiteralPath 'C:\Windows\Panther' -Force -Recurse -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\cdrom' -Name 'Start' -Value 1
+        Start-Process -File 'C:\Windows\System32\Sysprep\Sysprep.exe' -ArgumentList '/generalize /oobe /shutdown /mode:vm'
       '''
     }
   }

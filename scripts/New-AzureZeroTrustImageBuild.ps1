@@ -68,16 +68,20 @@ try
 	{   
 		Write-Output "$DestinationImageDefinitionName | $DestinationGalleryResourceGroupName | Image build initiated with a new source image version."
 		$TemplateParameters = @{
+			arcGisProInstaller = $Values.arcGisProInstaller
+			computeGalleryImageResourceId = $Values.computeGalleryImageResourceId
 			computeGalleryName = $Values.computeGalleryResourceId.Split('/')[8]
 			containerName = $Values.containerName
 			diskEncryptionSetResourceId = $Values.diskEncryptionSetResourceId
 			enableBuildAutomation = if($Values.enableBuildAutomation -eq 'true'){$true}else{$false}
 			excludeFromLatest = $Values.excludeFromLatest
+			hybridUseBenefit = if($Values.hybridUseBenefit -eq 'true'){$true}else{$false}
 			imageDefinitionName = $Values.imageDefinitionName
 			imageMajorVersion = [int]$Values.imageMajorVersion
 			imageMinorVersion = [int]$Values.imageMinorVersion
 			imageVirtualMachineName = $Values.imageVirtualMachineName
 			installAccess = if($Values.installAccess -eq 'true'){$true}else{$false}
+			installArcGisPro = if($Values.installArcGisPro -eq 'true'){$true}else{$false}
 			installExcel = if($Values.installExcel -eq 'true'){$true}else{$false}
 			installOneDrive = if($Values.installOneDrive -eq 'true'){$true}else{$false}
 			installOneNote = if($Values.installOneNote -eq 'true'){$true}else{$false}
@@ -99,9 +103,8 @@ try
 			officeInstaller = $Values.officeInstaller
 			replicaCount = [int]$Values.replicaCount
 			runbookExecution = $true
-			computeGalleryImageResourceId = $Values.computeGalleryImageResourceId
 			sourceImageType = $Values.sourceImageType
-			storageAccountName = $Values.storageAccountName
+			storageAccountResourceId = $Values.storageAccountResourceId
 			subnetResourceId = $Values.subnetResourceId
 			teamsInstaller = $Values.teamsInstaller
 			userAssignedIdentityClientId = $Values.userAssignedIdentityClientId

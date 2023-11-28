@@ -56,12 +56,8 @@ module computeGallery 'computeGallery.bicep' = {
   name: 'gallery-image-${deploymentNameSuffix}'
   scope: resourceGroup(subscriptionId, resourceGroupName)
   params: {
-    computeGalleryImageResourceId: computeGalleryImageResourceId
     enableBuildAutomation: enableBuildAutomation
-    imageDefinitionName: imageDefinitionName
     location: location
-    marketplaceImageOffer: marketplaceImageOffer
-    marketplaceImagePublisher: marketplaceImagePublisher
     computeGalleryName: computeGalleryName
     tags: tags
     userAssignedIdentityPrincipalId: userAssignedIdentity.outputs.principalId

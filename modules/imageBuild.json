@@ -5,11 +5,14 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "7746014134788891027"
+      "templateHash": "2772895709272155688"
     }
   },
   "parameters": {
     "arcGisProInstaller": {
+      "type": "string"
+    },
+    "computeGalleryImageResourceId": {
       "type": "string"
     },
     "computeGalleryName": {
@@ -36,7 +39,8 @@
       "type": "bool"
     },
     "hybridUseBenefit": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "imageDefinitionName": {
       "type": "string"
@@ -93,8 +97,7 @@
       "type": "bool"
     },
     "keyVaultName": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "localAdministratorPassword": {
       "type": "securestring",
@@ -112,24 +115,19 @@
       "type": "string"
     },
     "marketplaceImageOffer": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "marketplaceImagePublisher": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "marketplaceImageSKU": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "msrdcwebrtcsvcInstaller": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "officeInstaller": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "replicaCount": {
       "type": "int"
@@ -137,10 +135,6 @@
     "runbookExecution": {
       "type": "bool",
       "defaultValue": false
-    },
-    "computeGalleryImageResourceId": {
-      "type": "string",
-      "defaultValue": ""
     },
     "sourceImageType": {
       "type": "string"
@@ -156,8 +150,7 @@
       "defaultValue": {}
     },
     "teamsInstaller": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "userAssignedIdentityClientId": {
       "type": "string"
@@ -169,12 +162,10 @@
       "type": "string"
     },
     "vcRedistInstaller": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "vDOTInstaller": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "virtualMachineSize": {
       "type": "string"
@@ -738,7 +729,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "586866182220725554"
+              "templateHash": "3091204516823702660"
             }
           },
           "parameters": {
@@ -1101,7 +1092,7 @@
                   }
                 ],
                 "source": {
-                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      try {\r\n        if ($winDesktopRuntime ){\r\n            Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n        }\r\n      }\r\n      catch {\r\n        Write-Output \"\r\n      }\r\n\r\n      try {\r\n        # Install ArcGis Pro\r\n        $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n        Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      }\r\n      catch {\r\n\r\n      }\r\n\r\n      try {\r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n    }\r\n    catch {\r\n\r\n    }\r\n      "
+                  "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      try {\r\n        if ($winDesktopRuntime ){\r\n            Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n        }\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n        # Install ArcGis Pro\r\n        $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n        Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n    }\r\n    catch {\r\n      Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n    }\r\n      "
                 }
               },
               "dependsOn": [
@@ -1250,7 +1241,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "12930548717891217137"
+              "templateHash": "18065835533900027286"
             }
           },
           "parameters": {
@@ -1276,7 +1267,7 @@
                 "asyncExecution": true,
                 "parameters": [],
                 "source": {
-                  "script": "        Start-Sleep -Seconds 30\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
+                  "script": "        Start-Sleep -Seconds 30\r\n        Remove-Item -LiteralPath 'C:\\Windows\\Panther' -Force -Recurse -ErrorAction SilentlyContinue\r\n        Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\cdrom' -Name 'Start' -Value 1\r\n        Start-Process -File 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe' -ArgumentList '/generalize /oobe /shutdown /mode:vm'\r\n      "
                 }
               }
             }
@@ -1406,6 +1397,9 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "computeGalleryImageResourceId": {
+            "value": "[parameters('computeGalleryImageResourceId')]"
+          },
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
@@ -1427,6 +1421,12 @@
           "location": {
             "value": "[parameters('location')]"
           },
+          "marketplaceImageOffer": {
+            "value": "[parameters('marketplaceImageOffer')]"
+          },
+          "marketplaceImagePublisher": {
+            "value": "[parameters('marketplaceImagePublisher')]"
+          },
           "replicaCount": {
             "value": "[parameters('replicaCount')]"
           },
@@ -1441,7 +1441,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "866487267444344457"
+              "templateHash": "10489448698817055639"
             }
           },
           "parameters": {
@@ -1450,6 +1450,9 @@
               "defaultValue": true
             },
             "computeGalleryName": {
+              "type": "string"
+            },
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "diskEncryptionSetResourceId": {
@@ -1470,6 +1473,12 @@
             "location": {
               "type": "string"
             },
+            "marketplaceImageOffer": {
+              "type": "string"
+            },
+            "marketplaceImagePublisher": {
+              "type": "string"
+            },
             "replicaCount": {
               "type": "int"
             },
@@ -1478,6 +1487,30 @@
             }
           },
           "resources": [
+            {
+              "type": "Microsoft.Compute/galleries/images",
+              "apiVersion": "2022-03-03",
+              "name": "[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
+              "properties": {
+                "architecture": "x64",
+                "features": [
+                  {
+                    "name": "SecurityType",
+                    "value": "TrustedLaunch"
+                  }
+                ],
+                "hyperVGeneration": "V2",
+                "identifier": {
+                  "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                  "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                  "sku": "[parameters('imageDefinitionName')]"
+                },
+                "osState": "Generalized",
+                "osType": "Windows"
+              }
+            },
             {
               "type": "Microsoft.Compute/galleries/images/versions",
               "apiVersion": "2022-03-03",
@@ -1492,7 +1525,6 @@
                   "storageAccountType": "Standard_LRS",
                   "targetRegions": [
                     {
-                      "excludeFromLatest": "[parameters('excludeFromLatest')]",
                       "name": "[parameters('location')]",
                       "regionalReplicaCount": "[parameters('replicaCount')]",
                       "storageAccountType": "Standard_LRS"
@@ -1507,7 +1539,10 @@
                     "id": "[parameters('imageVirtualMachineResourceId')]"
                   }
                 }
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/galleries/images', parameters('computeGalleryName'), parameters('imageDefinitionName'))]"
+              ]
             }
           ]
         }

@@ -5,218 +5,399 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "2917842031745505878"
+      "templateHash": "17179185548530935345"
     }
   },
   "parameters": {
     "arcGisProInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the ArcGIS Pro installer in Azure Blobs."
+      }
     },
     "actionGroupName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The name for the action group resource."
+      }
     },
     "automationAccountName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name for the automation account resource."
+      }
     },
     "automationAccountPrivateDnsZoneResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The private DNS zone resource ID for the automation account resource."
+      }
     },
     "computeGalleryImageResourceId": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource ID of the compute gallery image."
+      }
     },
     "computeGalleryName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the compute gallery resource."
+      }
     },
     "containerName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the container in the storage account where the installer files are located."
+      }
     },
     "customizations": {
       "type": "array",
-      "defaultValue": []
+      "defaultValue": [],
+      "metadata": {
+        "description": "The array of customizations to apply to the image."
+      }
     },
     "diskEncryptionSetResourceId": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource ID of the disk encryption set to use for the management virtual machine."
+      }
     },
     "distributionGroup": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The distribution group for email notifications."
+      }
     },
     "deploymentNameSuffix": {
       "type": "string",
-      "defaultValue": "[utcNow('yyMMddHHs')]"
+      "defaultValue": "[utcNow('yyMMddHHs')]",
+      "metadata": {
+        "description": "The suffix to append to deployment names."
+      }
     },
     "domainJoinPassword": {
       "type": "securestring",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The password for the domain join account."
+      }
     },
     "domainJoinUserPrincipalName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The user principal name for the domain join account."
+      }
     },
     "domainName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The domain name to join."
+      }
     },
     "enableBuildAutomation": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to enable build automation."
+      }
     },
     "excludeFromLatest": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": true,
+      "metadata": {
+        "description": "Determines whether to exclude the image from the latest version."
+      }
     },
     "exemptPolicyAssignmentIds": {
       "type": "array",
-      "defaultValue": []
+      "defaultValue": [],
+      "metadata": {
+        "description": "The array of policy assignment IDs to exempt to prevent issues with the build process."
+      }
     },
     "hybridUseBenefit": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to use the hybrid use benefit."
+      }
     },
     "hybridWorkerName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The name of the hybrid worker (virtual machine) if using build automation."
+      }
     },
     "imageDefinitionNamePrefix": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name prefix for the image definition resource."
+      }
     },
     "imageMajorVersion": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "The major version for the name of the image version resource."
+      }
     },
     "imageMinorVersion": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "The minor version for the name of the image version resource."
+      }
     },
     "installAccess": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Access."
+      }
     },
     "installArcGisPro": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install ArcGIS Pro."
+      }
     },
     "installExcel": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Excel."
+      }
     },
     "installOneDrive": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install OneDrive."
+      }
     },
     "installOneNote": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install OneNote."
+      }
     },
     "installOutlook": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Outlook."
+      }
     },
     "installPowerPoint": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install PowerPoint."
+      }
     },
     "installProject": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Project."
+      }
     },
     "installPublisher": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Publisher."
+      }
     },
     "installSkypeForBusiness": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Skype for Business."
+      }
     },
     "installTeams": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Teams."
+      }
     },
     "installVirtualDesktopOptimizationTool": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install the Virtual Desktop Optimization Tool."
+      }
     },
     "installVisio": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Visio."
+      }
     },
     "installWord": {
-      "type": "bool"
+      "type": "bool",
+      "metadata": {
+        "description": "Determines whether to install Word."
+      }
     },
     "keyVaultName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the key vault resource."
+      }
     },
     "keyVaultPrivateDnsZoneResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The private DNS zone resource ID for the key vault resource."
+      }
     },
     "localAdministratorPassword": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the local administrator account."
+      }
     },
     "localAdministratorUsername": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The username for the local administrator account."
+      }
     },
     "location": {
       "type": "string",
-      "defaultValue": "[deployment().location]"
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "description": "The location for the resources."
+      }
     },
     "logAnalyticsWorkspaceResourceId": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The resource ID of the log analytics workspace if using build automation and desired."
+      }
     },
     "marketplaceImageOffer": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The marketplace image offer."
+      }
     },
     "marketplaceImagePublisher": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The marketplace image publisher."
+      }
     },
     "marketplaceImageSKU": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The marketplace image SKU."
+      }
     },
     "msrdcwebrtcsvcInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the msrdcwebrtcsvc installer in Azure Blobs."
+      }
     },
     "existingResourceGroup": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": false,
+      "metadata": {
+        "description": "Determines whether to use an existing resource group."
+      }
     },
     "officeInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the Office installer in Azure Blobs."
+      }
     },
     "oUPath": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The distinguished name of the organizational unit to join."
+      }
     },
     "replicaCount": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "The count of replicas for the image version resource."
+      }
     },
     "resourceGroupName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the resource group."
+      }
     },
     "sourceImageType": {
       "type": "string",
       "allowedValues": [
         "AzureComputeGallery",
         "AzureMarketplace"
-      ]
+      ],
+      "metadata": {
+        "description": "The type of source image."
+      }
     },
     "storageAccountResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the storage account where the installers and scripts are stored in Azure Blobs."
+      }
     },
     "subnetResourceId": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the subnet where the virtual machines will be deployed."
+      }
     },
     "tags": {
       "type": "object",
-      "defaultValue": {}
+      "defaultValue": {},
+      "metadata": {
+        "description": "The key value pairs of meta data to apply to the resources."
+      }
     },
     "teamsInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the Teams installer in Azure Blobs."
+      }
     },
     "userAssignedIdentityName": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The name of the user assigned identity resource."
+      }
     },
     "vcRedistInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the vcRedist installer in Azure Blobs."
+      }
     },
     "vDOTInstaller": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "The file name of the vDOT installer in Azure Blobs."
+      }
     },
     "virtualMachineSize": {
-      "type": "string"
+      "type": "string",
+      "metadata": {
+        "description": "The size of the image virtual machine."
+      }
     }
   },
   "variables": {
@@ -352,7 +533,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "13842961593942362553"
+              "templateHash": "18168377176206486327"
             }
           },
           "parameters": {
@@ -663,23 +844,11 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "computeGalleryImageResourceId": {
-                    "value": "[parameters('computeGalleryImageResourceId')]"
-                  },
                   "enableBuildAutomation": {
                     "value": "[parameters('enableBuildAutomation')]"
                   },
-                  "imageDefinitionName": {
-                    "value": "[parameters('imageDefinitionName')]"
-                  },
                   "location": {
                     "value": "[parameters('location')]"
-                  },
-                  "marketplaceImageOffer": {
-                    "value": "[parameters('marketplaceImageOffer')]"
-                  },
-                  "marketplaceImagePublisher": {
-                    "value": "[parameters('marketplaceImagePublisher')]"
                   },
                   "computeGalleryName": {
                     "value": "[parameters('computeGalleryName')]"
@@ -698,29 +867,17 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "15474719498090188133"
+                      "templateHash": "7729223795303614524"
                     }
                   },
                   "parameters": {
-                    "computeGalleryImageResourceId": {
-                      "type": "string"
-                    },
                     "computeGalleryName": {
                       "type": "string"
                     },
                     "enableBuildAutomation": {
                       "type": "bool"
                     },
-                    "imageDefinitionName": {
-                      "type": "string"
-                    },
                     "location": {
-                      "type": "string"
-                    },
-                    "marketplaceImageOffer": {
-                      "type": "string"
-                    },
-                    "marketplaceImagePublisher": {
                       "type": "string"
                     },
                     "tags": {
@@ -755,43 +912,12 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
                       ]
-                    },
-                    {
-                      "type": "Microsoft.Compute/galleries/images",
-                      "apiVersion": "2022-03-03",
-                      "name": "[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
-                      "location": "[parameters('location')]",
-                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
-                      "properties": {
-                        "architecture": "x64",
-                        "features": [
-                          {
-                            "name": "SecurityType",
-                            "value": "TrustedLaunch"
-                          }
-                        ],
-                        "hyperVGeneration": "V2",
-                        "identifier": {
-                          "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
-                          "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
-                          "sku": "[parameters('imageDefinitionName')]"
-                        },
-                        "osState": "Generalized",
-                        "osType": "Windows"
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
-                      ]
                     }
                   ],
                   "outputs": {
                     "computeGalleryResourceId": {
                       "type": "string",
                       "value": "[resourceId('Microsoft.Compute/galleries', parameters('computeGalleryName'))]"
-                    },
-                    "imageDefinitionName": {
-                      "type": "string",
-                      "value": "[parameters('imageDefinitionName')]"
                     }
                   }
                 }
@@ -1089,7 +1215,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "9377821254875743142"
+              "templateHash": "4721042314129417504"
             }
           },
           "parameters": {
@@ -1282,9 +1408,6 @@
             "virtualMachineSize": {
               "type": "string"
             }
-          },
-          "variables": {
-            "storageAccountName": "[split(parameters('storageAccountResourceId'), '/')[8]]"
           },
           "resources": [
             {
@@ -1619,7 +1742,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "14285150811048575511"
+                      "templateHash": "2014055609494702600"
                     }
                   },
                   "parameters": {
@@ -1641,11 +1764,14 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.23.1.45101",
-                          "templateHash": "7746014134788891027"
+                          "templateHash": "2772895709272155688"
                         }
                       },
                       "parameters": {
                         "arcGisProInstaller": {
+                          "type": "string"
+                        },
+                        "computeGalleryImageResourceId": {
                           "type": "string"
                         },
                         "computeGalleryName": {
@@ -1672,7 +1798,8 @@
                           "type": "bool"
                         },
                         "hybridUseBenefit": {
-                          "type": "bool"
+                          "type": "bool",
+                          "defaultValue": false
                         },
                         "imageDefinitionName": {
                           "type": "string"
@@ -1729,8 +1856,7 @@
                           "type": "bool"
                         },
                         "keyVaultName": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "localAdministratorPassword": {
                           "type": "securestring",
@@ -1748,24 +1874,19 @@
                           "type": "string"
                         },
                         "marketplaceImageOffer": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "marketplaceImagePublisher": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "marketplaceImageSKU": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "msrdcwebrtcsvcInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "officeInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "replicaCount": {
                           "type": "int"
@@ -1773,10 +1894,6 @@
                         "runbookExecution": {
                           "type": "bool",
                           "defaultValue": false
-                        },
-                        "computeGalleryImageResourceId": {
-                          "type": "string",
-                          "defaultValue": ""
                         },
                         "sourceImageType": {
                           "type": "string"
@@ -1792,8 +1909,7 @@
                           "defaultValue": {}
                         },
                         "teamsInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "userAssignedIdentityClientId": {
                           "type": "string"
@@ -1805,12 +1921,10 @@
                           "type": "string"
                         },
                         "vcRedistInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "vDOTInstaller": {
-                          "type": "string",
-                          "defaultValue": ""
+                          "type": "string"
                         },
                         "virtualMachineSize": {
                           "type": "string"
@@ -2374,7 +2488,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.23.1.45101",
-                                  "templateHash": "586866182220725554"
+                                  "templateHash": "3091204516823702660"
                                 }
                               },
                               "parameters": {
@@ -2737,7 +2851,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      try {\r\n        if ($winDesktopRuntime ){\r\n            Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n        }\r\n      }\r\n      catch {\r\n        Write-Output \"\r\n      }\r\n\r\n      try {\r\n        # Install ArcGis Pro\r\n        $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n        Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      }\r\n      catch {\r\n\r\n      }\r\n\r\n      try {\r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n    }\r\n    catch {\r\n\r\n    }\r\n      "
+                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      try {\r\n        if ($winDesktopRuntime ){\r\n            Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n        }\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n        # Install ArcGis Pro\r\n        $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n        Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n    }\r\n    catch {\r\n      Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n    }\r\n      "
                                     }
                                   },
                                   "dependsOn": [
@@ -2886,7 +3000,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.23.1.45101",
-                                  "templateHash": "12930548717891217137"
+                                  "templateHash": "18065835533900027286"
                                 }
                               },
                               "parameters": {
@@ -2912,7 +3026,7 @@
                                     "asyncExecution": true,
                                     "parameters": [],
                                     "source": {
-                                      "script": "        Start-Sleep -Seconds 30\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
+                                      "script": "        Start-Sleep -Seconds 30\r\n        Remove-Item -LiteralPath 'C:\\Windows\\Panther' -Force -Recurse -ErrorAction SilentlyContinue\r\n        Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\cdrom' -Name 'Start' -Value 1\r\n        Start-Process -File 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe' -ArgumentList '/generalize /oobe /shutdown /mode:vm'\r\n      "
                                     }
                                   }
                                 }
@@ -3042,6 +3156,9 @@
                             },
                             "mode": "Incremental",
                             "parameters": {
+                              "computeGalleryImageResourceId": {
+                                "value": "[[parameters('computeGalleryImageResourceId')]"
+                              },
                               "computeGalleryName": {
                                 "value": "[[parameters('computeGalleryName')]"
                               },
@@ -3063,6 +3180,12 @@
                               "location": {
                                 "value": "[[parameters('location')]"
                               },
+                              "marketplaceImageOffer": {
+                                "value": "[[parameters('marketplaceImageOffer')]"
+                              },
+                              "marketplaceImagePublisher": {
+                                "value": "[[parameters('marketplaceImagePublisher')]"
+                              },
                               "replicaCount": {
                                 "value": "[[parameters('replicaCount')]"
                               },
@@ -3077,7 +3200,7 @@
                                 "_generator": {
                                   "name": "bicep",
                                   "version": "0.23.1.45101",
-                                  "templateHash": "866487267444344457"
+                                  "templateHash": "10489448698817055639"
                                 }
                               },
                               "parameters": {
@@ -3086,6 +3209,9 @@
                                   "defaultValue": true
                                 },
                                 "computeGalleryName": {
+                                  "type": "string"
+                                },
+                                "computeGalleryImageResourceId": {
                                   "type": "string"
                                 },
                                 "diskEncryptionSetResourceId": {
@@ -3106,6 +3232,12 @@
                                 "location": {
                                   "type": "string"
                                 },
+                                "marketplaceImageOffer": {
+                                  "type": "string"
+                                },
+                                "marketplaceImagePublisher": {
+                                  "type": "string"
+                                },
                                 "replicaCount": {
                                   "type": "int"
                                 },
@@ -3114,6 +3246,30 @@
                                 }
                               },
                               "resources": [
+                                {
+                                  "type": "Microsoft.Compute/galleries/images",
+                                  "apiVersion": "2022-03-03",
+                                  "name": "[[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
+                                  "location": "[[parameters('location')]",
+                                  "tags": "[[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
+                                  "properties": {
+                                    "architecture": "x64",
+                                    "features": [
+                                      {
+                                        "name": "SecurityType",
+                                        "value": "TrustedLaunch"
+                                      }
+                                    ],
+                                    "hyperVGeneration": "V2",
+                                    "identifier": {
+                                      "offer": "[[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                                      "publisher": "[[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                                      "sku": "[[parameters('imageDefinitionName')]"
+                                    },
+                                    "osState": "Generalized",
+                                    "osType": "Windows"
+                                  }
+                                },
                                 {
                                   "type": "Microsoft.Compute/galleries/images/versions",
                                   "apiVersion": "2022-03-03",
@@ -3128,7 +3284,6 @@
                                       "storageAccountType": "Standard_LRS",
                                       "targetRegions": [
                                         {
-                                          "excludeFromLatest": "[[parameters('excludeFromLatest')]",
                                           "name": "[[parameters('location')]",
                                           "regionalReplicaCount": "[[parameters('replicaCount')]",
                                           "storageAccountType": "Standard_LRS"
@@ -3143,7 +3298,10 @@
                                         "id": "[[parameters('imageVirtualMachineResourceId')]"
                                       }
                                     }
-                                  }
+                                  },
+                                  "dependsOn": [
+                                    "[[resourceId('Microsoft.Compute/galleries/images', parameters('computeGalleryName'), parameters('imageDefinitionName'))]"
+                                  ]
                                 }
                               ]
                             }
@@ -3577,6 +3735,9 @@
                   "automationAccountPrivateDnsZoneResourceId": {
                     "value": "[parameters('automationAccountPrivateDnsZoneResourceId')]"
                   },
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
+                  },
                   "computeGalleryResourceId": {
                     "value": "[parameters('computeGalleryResourceId')]"
                   },
@@ -3609,6 +3770,9 @@
                   },
                   "excludeFromLatest": {
                     "value": "[parameters('excludeFromLatest')]"
+                  },
+                  "hybridUseBenefit": {
+                    "value": "[parameters('hybridUseBenefit')]"
                   },
                   "imageDefinitionName": {
                     "value": "[parameters('imageDefinitionName')]"
@@ -3700,14 +3864,11 @@
                   "resourceGroupName": {
                     "value": "[parameters('resourceGroupName')]"
                   },
-                  "computeGalleryImageResourceId": {
-                    "value": "[parameters('computeGalleryImageResourceId')]"
-                  },
                   "sourceImageType": {
                     "value": "[parameters('sourceImageType')]"
                   },
-                  "storageAccountName": {
-                    "value": "[variables('storageAccountName')]"
+                  "storageAccountResourceId": {
+                    "value": "[parameters('storageAccountResourceId')]"
                   },
                   "subnetResourceId": {
                     "value": "[parameters('subnetResourceId')]"
@@ -3750,7 +3911,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "11773766989873420876"
+                      "templateHash": "3126020249196509944"
                     }
                   },
                   "parameters": {
@@ -3764,6 +3925,9 @@
                       "type": "string"
                     },
                     "automationAccountPrivateDnsZoneResourceId": {
+                      "type": "string"
+                    },
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "computeGalleryResourceId": {
@@ -3797,6 +3961,9 @@
                       "type": "bool"
                     },
                     "excludeFromLatest": {
+                      "type": "bool"
+                    },
+                    "hybridUseBenefit": {
                       "type": "bool"
                     },
                     "imageDefinitionName": {
@@ -3893,13 +4060,10 @@
                     "resourceGroupName": {
                       "type": "string"
                     },
-                    "computeGalleryImageResourceId": {
-                      "type": "string"
-                    },
                     "sourceImageType": {
                       "type": "string"
                     },
-                    "storageAccountName": {
+                    "storageAccountResourceId": {
                       "type": "string"
                     },
                     "subnetResourceId": {
@@ -3950,6 +4114,7 @@
                       "enableBuildAutomation": "[string(parameters('enableBuildAutomation'))]",
                       "environmentName": "[environment().name]",
                       "excludeFromLatest": "[parameters('excludeFromLatest')]",
+                      "hybridUseBenefit": "[parameters('hybridUseBenefit')]",
                       "imageDefinitionName": "[parameters('imageDefinitionName')]",
                       "imageMajorVersion": "[string(parameters('imageMajorVersion'))]",
                       "imageMinorVersion": "[string(parameters('imageMinorVersion'))]",
@@ -3980,7 +4145,7 @@
                       "resourceGroupName": "[parameters('resourceGroupName')]",
                       "computeGalleryImageResourceId": "[parameters('computeGalleryImageResourceId')]",
                       "sourceImageType": "[parameters('sourceImageType')]",
-                      "storageAccountName": "[parameters('storageAccountName')]",
+                      "storageAccountResourceId": "[parameters('storageAccountResourceId')]",
                       "subnetResourceId": "[parameters('subnetResourceId')]",
                       "subscriptionId": "[variables('subscriptionId')]",
                       "tags": "[string(parameters('tags'))]",
@@ -4097,7 +4262,7 @@
                           },
                           {
                             "name": "StorageAccountName",
-                            "value": "[parameters('storageAccountName')]"
+                            "value": "[split(parameters('storageAccountResourceId'), '/')[8]]"
                           },
                           {
                             "name": "StorageEndpoint",
@@ -4623,11 +4788,14 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "12107631669359574006"
+              "templateHash": "2772895709272155688"
             }
           },
           "parameters": {
             "arcGisProInstaller": {
+              "type": "string"
+            },
+            "computeGalleryImageResourceId": {
               "type": "string"
             },
             "computeGalleryName": {
@@ -4654,7 +4822,8 @@
               "type": "bool"
             },
             "hybridUseBenefit": {
-              "type": "bool"
+              "type": "bool",
+              "defaultValue": false
             },
             "imageDefinitionName": {
               "type": "string"
@@ -4711,8 +4880,7 @@
               "type": "bool"
             },
             "keyVaultName": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "localAdministratorPassword": {
               "type": "securestring",
@@ -4730,24 +4898,19 @@
               "type": "string"
             },
             "marketplaceImageOffer": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "marketplaceImagePublisher": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "marketplaceImageSKU": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "msrdcwebrtcsvcInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "officeInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "replicaCount": {
               "type": "int"
@@ -4755,10 +4918,6 @@
             "runbookExecution": {
               "type": "bool",
               "defaultValue": false
-            },
-            "computeGalleryImageResourceId": {
-              "type": "string",
-              "defaultValue": ""
             },
             "sourceImageType": {
               "type": "string"
@@ -4774,8 +4933,7 @@
               "defaultValue": {}
             },
             "teamsInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "userAssignedIdentityClientId": {
               "type": "string"
@@ -4787,12 +4945,10 @@
               "type": "string"
             },
             "vcRedistInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "vDOTInstaller": {
-              "type": "string",
-              "defaultValue": ""
+              "type": "string"
             },
             "virtualMachineSize": {
               "type": "string"
@@ -5868,7 +6024,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "12930548717891217137"
+                      "templateHash": "18065835533900027286"
                     }
                   },
                   "parameters": {
@@ -5894,7 +6050,7 @@
                         "asyncExecution": true,
                         "parameters": [],
                         "source": {
-                          "script": "        Start-Sleep -Seconds 30\r\n        Start-Process -File \"C:\\Windows\\System32\\Sysprep\\Sysprep.exe\" -ArgumentList \"/generalize /oobe /shutdown /mode:vm\"\r\n      "
+                          "script": "        Start-Sleep -Seconds 30\r\n        Remove-Item -LiteralPath 'C:\\Windows\\Panther' -Force -Recurse -ErrorAction SilentlyContinue\r\n        Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\cdrom' -Name 'Start' -Value 1\r\n        Start-Process -File 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe' -ArgumentList '/generalize /oobe /shutdown /mode:vm'\r\n      "
                         }
                       }
                     }
@@ -6024,6 +6180,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "computeGalleryImageResourceId": {
+                    "value": "[parameters('computeGalleryImageResourceId')]"
+                  },
                   "computeGalleryName": {
                     "value": "[parameters('computeGalleryName')]"
                   },
@@ -6045,6 +6204,12 @@
                   "location": {
                     "value": "[parameters('location')]"
                   },
+                  "marketplaceImageOffer": {
+                    "value": "[parameters('marketplaceImageOffer')]"
+                  },
+                  "marketplaceImagePublisher": {
+                    "value": "[parameters('marketplaceImagePublisher')]"
+                  },
                   "replicaCount": {
                     "value": "[parameters('replicaCount')]"
                   },
@@ -6059,7 +6224,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "866487267444344457"
+                      "templateHash": "10489448698817055639"
                     }
                   },
                   "parameters": {
@@ -6068,6 +6233,9 @@
                       "defaultValue": true
                     },
                     "computeGalleryName": {
+                      "type": "string"
+                    },
+                    "computeGalleryImageResourceId": {
                       "type": "string"
                     },
                     "diskEncryptionSetResourceId": {
@@ -6088,6 +6256,12 @@
                     "location": {
                       "type": "string"
                     },
+                    "marketplaceImageOffer": {
+                      "type": "string"
+                    },
+                    "marketplaceImagePublisher": {
+                      "type": "string"
+                    },
                     "replicaCount": {
                       "type": "int"
                     },
@@ -6096,6 +6270,30 @@
                     }
                   },
                   "resources": [
+                    {
+                      "type": "Microsoft.Compute/galleries/images",
+                      "apiVersion": "2022-03-03",
+                      "name": "[format('{0}/{1}', parameters('computeGalleryName'), parameters('imageDefinitionName'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[if(contains(parameters('tags'), 'Microsoft.Compute/galleries'), parameters('tags')['Microsoft.Compute/galleries'], createObject())]",
+                      "properties": {
+                        "architecture": "x64",
+                        "features": [
+                          {
+                            "name": "SecurityType",
+                            "value": "TrustedLaunch"
+                          }
+                        ],
+                        "hyperVGeneration": "V2",
+                        "identifier": {
+                          "offer": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImageOffer'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.offer)]",
+                          "publisher": "[if(empty(parameters('computeGalleryImageResourceId')), parameters('marketplaceImagePublisher'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('computeGalleryImageResourceId'), '/')[2], split(parameters('computeGalleryImageResourceId'), '/')[4]), 'Microsoft.Compute/galleries/images', split(parameters('computeGalleryImageResourceId'), '/')[8], split(parameters('computeGalleryImageResourceId'), '/')[10]), '2022-03-03').identifier.publisher)]",
+                          "sku": "[parameters('imageDefinitionName')]"
+                        },
+                        "osState": "Generalized",
+                        "osType": "Windows"
+                      }
+                    },
                     {
                       "type": "Microsoft.Compute/galleries/images/versions",
                       "apiVersion": "2022-03-03",
@@ -6110,7 +6308,6 @@
                           "storageAccountType": "Standard_LRS",
                           "targetRegions": [
                             {
-                              "excludeFromLatest": "[parameters('excludeFromLatest')]",
                               "name": "[parameters('location')]",
                               "regionalReplicaCount": "[parameters('replicaCount')]",
                               "storageAccountType": "Standard_LRS"
@@ -6125,7 +6322,10 @@
                             "id": "[parameters('imageVirtualMachineResourceId')]"
                           }
                         }
-                      }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Compute/galleries/images', parameters('computeGalleryName'), parameters('imageDefinitionName'))]"
+                      ]
                     }
                   ]
                 }
