@@ -4,7 +4,7 @@ param arcGisProInstaller string
 param computeGalleryImageResourceId string
 param computeGalleryName string
 param containerName string
-param customizations array
+param customizations array = []
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool

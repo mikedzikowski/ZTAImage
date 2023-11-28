@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "17474374863199825037"
+      "templateHash": "17179185548530935345"
     }
   },
   "parameters": {
@@ -1215,7 +1215,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "8856987320648697377"
+              "templateHash": "4721042314129417504"
             }
           },
           "parameters": {
@@ -1742,7 +1742,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "15496792277358199101"
+                      "templateHash": "2014055609494702600"
                     }
                   },
                   "parameters": {
@@ -1764,7 +1764,7 @@
                         "_generator": {
                           "name": "bicep",
                           "version": "0.23.1.45101",
-                          "templateHash": "17939616616989403186"
+                          "templateHash": "2772895709272155688"
                         }
                       },
                       "parameters": {
@@ -1781,7 +1781,8 @@
                           "type": "string"
                         },
                         "customizations": {
-                          "type": "array"
+                          "type": "array",
+                          "defaultValue": []
                         },
                         "deploymentNameSuffix": {
                           "type": "string",
@@ -4787,7 +4788,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "17939616616989403186"
+              "templateHash": "2772895709272155688"
             }
           },
           "parameters": {
@@ -4804,7 +4805,8 @@
               "type": "string"
             },
             "customizations": {
-              "type": "array"
+              "type": "array",
+              "defaultValue": []
             },
             "deploymentNameSuffix": {
               "type": "string",
