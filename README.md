@@ -18,6 +18,13 @@ This solution adheres to Zero Trust which dictates that all virtual machine disk
 Register-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
 ```
 
+### Required Permissions
+
+Permissions:
+    Ensure the principal deploying the solution has "Owner" and "Key Vault Administrator" roles assigned on the target Azure subscription. This solution deploys role assignments at various scopes so the principal deploying this solution will need to be an Owner at the subscription scope for a successful deployment. It also deploys a key and secrets in a key vault to enhance security. A custom role may be used to reduce the scope of permisions required if your organization wants to use something other than they built in roles.
+
+[Creating a custom role](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles)
+
 ### Software
 
 Ensure the following software is installed on your client workstation:
@@ -40,6 +47,7 @@ Ensure the following software is installed on your client workstation:
 * [Teams Installer - GCCH](https://gov.teams.microsoft.us/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true)
 * [Microsoft Visual C++ Redistributable](https://aka.ms/vs/16/release/vc_redist.x64.exe)
 * [Remote Desktop WebRTC Redirector Service](https://aka.ms/msrdcwebrtcsvc/msi)
+* [ArcGIS Pro Installer - as Zip File](https://pro.arcgis.com/en/pro-app/latest/get-started/download-arcgis-pro.htm)
 
 ### Example Custom Installers
 

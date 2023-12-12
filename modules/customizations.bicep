@@ -147,7 +147,9 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
           Expand-Archive -Path $env:windir\temp\$Installer\Files\$Blobname -DestinationPath $env:windir\temp\$Installer\Files -Force
           Remove-Item -Path .\$Blobname -Force -Recurse
         }
-      '''
+        Write-Host "Removing $Installer Files"
+        Remove-item $env:windir\temp\$Installer -Force -Recurse -Confirm:$false
+       '''
     }
   }
 }]
@@ -251,57 +253,60 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if 
       $StorageAccountUrl = "https://" + $StorageAccountName + ".blob." + $StorageEndpoint + "/"
       $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
       $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
+      New-Item -Path "$env:windir\temp\office" -ItemType "directory" -Force
       $sku = (Get-ComputerInfo).OsName
-      $o365ConfigHeader = Set-Content "$env:windir\temp\office365x64.xml" '<Configuration><Add OfficeClientEdition="64" Channel="Current">'
-      $o365OfficeHeader = Add-Content "$env:windir\temp\office365x64.xml" '<Product ID="O365ProPlusRetail"><Language ID="en-us" /><ExcludeApp ID="Teams"/>'
+      $o365ConfigHeader = Set-Content "$env:windir\temp\office\office365x64.xml" '<Configuration><Add OfficeClientEdition="64" Channel="Current">'
+      $o365OfficeHeader = Add-Content "$env:windir\temp\office\office365x64.xml" '<Product ID="O365ProPlusRetail"><Language ID="en-us" /><ExcludeApp ID="Teams"/>'
       if($InstallAccess -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Access" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Access" />'
       }
       if($InstallExcel -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Excel" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Excel" />'
       }
       if($InstallOneDrive -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="OneDrive" />'
+          Add-Content "$env:windir\temp\office\ffice365x64.xml" '<ExcludeApp ID="OneDrive" />'
       }
       if($InstallOneNote -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="OneNote" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="OneNote" />'
       }
       if($InstallOutlook -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Outlook" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Outlook" />'
       }
       if($InstallPowerPoint -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="PowerPoint" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="PowerPoint" />'
       }
       if($InstallPublisher -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Publisher" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Publisher" />'
       }
       if($InstallSkypeForBusiness -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Lync" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Lync" />'
       }
       if($InstallWord -notlike '*true*'){
-          Add-Content "$env:windir\temp\office365x64.xml" '<ExcludeApp ID="Word" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Word" />'
       }
-      $addOfficefooter = Add-Content "$env:windir\temp\office365x64.xml" '</Product>'
+      $addOfficefooter = Add-Content "$env:windir\temp\office\office365x64.xml" '</Product>'
       if($InstallProject -like '*true*'){
-        Add-Content "$env:windir\temp\office365x64.xml" '<Product ID="ProjectProRetail"><Language ID="en-us" /></Product>'
+        Add-Content "$env:windir\temp\office\office365x64.xml" '<Product ID="ProjectProRetail"><Language ID="en-us" /></Product>'
       }
       if($InstallVisio -like '*true*'){
-        Add-Content "$env:windir\temp\office365x64.xml" '<Product ID="VisioProRetail"><Language ID="en-us" /></Product>'
+        Add-Content "$env:windir\temp\office\office365x64.xml" '<Product ID="VisioProRetail"><Language ID="en-us" /></Product>'
       }
-      Add-Content "$env:windir\temp\office365x64.xml" '</Add><Updates Enabled="FALSE" /><Display Level="None" AcceptEULA="TRUE" /><Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>'
+      Add-Content "$env:windir\temp\office\office365x64.xml" '</Add><Updates Enabled="FALSE" /><Display Level="None" AcceptEULA="TRUE" /><Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>'
       $PerMachineConfiguration = if(($Sku).Contains("multi") -eq "true"){
-          Add-Content "$env:windir\temp\office365x64.xml" '<Property Name="SharedComputerLicensing" Value="1"/>'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<Property Name="SharedComputerLicensing" Value="1"/>'
       }
-      Add-Content "$env:windir\temp\office365x64.xml" '</Configuration>'
-      $Installer = "$env:windir\temp\office.exe"
+      Add-Content "$env:windir\temp\office\office365x64.xml" '</Configuration>'
+      $Installer = "$env:windir\temp\office\office.exe"
       #$DownloadLinks = Invoke-WebRequest -Uri "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117" -UseBasicParsing
       #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like "https://download.microsoft.com/download/*officedeploymenttool*"} | Select-Object -First 1
       #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing
       Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $Installer
-      Start-Process -FilePath $Installer -ArgumentList "/extract:$env:windir\temp /quiet /passive /norestart" -Wait -PassThru | Out-Null
+      Start-Process -FilePath $Installer -ArgumentList "/extract:$env:windir\temp\office /quiet /passive /norestart" -Wait -PassThru | Out-Null
       Write-Host "Downloaded & extracted the Office 365 Deployment Toolkit"
-      Start-Process -FilePath "$env:windir\temp\setup.exe" -ArgumentList "/configure $env:windir\temp\office365x64.xml" -Wait -PassThru -ErrorAction "Stop" | Out-Null
+      Start-Process -FilePath "$env:windir\temp\office\setup.exe" -ArgumentList "/configure $env:windir\temp\office\office365x64.xml" -Wait -PassThru -ErrorAction "Stop" | Out-Null
       Write-Host "Installed the selected Office365 applications"
+      Write-Host "Removing Office FIles"
+      Remove-item -Path  "$env:windir\temp\office" -Force -Confirm:$false -Recurse
       '''
     }
   }
@@ -365,7 +370,10 @@ resource vdot 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (i
         $ScriptUpdate = $Script.Replace("Set-NetAdapterAdvancedProperty","#Set-NetAdapterAdvancedProperty")
         $ScriptUpdate | Set-Content -Path $Path
         & $Path -Optimizations @("AppxPackages","Autologgers","DefaultUserSettings","LGPO";"NetworkOptimizations","ScheduledTasks","Services","WindowsMediaPlayer") -AdvancedOptimizations "All" -AcceptEULA
-      '''
+        Write-Host "Removing VDOT Files"
+        # Expecting this format for vDot ZIP, update if using a different ZIP format for folder structure
+        Remove-Item -Path $env:windir\temp\Virtual-Desktop-Optimization-Tool-main -Force -Recurse -Confirm:$false
+        '''
     }
     timeoutInSeconds: 640
   }
@@ -471,19 +479,16 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (
       Start-Process "reg" -ArgumentList "add HKLM\SOFTWARE\Microsoft\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f" -Wait -PassThru -ErrorAction "Stop"
       Write-Host "Enabled media optimizations for Teams"
       # Download & install the latest version of Microsoft Visual C++ Redistributable
-      $ErrorActionPreference = "Stop"
       #$File = "$env:windir\temp\vc_redist.x64.exe"
       #Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vc_redist.x64.exe" -OutFile $File
       Start-Process -FilePath  $vcRedistFile -Args "/install /quiet /norestart /log vcdist.log" -Wait -PassThru | Out-Null
       Write-Host "Installed the latest version of Microsoft Visual C++ Redistributable"
       # Download & install the Remote Desktop WebRTC Redirector Service
-      $ErrorActionPreference = "Stop"
       #$File = "$env:windir\temp\webSocketSvc.msi"
       #Invoke-WebRequest -Uri "https://aka.ms/msrdcwebrtcsvc/msi" -OutFile $File
       Start-Process -FilePath msiexec.exe -Args "/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log" -Wait -PassThru | Out-Null
       Write-Host "Installed the Remote Desktop WebRTC Redirector Service"
       # Install Teams
-      $ErrorActionPreference = "Stop"
       #$File = "$env:windir\temp\teams.msi"
       #Write-host $($TeamsUrl)
       #Invoke-WebRequest -Uri "$TeamsUrl" -OutFile $File
@@ -491,6 +496,10 @@ resource teams 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if (
       $PerMachineConfiguration = if(($Sku).Contains("multi") -eq "true"){"ALLUSER=1"}else{""}
       Start-Process -FilePath msiexec.exe -Args "/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1" -Wait -PassThru | Out-Null
       Write-Host "Installed Teams"
+      Write-Host "Removing Teams Files"
+      Remove-Item "$teamsFile" -Force -Confirm:$false
+      Remove-Item "$vcRedistFile" -Force -Confirm:$false
+      Remove-Item "$webSocketFile" -Force -Confirm:$false
       '''
     }
   }
@@ -586,11 +595,16 @@ resource argGisPro 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = 
     catch {
       Write-Output "Please validate all software requirements are included with the ArcGIS Pro Zip"
     }
-      '''
+    Write-Host "Removing ArcGis Files"
+    Remove-Item $ZIP -Force -Confirm:$false -Recurse
+    Remove-item -Path  "$env:windir\temp\arcgis" -Force -Confirm:$false -Recurse
+    '''
     }
   }
   dependsOn: [
     applications
     office
+    teams
+    vdot
   ]
 }
