@@ -1,15 +1,11 @@
 targetScope = 'subscription'
 
-param computeGalleryImageResourceId string
 param computeGalleryName string
 param deploymentNameSuffix string
 param diskEncryptionSetResourceId string
 param enableBuildAutomation bool
 param exemptPolicyAssignmentIds array
-param imageDefinitionName string
 param location string
-param marketplaceImageOffer string
-param marketplaceImagePublisher string
 param resourceGroupName string
 param storageAccountResourceId string
 param subscriptionId string

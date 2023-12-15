@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "12733685306792557119"
+      "templateHash": "8398129647784867748"
     }
   },
   "parameters": {
@@ -482,9 +482,6 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "computeGalleryImageResourceId": {
-            "value": "[parameters('computeGalleryImageResourceId')]"
-          },
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
@@ -500,17 +497,8 @@
           "exemptPolicyAssignmentIds": {
             "value": "[parameters('exemptPolicyAssignmentIds')]"
           },
-          "imageDefinitionName": {
-            "value": "[variables('imageDefinitionName')]"
-          },
           "location": {
             "value": "[parameters('location')]"
-          },
-          "marketplaceImageOffer": {
-            "value": "[parameters('marketplaceImageOffer')]"
-          },
-          "marketplaceImagePublisher": {
-            "value": "[parameters('marketplaceImagePublisher')]"
           },
           "resourceGroupName": "[if(parameters('existingResourceGroup'), createObject('value', parameters('resourceGroupName')), createObject('value', parameters('resourceGroupName')))]",
           "storageAccountResourceId": {
@@ -533,13 +521,10 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "8052270714457028036"
+              "templateHash": "3810275683162469600"
             }
           },
           "parameters": {
-            "computeGalleryImageResourceId": {
-              "type": "string"
-            },
             "computeGalleryName": {
               "type": "string"
             },
@@ -555,16 +540,7 @@
             "exemptPolicyAssignmentIds": {
               "type": "array"
             },
-            "imageDefinitionName": {
-              "type": "string"
-            },
             "location": {
-              "type": "string"
-            },
-            "marketplaceImageOffer": {
-              "type": "string"
-            },
-            "marketplaceImagePublisher": {
               "type": "string"
             },
             "resourceGroupName": {
@@ -1215,7 +1191,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "13561773558624352872"
+              "templateHash": "3548982035496454722"
             }
           },
           "parameters": {
@@ -1742,7 +1718,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.24.24.22086",
-                      "templateHash": "306908932859504066"
+                      "templateHash": "4692702333611866432"
                     }
                   },
                   "parameters": {
@@ -1763,8 +1739,8 @@
                       "metadata": {
                         "_generator": {
                           "name": "bicep",
-                          "version": "0.23.1.45101",
-                          "templateHash": "2772895709272155688"
+                          "version": "0.24.24.22086",
+                          "templateHash": "8608605352698139903"
                         }
                       },
                       "parameters": {
@@ -1995,8 +1971,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "8820205774480521076"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "5351463014152522794"
                                 }
                               },
                               "parameters": {
@@ -2241,8 +2217,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "12018655233659210692"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "666417518081719909"
                                 }
                               },
                               "parameters": {
@@ -2487,8 +2463,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "3091204516823702660"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "12702244124956355874"
                                 }
                               },
                               "parameters": {
@@ -2638,7 +2614,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Installer,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname -Force -Recurse\r\n        }\r\n      "
+                                      "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName,\r\n          [string]$Installer,\r\n          [string]$Arguments\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        New-Item -Path $env:windir\\temp -Name $Installer -ItemType \"directory\" -Force\r\n        New-Item -Path $env:windir\\temp\\$Installer -Name 'Files' -ItemType \"directory\" -Force\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $env:windir\\temp\\$Installer\\Files\\$Blobname\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\\$Installer\r\n        if($Blobname -like (\"*.exe\"))\r\n        {\r\n          Start-Process -FilePath $env:windir\\temp\\$Installer\\Files\\$Blobname -ArgumentList $Arguments -NoNewWindow -Wait -PassThru\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.msi\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Start-Process -FilePath msiexec.exe -ArgumentList $Arguments -Wait\r\n          $status = Get-WmiObject -Class Win32_Product | Where-Object Name -like \"*$($installer)*\"\r\n          if($status)\r\n          {\r\n            Write-Host $status.Name \"is installed\"\r\n          }\r\n          else\r\n          {\r\n            Write-host $Installer \"did not install properly, please check arguments\"\r\n          }\r\n        }\r\n        if($Blobname -like (\"*.bat\"))\r\n        {\r\n          Start-Process -FilePath cmd.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.ps1\"))\r\n        {\r\n          Start-Process -FilePath PowerShell.exe -ArgumentList $env:windir\\temp\\$Installer\\Files\\$Arguments -Wait\r\n        }\r\n        if($Blobname -like (\"*.zip\"))\r\n        {\r\n          Set-Location -Path $env:windir\\temp\\$Installer\\Files\r\n          Expand-Archive -Path $env:windir\\temp\\$Installer\\Files\\$Blobname -DestinationPath $env:windir\\temp\\$Installer\\Files -Force\r\n          Remove-Item -Path .\\$Blobname -Force -Recurse\r\n        }\r\n        Write-Host \"Removing $Installer Files\"\r\n        Remove-item $env:windir\\temp\\$Installer -Force -Recurse -Confirm:$false\r\n       "
                                     }
                                   }
                                 },
@@ -2719,7 +2695,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDrive,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDrive -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneDrive\" />'\r\n      }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          Add-Content \"$env:windir\\temp\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office365x64.xml\" '</Configuration>'\r\n      $Installer = \"$env:windir\\temp\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      "
+                                      "script": "      param(\r\n        [string]$InstallAccess,\r\n        [string]$InstallExcel,\r\n        [string]$InstallOneDrive,\r\n        [string]$InstallOutlook,\r\n        [string]$InstallProject,\r\n        [string]$InstallPublisher,\r\n        [string]$InstallSkypeForBusiness,\r\n        [string]$InstallVisio,\r\n        [string]$InstallWord,\r\n        [string]$InstallOneNote,\r\n        [string]$InstallPowerPoint,\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      New-Item -Path \"$env:windir\\temp\\office\" -ItemType \"directory\" -Force\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $o365ConfigHeader = Set-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<Configuration><Add OfficeClientEdition=\"64\" Channel=\"Current\">'\r\n      $o365OfficeHeader = Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<Product ID=\"O365ProPlusRetail\"><Language ID=\"en-us\" /><ExcludeApp ID=\"Teams\"/>'\r\n      if($InstallAccess -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"Access\" />'\r\n      }\r\n      if($InstallExcel -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"Excel\" />'\r\n      }\r\n      if($InstallOneDrive -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"OneDrive\" />'\r\n      }\r\n      if($InstallOneNote -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"OneNote\" />'\r\n      }\r\n      if($InstallOutlook -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"Outlook\" />'\r\n      }\r\n      if($InstallPowerPoint -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"PowerPoint\" />'\r\n      }\r\n      if($InstallPublisher -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"Publisher\" />'\r\n      }\r\n      if($InstallSkypeForBusiness -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"Lync\" />'\r\n      }\r\n      if($InstallWord -notlike '*true*'){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<ExcludeApp ID=\"Word\" />'\r\n      }\r\n      $addOfficefooter = Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '</Product>'\r\n      if($InstallProject -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<Product ID=\"ProjectProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      if($InstallVisio -like '*true*'){\r\n        Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<Product ID=\"VisioProRetail\"><Language ID=\"en-us\" /></Product>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '</Add><Updates Enabled=\"FALSE\" /><Display Level=\"None\" AcceptEULA=\"TRUE\" /><Property Name=\"FORCEAPPSHUTDOWN\" Value=\"TRUE\"/>'\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\r\n          Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '<Property Name=\"SharedComputerLicensing\" Value=\"1\"/>'\r\n      }\r\n      Add-Content \"$env:windir\\temp\\office\\office365x64.xml\" '</Configuration>'\r\n      $Installer = \"$env:windir\\temp\\office\\office.exe\"\r\n      #$DownloadLinks = Invoke-WebRequest -Uri \"https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117\" -UseBasicParsing\r\n      #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like \"https://download.microsoft.com/download/*officedeploymenttool*\"} | Select-Object -First 1\r\n      #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $Installer\r\n      Start-Process -FilePath $Installer -ArgumentList \"/extract:$env:windir\\temp\\office /quiet /passive /norestart\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Downloaded & extracted the Office 365 Deployment Toolkit\"\r\n      Start-Process -FilePath \"$env:windir\\temp\\office\\setup.exe\" -ArgumentList \"/configure $env:windir\\temp\\office\\office365x64.xml\" -Wait -PassThru -ErrorAction \"Stop\" | Out-Null\r\n      Write-Host \"Installed the selected Office365 applications\"\r\n      Write-Host \"Removing Office FIles\"\r\n      Remove-item -Path  \"$env:windir\\temp\\office\" -Force -Confirm:$false -Recurse\r\n      "
                                     }
                                   },
                                   "dependsOn": [
@@ -2759,7 +2735,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $ZIP = \"$env:windir\\temp\\VDOT.zip\"\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        Unblock-File -Path $ZIP\r\n        Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\" -Force\r\n        $Path = (Get-ChildItem -Path \"$env:windir\\temp\" -Recurse | Where-Object {$_.Name -eq \"Windows_VDOT.ps1\"}).FullName\r\n        $Script = Get-Content -Path $Path\r\n        $ScriptUpdate = $Script.Replace(\"Set-NetAdapterAdvancedProperty\",\"#Set-NetAdapterAdvancedProperty\")\r\n        $ScriptUpdate | Set-Content -Path $Path\r\n        & $Path -Optimizations @(\"AppxPackages\",\"Autologgers\",\"DefaultUserSettings\",\"LGPO\";\"NetworkOptimizations\",\"ScheduledTasks\",\"Services\",\"WindowsMediaPlayer\") -AdvancedOptimizations \"All\" -AcceptEULA\r\n      "
+                                      "script": "        param(\r\n          [string]$UserAssignedIdentityObjectId,\r\n          [string]$StorageAccountName,\r\n          [string]$ContainerName,\r\n          [string]$StorageEndpoint,\r\n          [string]$BlobName\r\n        )\r\n        $ErrorActionPreference = 'Stop'\r\n        $WarningPreference = 'SilentlyContinue'\r\n        $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n        $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n        $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n        $ZIP = \"$env:windir\\temp\\VDOT.zip\"\r\n        Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n        Start-Sleep -Seconds 30\r\n        Set-Location -Path $env:windir\\temp\r\n        Unblock-File -Path $ZIP\r\n        Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\" -Force\r\n        $Path = (Get-ChildItem -Path \"$env:windir\\temp\" -Recurse | Where-Object {$_.Name -eq \"Windows_VDOT.ps1\"}).FullName\r\n        $Script = Get-Content -Path $Path\r\n        $ScriptUpdate = $Script.Replace(\"Set-NetAdapterAdvancedProperty\",\"#Set-NetAdapterAdvancedProperty\")\r\n        $ScriptUpdate | Set-Content -Path $Path\r\n        & $Path -Optimizations @(\"AppxPackages\",\"Autologgers\",\"DefaultUserSettings\",\"LGPO\";\"NetworkOptimizations\",\"ScheduledTasks\",\"Services\",\"WindowsMediaPlayer\") -AdvancedOptimizations \"All\" -AcceptEULA\r\n        Write-Host \"Removing VDOT Files\"\r\n        # Expecting this format for vDot ZIP, update if using a different ZIP format for folder structure\r\n        Remove-Item -Path $env:windir\\temp\\Virtual-Desktop-Optimization-Tool-main -Force -Recurse -Confirm:$false\r\n        "
                                     },
                                     "timeoutInSeconds": 640
                                   },
@@ -2810,7 +2786,7 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      $ErrorActionPreference = \"Stop\"\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      "
+                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName,\r\n        [string]$BlobName2,\r\n        [string]$BlobName3\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      $vcRedistFile = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      $webSocketFile = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      $teamsFile = \"$env:windir\\temp\\teams.msi\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $teamsFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName2\" -OutFile $vcRedistFile\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName3\" -OutFile  $webSocketFile\r\n\r\n      # Enable media optimizations for Team\r\n      Start-Process \"reg\" -ArgumentList \"add HKLM\\SOFTWARE\\Microsoft\\Teams /v IsWVDEnvironment /t REG_DWORD /d 1 /f\" -Wait -PassThru -ErrorAction \"Stop\"\r\n      Write-Host \"Enabled media optimizations for Teams\"\r\n      # Download & install the latest version of Microsoft Visual C++ Redistributable\r\n      #$File = \"$env:windir\\temp\\vc_redist.x64.exe\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/vs/16/release/vc_redist.x64.exe\" -OutFile $File\r\n      Start-Process -FilePath  $vcRedistFile -Args \"/install /quiet /norestart /log vcdist.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the latest version of Microsoft Visual C++ Redistributable\"\r\n      # Download & install the Remote Desktop WebRTC Redirector Service\r\n      #$File = \"$env:windir\\temp\\webSocketSvc.msi\"\r\n      #Invoke-WebRequest -Uri \"https://aka.ms/msrdcwebrtcsvc/msi\" -OutFile $File\r\n      Start-Process -FilePath msiexec.exe -Args \"/i  $webSocketFile /quiet /qn /norestart /passive /log webSocket.log\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed the Remote Desktop WebRTC Redirector Service\"\r\n      # Install Teams\r\n      #$File = \"$env:windir\\temp\\teams.msi\"\r\n      #Write-host $($TeamsUrl)\r\n      #Invoke-WebRequest -Uri \"$TeamsUrl\" -OutFile $File\r\n      $sku = (Get-ComputerInfo).OsName\r\n      $PerMachineConfiguration = if(($Sku).Contains(\"multi\") -eq \"true\"){\"ALLUSER=1\"}else{\"\"}\r\n      Start-Process -FilePath msiexec.exe -Args \"/i $teamsFile /quiet /qn /norestart /passive /log teams.log $PerMachineConfiguration ALLUSERS=1\" -Wait -PassThru | Out-Null\r\n      Write-Host \"Installed Teams\"\r\n      Write-Host \"Removing Teams Files\"\r\n      Remove-Item \"$teamsFile\" -Force -Confirm:$false\r\n      Remove-Item \"$vcRedistFile\" -Force -Confirm:$false\r\n      Remove-Item \"$webSocketFile\" -Force -Confirm:$false\r\n      "
                                     }
                                   },
                                   "dependsOn": [
@@ -2851,12 +2827,14 @@
                                       }
                                     ],
                                     "source": {
-                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      try {\r\n        if ($winDesktopRuntime ){\r\n            Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n        }\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n        # Install ArcGis Pro\r\n        $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n        Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n    }\r\n    catch {\r\n      Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n    }\r\n      "
+                                      "script": "      param(\r\n        [string]$UserAssignedIdentityObjectId,\r\n        [string]$StorageAccountName,\r\n        [string]$ContainerName,\r\n        [string]$StorageEndpoint,\r\n        [string]$BlobName\r\n      )\r\n      $ErrorActionPreference = 'Stop'\r\n      $WarningPreference = 'SilentlyContinue'\r\n      $StorageAccountUrl = \"https://\" + $StorageAccountName + \".blob.\" + $StorageEndpoint + \"/\"\r\n      $TokenUri = \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId\"\r\n      $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token\r\n      # Retrieve Files\r\n      New-Item -Path $env:windir\\temp -Name arcgis -ItemType \"directory\" -Force\r\n      $ZIP = \"$env:windir\\temp\\arcgispro.zip\"\r\n      Invoke-WebRequest -Headers @{\"x-ms-version\"=\"2017-11-09\"; Authorization =\"Bearer $AccessToken\"} -Uri \"$StorageAccountUrl$ContainerName/$BlobName\" -OutFile $ZIP\r\n      Start-Sleep -Seconds 30\r\n      Set-Location -Path $env:windir\\temp\r\n      Unblock-File -Path $ZIP\r\n      Expand-Archive -LiteralPath $ZIP -DestinationPath \"$env:windir\\temp\\arcgis\" -Force\r\n\r\n      # Install Arcgis\r\n      $arcGisProMsi = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -eq \"ArcGisPro.msi\"})\r\n      $arcGisProMsp = (Get-ChildItem \"$env:windir\\temp\\arcgis\" -Recurse | where {$_.Extension -eq \".msp\"})\r\n      $winDesktopRuntime = (Get-ChildItem \"$env:windir\\temp\\arcgis\\\" -Recurse | where {$_.Name -like \"windowsdesktop-runtime-*\"})\r\n\r\n      # If found Install Windows Desktop Runtime Pre-Req\r\n      try {\r\n        if ($winDesktopRuntime ){\r\n            Start-Process -FilePath \"$($winDesktopRuntime.Directory.FullName)\\$winDesktopRuntime\" -ArgumentList \"/install /quiet /norestart\" -Wait -NoNewWindow -PassThru\r\n        }\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n        # Install ArcGis Pro\r\n        $arcGisProArguments = \"/i $($arcGisProMsi.Directory.FullName)\\$arcGisProMsi ALLUSERS=1 ACCEPTEULA=yes ENABLEEUEI=0 SOFTWARE_CLASS=Professional AUTHORIZATION_TYPE=NAMED_USER LOCK_AUTH_SETTINGS=False ArcGIS_Connection=TRUE /qn /norestart\"\r\n        Start-Process \"msiexec.exe\" -ArgumentList $arcGisProArguments  -Wait -NoNewWindow -PassThru\r\n      }\r\n      catch {\r\n        Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n      }\r\n\r\n      try {\r\n      # If MSP is found, patch ArcGisPro with MSP file\r\n      if($arcGisProMsp){\r\n          Start-Process \"msiexec.exe\" -ArgumentList \"/p $($arcGisProMsp.Directory.FullName)\\$arcGisProMsp /qn\" -Wait -NoNewWindow -PassThru\r\n      }\r\n    }\r\n    catch {\r\n      Write-Output \"Please validate all software requirements are included with the ArcGIS Pro Zip\"\r\n    }\r\n    Write-Host \"Removing ArcGis Files\"\r\n    Remove-Item $ZIP -Force -Confirm:$false -Recurse\r\n    Remove-item -Path  \"$env:windir\\temp\\arcgis\" -Force -Confirm:$false -Recurse\r\n    "
                                     }
                                   },
                                   "dependsOn": [
                                     "applications",
-                                    "[[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'office')]"
+                                    "[[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'office')]",
+                                    "[[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'teams')]",
+                                    "[[resourceId('Microsoft.Compute/virtualMachines/runCommands', parameters('virtualMachineName'), 'vdot')]"
                                   ]
                                 }
                               ]
@@ -2899,8 +2877,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "17226869118757649079"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "272404991735293049"
                                 }
                               },
                               "parameters": {
@@ -2999,8 +2977,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "18065835533900027286"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "15255297707921051029"
                                 }
                               },
                               "parameters": {
@@ -3071,8 +3049,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "13646192547375535656"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "14089062657418312586"
                                 }
                               },
                               "parameters": {
@@ -3199,8 +3177,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "10489448698817055639"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "6063252628277218646"
                                 }
                               },
                               "parameters": {
@@ -3344,8 +3322,8 @@
                               "metadata": {
                                 "_generator": {
                                   "name": "bicep",
-                                  "version": "0.23.1.45101",
-                                  "templateHash": "2585342901489447118"
+                                  "version": "0.24.24.22086",
+                                  "templateHash": "3667781850662988906"
                                 }
                               },
                               "parameters": {
