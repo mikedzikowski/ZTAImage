@@ -257,16 +257,12 @@ resource rg 'Microsoft.Resources/resourceGroups@2019-05-01' = if (!existingResou
 module baseline 'modules/baseline.bicep' = {
   name: 'baseline-${deploymentNameSuffix}'
   params: {
-    computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
     deploymentNameSuffix: deploymentNameSuffix
     diskEncryptionSetResourceId: diskEncryptionSetResourceId
     enableBuildAutomation: enableBuildAutomation
     exemptPolicyAssignmentIds: exemptPolicyAssignmentIds
-    imageDefinitionName: imageDefinitionName
     location: location
-    marketplaceImageOffer: marketplaceImageOffer
-    marketplaceImagePublisher: marketplaceImagePublisher
     resourceGroupName: existingResourceGroup ? resourceGroupName : rg.name
     storageAccountResourceId: storageAccountResourceId
     subscriptionId: subscriptionId
