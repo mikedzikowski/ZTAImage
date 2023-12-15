@@ -63,6 +63,20 @@ The following resources must exist in your Azure environment before deployment:
   * Private DNS Zone
   * Blob container with executables, scripts, etc. that are required for the imaging deployment
 
+### Disk Encryption Set Requirements
+
+You must enable the feature for your subscription before you use the EncryptionAtHost property for your VM/VMSS. Use the following steps to enable the feature for your subscription:
+
+Execute the following command to register the feature for your subscription
+
+```powershell
+Register-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
+
+Get-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
+```
+
+* [Use the Azure PowerShell module to enable end-to-end encryption using encryption at host](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/disks-enable-host-based-encryption-powershell)
+
 ## Creating Template Spec
 
 ### Example
