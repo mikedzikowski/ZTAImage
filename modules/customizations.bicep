@@ -264,7 +264,7 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if 
           Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="Excel" />'
       }
       if($InstallOneDrive -notlike '*true*'){
-          Add-Content "$env:windir\temp\office\ffice365x64.xml" '<ExcludeApp ID="OneDrive" />'
+          Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="OneDrive" />'
       }
       if($InstallOneNote -notlike '*true*'){
           Add-Content "$env:windir\temp\office\office365x64.xml" '<ExcludeApp ID="OneNote" />'
