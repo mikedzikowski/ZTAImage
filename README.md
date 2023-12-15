@@ -65,7 +65,7 @@ The following resources must exist in your Azure environment before deployment:
 
 ### Disk Encryption Set Requirements
 
-You must enable the feature for your subscription before you use the EncryptionAtHost property for your VM/VMSS. Use the following steps to enable the feature for your subscription:
+You must enable the feature for your subscription before you use the EncryptionAtHost property for your VM/VMSS. Use the following steps to enable the feature for your subscription.
 
 Execute the following command to register the feature for your subscription
 
