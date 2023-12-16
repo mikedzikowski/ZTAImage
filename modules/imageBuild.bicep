@@ -1,33 +1,33 @@
 targetScope = 'resourceGroup'
 
-param arcGisProInstaller string
-param computeGalleryImageResourceId string
+param arcGisProInstaller string = ''
+param computeGalleryImageResourceId string = ''
 param computeGalleryName string
-param containerName string
+param containerName string 
 param customizations array = []
 param deploymentNameSuffix string = utcNow('yyMMddHHs')
 param diskEncryptionSetResourceId string
-param enableBuildAutomation bool
-param excludeFromLatest bool
+param enableBuildAutomation bool = false
+param excludeFromLatest bool = true
 param hybridUseBenefit bool = false
 param imageDefinitionName string
 param imageMajorVersion int
 param imageMinorVersion int
 param imageVirtualMachineName string
-param installAccess bool
-param installArcGisPro bool
-param installExcel bool
-param installOneDrive bool
-param installOneNote bool
-param installOutlook bool
-param installPowerPoint bool
-param installProject bool
-param installPublisher bool
-param installSkypeForBusiness bool
-param installTeams bool
-param installVirtualDesktopOptimizationTool bool
-param installVisio bool
-param installWord bool
+param installAccess bool = false
+param installArcGisPro bool = false
+param installExcel bool = false
+param installOneDrive bool = false
+param installOneNote bool = false
+param installOutlook bool = false
+param installPowerPoint bool = false
+param installProject bool = false
+param installPublisher bool = false
+param installSkypeForBusiness bool = false
+param installTeams bool = false
+param installVirtualDesktopOptimizationTool bool = false
+param installVisio bool = false
+param installWord bool = false
 param keyVaultName string
 @secure()
 param localAdministratorPassword string = ''
@@ -38,20 +38,20 @@ param managementVirtualMachineName string
 param marketplaceImageOffer string
 param marketplaceImagePublisher string
 param marketplaceImageSKU string
-param msrdcwebrtcsvcInstaller string
-param officeInstaller string
-param replicaCount int
+param msrdcwebrtcsvcInstaller string = ''
+param officeInstaller string = ''
+param replicaCount int = 1
 param runbookExecution bool = false
-param sourceImageType string
+param sourceImageType string = 'AzureMarketplace'
 param storageAccountResourceId string
 param subnetResourceId string
 param tags object = {}
-param teamsInstaller string
+param teamsInstaller string = ''
 param userAssignedIdentityClientId string
 param userAssignedIdentityPrincipalId string
 param userAssignedIdentityResourceId string
-param vcRedistInstaller string
-param vDOTInstaller string
+param vcRedistInstaller string = ''
+param vDOTInstaller string = ''
 param virtualMachineSize string
 
 var autoImageVersion = '${imageMajorVersion}.${imageSuffix}.${imageMinorVersion}'
@@ -185,7 +185,7 @@ module imageVersion 'imageVersion.bicep' = {
   params: {
     computeGalleryImageResourceId: computeGalleryImageResourceId
     computeGalleryName: computeGalleryName
-    diskEncryptionSetResourceId: diskEncryptionSetResourceId
+    //diskEncryptionSetResourceId: diskEncryptionSetResourceId
     excludeFromLatest: excludeFromLatest
     imageDefinitionName: imageDefinitionName
     imageVersionNumber: autoImageVersion
