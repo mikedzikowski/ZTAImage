@@ -49,6 +49,16 @@ Ensure the following software is installed on your client workstation:
 * [Remote Desktop WebRTC Redirector Service](https://aka.ms/msrdcwebrtcsvc/msi)
 * [ArcGIS Pro Installer - as Zip File](https://pro.arcgis.com/en/pro-app/latest/get-started/download-arcgis-pro.htm)
 
+    You can download ArcGIS Pro from My Esri or your ArcGIS Online organization.
+    Once the application is downloaded, if your windows OS image requires ArcGIS Pro you will need to create a ZIP file that contains all of the installation bits including the Windows Runtime.
+
+    Example:
+    ![Alt text](images/arcGisProRuntimeExample.png)
+
+    | Software | Minimum requirement
+    |:---------|:--------:|
+    |  Microsoft .NET  |  [Microsoft .NET Desktop Runtime 6.0.5](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.5-windows-x64-installer) or a [later patch](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) release (6.0.6 and so on), using a Windows x64 installer, is required. The presence of Microsoft .NET Desktop Runtime 7 or later is inconsequential.|
+
 ### Example Custom Installers
 
 ![Alt text](images/image.png)
