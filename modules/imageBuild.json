@@ -5,15 +5,17 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "8608605352698139903"
+      "templateHash": "6609998574317511230"
     }
   },
   "parameters": {
     "arcGisProInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "computeGalleryImageResourceId": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "computeGalleryName": {
       "type": "string"
@@ -33,10 +35,12 @@
       "type": "string"
     },
     "enableBuildAutomation": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "excludeFromLatest": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": true
     },
     "hybridUseBenefit": {
       "type": "bool",
@@ -55,46 +59,60 @@
       "type": "string"
     },
     "installAccess": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installArcGisPro": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installExcel": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installOneDrive": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installOneNote": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installOutlook": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installPowerPoint": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installProject": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installPublisher": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installSkypeForBusiness": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installTeams": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installVirtualDesktopOptimizationTool": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installVisio": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "installWord": {
-      "type": "bool"
+      "type": "bool",
+      "defaultValue": false
     },
     "keyVaultName": {
       "type": "string"
@@ -124,20 +142,24 @@
       "type": "string"
     },
     "msrdcwebrtcsvcInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "officeInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "replicaCount": {
-      "type": "int"
+      "type": "int",
+      "defaultValue": 1
     },
     "runbookExecution": {
       "type": "bool",
       "defaultValue": false
     },
     "sourceImageType": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "AzureMarketplace"
     },
     "storageAccountResourceId": {
       "type": "string"
@@ -150,7 +172,8 @@
       "defaultValue": {}
     },
     "teamsInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "userAssignedIdentityClientId": {
       "type": "string"
@@ -162,10 +185,12 @@
       "type": "string"
     },
     "vcRedistInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "vDOTInstaller": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "virtualMachineSize": {
       "type": "string"
@@ -1405,9 +1430,6 @@
           "computeGalleryName": {
             "value": "[parameters('computeGalleryName')]"
           },
-          "diskEncryptionSetResourceId": {
-            "value": "[parameters('diskEncryptionSetResourceId')]"
-          },
           "excludeFromLatest": {
             "value": "[parameters('excludeFromLatest')]"
           },
@@ -1443,7 +1465,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "6063252628277218646"
+              "templateHash": "6302458606004775652"
             }
           },
           "parameters": {
@@ -1455,9 +1477,6 @@
               "type": "string"
             },
             "computeGalleryImageResourceId": {
-              "type": "string"
-            },
-            "diskEncryptionSetResourceId": {
               "type": "string"
             },
             "excludeFromLatest": {

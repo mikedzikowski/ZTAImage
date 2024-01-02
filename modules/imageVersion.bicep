@@ -1,7 +1,7 @@
 param allowDeletionOfReplicatedLocations bool = true
 param computeGalleryName string
 param computeGalleryImageResourceId string
-param diskEncryptionSetResourceId string
+//param diskEncryptionSetResourceId string
 param excludeFromLatest bool
 param imageDefinitionName string
 param imageVersionNumber string
