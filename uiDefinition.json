@@ -1334,7 +1334,7 @@
                 "officeInstaller": "[if(equals(steps('customizations').office.installOffice, true), steps('customizations').office.officeBlob.blobName,'')]",
                 "oUPath": "[if(and(steps('automation').enable, steps('automation').hybridWorker.domainJoin), steps('automation').hybridWorker.ouPath, '')]",
                 "replicaCount": "[steps('destination').imageVersion.replicaCount]",
-                "resourceGroupName": "[if(equals(steps('basics').existingResourceGroup, true), steps('basics').existingResourceGroup ,steps('basics').newResourceGroup)]",
+                "resourceGroupName": "[if(equals(steps('basics').existingResourceGroup, true), steps('basics').existingResourceGroupName ,steps('basics').newResourceGroup)]",
                 "sourceImageType": "[steps('source').type]",
                 "storageAccountResourceId": "[steps('storage').storageSelector.id]",
                 "subnetResourceId": "[steps('virtualMachines').network.subnet]",
