@@ -102,8 +102,12 @@ resource applications 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01'
         $TokenUri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=$StorageAccountUrl&object_id=$UserAssignedIdentityObjectId"
         $AccessToken = ((Invoke-WebRequest -Headers @{Metadata=$true} -Uri $TokenUri -UseBasicParsing).Content | ConvertFrom-Json).access_token
         New-Item -Path $env:windir\temp -Name $Installer -ItemType "directory" -Force
-        New-Item -Path $env:windir\temp\$Installer -Name 'Files' -ItemType "directory" -Force
-        Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $env:windir\temp\$Installer\Files\$Blobname
+        New-Item -Path $env:windir\temp\$Installer -Name 'Files' -ItemType "directory" -Force       
+        $WebClient = New-Object System.Net.WebClient
+        $WebClient.Headers.Add('x-ms-version', '2017-11-09')
+        $webClient.Headers.Add("Authorization", "Bearer $AccessToken")
+        $webClient.DownloadFile("$StorageAccountUrl$ContainerName/$BlobName", "$env:windir\temp\$Installer\Files\$Blobname")
+       
         Start-Sleep -Seconds 30
         Set-Location -Path $env:windir\temp\$Installer
         if($Blobname -like ("*.exe"))
@@ -300,7 +304,7 @@ resource office 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = if 
       #$DownloadLinks = Invoke-WebRequest -Uri "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117" -UseBasicParsing
       #$URL = $DownloadLinks.Links.href | Where-Object {$_ -like "https://download.microsoft.com/download/*officedeploymenttool*"} | Select-Object -First 1
       #Invoke-WebRequest -Uri $URL -OutFile $Installer -UseBasicParsing
-      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $Installer
+      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $Installer     
       Start-Process -FilePath $Installer -ArgumentList "/extract:$env:windir\temp\office /quiet /passive /norestart" -Wait -PassThru | Out-Null
       Write-Host "Downloaded & extracted the Office 365 Deployment Toolkit"
       Start-Process -FilePath "$env:windir\temp\office\setup.exe" -ArgumentList "/configure $env:windir\temp\office\office365x64.xml" -Wait -PassThru -ErrorAction "Stop" | Out-Null
@@ -556,7 +560,11 @@ resource argGisPro 'Microsoft.Compute/virtualMachines/runCommands@2023-03-01' = 
       # Retrieve Files
       New-Item -Path $env:windir\temp -Name arcgis -ItemType "directory" -Force
       $ZIP = "$env:windir\temp\arcgispro.zip"
-      Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ZIP
+      $WebClient = New-Object System.Net.WebClient
+      $WebClient.Headers.Add('x-ms-version', '2017-11-09')
+      $WebClient.Headers.Add("Authorization", "Bearer $AccessToken")
+      $WebClient.DownloadFile("$StorageAccountUrl$ContainerName/$BlobName", "$ZIP")
+      #Invoke-WebRequest -Headers @{"x-ms-version"="2017-11-09"; Authorization ="Bearer $AccessToken"} -Uri "$StorageAccountUrl$ContainerName/$BlobName" -OutFile $ZIP
       Start-Sleep -Seconds 30
       Set-Location -Path $env:windir\temp
       Unblock-File -Path $ZIP
